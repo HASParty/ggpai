@@ -50,6 +50,7 @@
      <Compile Include="Assets\Scripts\Boardgame\Grid.cs" />
      <Compile Include="Assets\Scripts\Boardgame\GridScriptable.cs" />
      <Compile Include="Assets\Scripts\Boardgame\Piece.cs" />
+     <Compile Include="Assets\Scripts\Tools\MouseRay.cs" />
      <Compile Include="Assets\Scripts\Tools\Singleton.cs" />
      <None Include="Assets\Standard Assets\CrossPlatformInput\CrossPlatformInputGuidelines.txt" />
      <None Include="Assets\Standard Assets\Characters\FirstPersonCharacter\FirstPersonCharacterGuidelines.txt" />

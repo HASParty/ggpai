@@ -8,6 +8,8 @@ namespace Boardgame {
 
 		Grid board;
 		SerializedProperty scriptable;
+		int selectedCell = 0;
+		static bool editingEnabled = false;
 
 		void OnEnable()
 		{
@@ -18,25 +20,52 @@ namespace Boardgame {
 		public override void OnInspectorGUI() {
 			serializedObject.Update ();
 			EditorGUILayout.PropertyField (scriptable, new GUIContent ("Source"), true);
+			if(!editingEnabled && GUILayout.Button ("Enable editing")) {
+				editingEnabled = true;
+				SceneView.RepaintAll();
+
+			} else if (editingEnabled && GUILayout.Button ("Disable editing")) {
+				editingEnabled = false;
+				SceneView.RepaintAll();
+			}
 			serializedObject.ApplyModifiedProperties ();
 		}
 
 		void OnSceneGUI()
 		{
 			if (board.Source.grid != null) {
-				foreach (Cell cell in board.Source.grid) {
+				MeshFilter meshfilter = board.gameObject.GetComponent<MeshFilter>();
+				//if(meshfilter == null) return;
+				float offsetX = board.transform.position.x - meshfilter.sharedMesh.bounds.extents.x*board.transform.localScale.x;
+				float offsetY = board.transform.position.y + meshfilter.sharedMesh.bounds.extents.y*board.transform.localScale.y;
+				float offsetZ = board.transform.position.z - meshfilter.sharedMesh.bounds.extents.z*board.transform.localScale.z;
+				for(int i = 0; i < board.Source.grid.Length; i++) {
+					Cell cell = board.Source.grid[i];
 					Vector3[] loc = new Vector3[4];
-					float offsetX = board.transform.position.x - board.transform.localScale.x/2;
-					float offsetY = board.transform.position.y + board.transform.localScale.y/2;
-					float offsetZ = board.transform.position.z - board.transform.localScale.x/2;
+
+
 					loc [0] = new Vector3 (cell.x + offsetX, offsetY, cell.y + offsetZ);
 					loc [1] = new Vector3 (cell.x + cell.w + offsetX, offsetY, cell.y + offsetZ);
 					loc [2] = new Vector3 (cell.x + cell.w + offsetX, offsetY, cell.y + cell.h + offsetZ);
 					loc [3] = new Vector3 (cell.x + offsetX, offsetY, cell.y + cell.h + offsetZ);
 
+					Vector3 center = loc[0] + (loc[2] - loc[0])/2;
+
 					Handles.DrawSolidRectangleWithOutline (loc, Color.clear, Color.red);
-					Handles.Label(loc[0] + (loc[2] - loc[0])/2, cell.id);
-					Handles.DrawWireDisc(loc[0] + (loc[2] - loc[0])/2, Vector3.up, 0.01f);
+					Handles.Label(center, cell.id);
+					if(editingEnabled) {
+						if(selectedCell == i) {
+							Vector3 newPos = Handles.PositionHandle(center, board.transform.rotation);
+							if(GUI.changed) {
+								board.Source.grid[i].x -= center.x-newPos.x;
+								board.Source.grid[i].y -= center.z-newPos.z;
+							}
+						}
+						if(Handles.Button (center, board.transform.rotation, 0.01f, 0.01f, Handles.SphereCap)){
+							selectedCell = i;
+						}
+					}
+
 				}
 			}
 		}
