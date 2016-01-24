@@ -7,60 +7,39 @@ namespace Boardgame {
         private Grid grid;
         private GameObject piece;
 
-        public GameObject HighlightPrefab;
-        public GameObject GhostPrefab;
-        public GameObject DefaultPrefab;
-
-        private Mode mode;
-
-        private enum Mode
-        {
-            Highlight,
-            Default,
-            Ghost,
-            None
-        }
+		[HideInInspector]
+		public Cell Cell;
+		[SerializeField]
+        private GameObject GhostPrefab;
+		[SerializeField]
+		private GameObject DefaultPrefab;
+		[SerializeField]
+		private float HighlightOffsetHeight;
 
         public void Awake()
         {
             grid = GetComponentInParent<Grid>();
-            mode = Mode.None;
-            ShowNormal();
-        }
-
-        public void ShowHighlight()
-        {
-            if (mode == Mode.Highlight) return;
-            if (piece != null) Destroy(piece);
-            mode = Mode.Highlight;
-            Place(HighlightPrefab);
-        }
-
-        public void ShowNormal()
-        {
-            if (mode == Mode.Default) return;
-            if (piece != null) Destroy(piece);
-            mode = Mode.Default;
-            Place(DefaultPrefab);
-        }
-
-        public void ShowGhost()
-        {
-            if (mode == Mode.Ghost) return;
-            if (piece != null) Destroy(piece);
-            mode = Mode.Ghost;
-            Place(GhostPrefab);
+			Place(DefaultPrefab);
         }
 
         public void OnMouseEnter()
         {
-            if (mode == Mode.Default) ShowNormal(); ShowHighlight();
+			PlayerInteractionManager.Instance.PieceHighlight (this);
         }
 
         public void OnMouseExit()
         {
-            if(mode == Mode.Highlight) ShowNormal();
+			PlayerInteractionManager.Instance.PieceLeave (this);
         }
+
+		public void OnMouseUp() 
+		{
+			PlayerInteractionManager.Instance.PieceSelect (this);
+		}
+
+		public Vector3 GetHighlightPosition() {
+			return transform.position + transform.localToWorldMatrix.MultiplyVector (new Vector3 (0, HighlightOffsetHeight, 0));
+		}
 
         private void Place(GameObject prefab)
         {

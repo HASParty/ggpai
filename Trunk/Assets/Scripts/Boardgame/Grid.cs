@@ -7,8 +7,15 @@ public class Grid : MonoBehaviour {
 		public GridScriptable Source;
 		private Dictionary<string, Cell> cells;
 
+		private float boardHalfWidth;
+		private float boardHalfHeight;
+		private float scaleX;
+		private float scaleZ;
+
 		public void Awake() {
 			PopulateBoard ();
+			BoardgameManager.Instance.SetBoard (this);
+			MeshFilter meshfilter = gameObject.GetComponent<MeshFilter>();
 		}
 
 		public void PopulateBoard() {
@@ -28,22 +35,19 @@ public class Grid : MonoBehaviour {
 			}
 		}
 
-        public void ShowFreeCells()
-        {
-        }
-
-        public void HideFreeCells()
-        {
-
-        }
+		public Cell GetCell(string cellID) {
+			return cells [cellID];
+		}
 
         public bool PlacePiece(Piece piece, string cellID, bool first = false)
         {            
             if (cells.ContainsKey(cellID) && (cells[cellID].piece == null || first))
             {
-                Cell cell = cells[cellID];
+				Cell cell = cells[cellID];
+				MeshFilter meshfilter = gameObject.GetComponent<MeshFilter>();
                 piece.transform.SetParent(transform);
-                piece.transform.localPosition = new Vector3(-transform.localScale.x / 2 + cell.x + cell.w / 2, transform.localPosition.y, -transform.localScale.z / 2 + cell.y + cell.h / 2);
+				piece.Cell = cell;
+				piece.transform.localPosition = new Vector3((cell.x + cell.w/2) - meshfilter.sharedMesh.bounds.extents.x, 0.5f, (cell.y + cell.h/2) - meshfilter.sharedMesh.bounds.extents.z);
                 return true;
             }
             Debug.LogWarning("Grid: Illegal cell " + cellID + " or cell already occupied.");
