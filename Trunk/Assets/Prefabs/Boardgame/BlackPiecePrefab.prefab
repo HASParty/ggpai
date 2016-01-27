@@ -47,9 +47,8 @@ MonoBehaviour:
     w: 0
     h: 0
     piece: {fileID: 0}
-  GhostPrefab: {fileID: 192656, guid: 8ad80bd75abc7064ba31a76420871895, type: 2}
-  DefaultPrefab: {fileID: 106502, guid: c85b91360f864384c92f53fc7535fde3, type: 2}
-  HighlightOffsetHeight: .0599999987
+  ghostPrefab: {fileID: 0}
+  defaultPrefab: {fileID: 106502, guid: c85b91360f864384c92f53fc7535fde3, type: 2}
 --- !u!136 &13692846
 CapsuleCollider:
   m_ObjectHideFlags: 1
@@ -59,8 +58,8 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: .0500000007
-  m_Height: .0500000007
+  m_Radius: 0.05
+  m_Height: 0.05
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &100100000
@@ -77,6 +76,18 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: HighlightOffsetHeight
       value: .0599999987
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: defaultPrefab
+      value: 
+      objectReference: {fileID: 106502, guid: c85b91360f864384c92f53fc7535fde3, type: 2}
+    - target: {fileID: 0}
+      propertyPath: highlightOffsetHeight
+      value: 0.06
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: selectOffsetHeight
+      value: 0.06
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

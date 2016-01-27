@@ -14,8 +14,7 @@ public class Grid : MonoBehaviour {
 
 		public void Awake() {
 			PopulateBoard ();
-			BoardgameManager.Instance.SetBoard (this);
-			MeshFilter meshfilter = gameObject.GetComponent<MeshFilter>();
+            BoardgameManager.Instance.SetBoard(this);
 		}
 
 		public void PopulateBoard() {
@@ -39,15 +38,51 @@ public class Grid : MonoBehaviour {
 			return cells [cellID];
 		}
 
+        public Cell[] GetAllCells()
+        {
+            Cell[] all = new Cell[cells.Count];
+            cells.Values.CopyTo(all, 0);
+            return all;
+        }
+
+        public Piece RemovePiece(string cellID)
+        {
+            if (cells.ContainsKey(cellID))
+            {
+                Cell cell = cells[cellID];
+                Piece piece = cell.piece;
+                cell.piece = null;
+                return piece;
+                //Must then place piece elsewhere in order to move it, or destroy it.
+            }
+            Debug.LogWarning("Grid: Illegal cell " + cellID + " or cell empty.");
+            return null;
+        }
+
+        private Vector3 GetLocalCellPosition(string cellID)
+        {
+            Cell cell = cells[cellID];
+            MeshFilter meshfilter = gameObject.GetComponent<MeshFilter>();
+            return new Vector3((cell.x + cell.w / 2) - meshfilter.sharedMesh.bounds.extents.x,
+                0.5f, (cell.y + cell.h / 2) - meshfilter.sharedMesh.bounds.extents.z);
+        }
+
+        public Vector3 GetCellPosition(string cellID)
+        {
+            Cell cell = cells[cellID];
+            MeshFilter meshfilter = gameObject.GetComponent<MeshFilter>();
+            return transform.position + transform.localToWorldMatrix.MultiplyVector(
+                new Vector3((cell.x + cell.w / 2) - meshfilter.sharedMesh.bounds.extents.x,
+                0.5f, (cell.y + cell.h / 2) - meshfilter.sharedMesh.bounds.extents.z));
+        }
+
         public bool PlacePiece(Piece piece, string cellID, bool first = false)
         {            
             if (cells.ContainsKey(cellID) && (cells[cellID].piece == null || first))
             {
-				Cell cell = cells[cellID];
-				MeshFilter meshfilter = gameObject.GetComponent<MeshFilter>();
                 piece.transform.SetParent(transform);
-				piece.Cell = cell;
-				piece.transform.localPosition = new Vector3((cell.x + cell.w/2) - meshfilter.sharedMesh.bounds.extents.x, 0.5f, (cell.y + cell.h/2) - meshfilter.sharedMesh.bounds.extents.z);
+				piece.Cell = cells[cellID];
+                piece.transform.localPosition = GetLocalCellPosition(cellID);
                 return true;
             }
             Debug.LogWarning("Grid: Illegal cell " + cellID + " or cell already occupied.");

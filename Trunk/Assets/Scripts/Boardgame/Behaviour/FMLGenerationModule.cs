@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Mood : MonoBehaviour {
+public class FMLGenerationModule : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {

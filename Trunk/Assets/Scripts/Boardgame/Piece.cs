@@ -4,22 +4,18 @@ using System.Collections;
 namespace Boardgame {
     [RequireComponent(typeof(CapsuleCollider))]
 	public class Piece : MonoBehaviour {
-        private Grid grid;
         private GameObject piece;
 
 		[HideInInspector]
 		public Cell Cell;
 		[SerializeField]
-        private GameObject GhostPrefab;
+        private GameObject ghostPrefab;
 		[SerializeField]
-		private GameObject DefaultPrefab;
-		[SerializeField]
-		private float HighlightOffsetHeight;
+		private GameObject defaultPrefab;
 
         public void Awake()
         {
-            grid = GetComponentInParent<Grid>();
-			Place(DefaultPrefab);
+			Place(defaultPrefab);
         }
 
         public void OnMouseEnter()
@@ -38,8 +34,13 @@ namespace Boardgame {
 		}
 
 		public Vector3 GetHighlightPosition() {
-			return transform.position + transform.localToWorldMatrix.MultiplyVector (new Vector3 (0, HighlightOffsetHeight, 0));
+			return transform.position;
 		}
+
+        public Vector3 GetSelectPosition()
+        {
+            return transform.position;
+        }
 
         private void Place(GameObject prefab)
         {
