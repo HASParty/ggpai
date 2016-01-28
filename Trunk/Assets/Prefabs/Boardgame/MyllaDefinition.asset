@@ -11,6 +11,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95ee9d963e00df543b7daf9d8d2c4d21, type: 3}
   m_Name: MyllaDefinition
   m_EditorClassIdentifier: 
-  ID: 
-  PhysicalBoardDescription: {fileID: 0}
-  PhysicalBoardPrefab: {fileID: 0}
+  ID: Mylla
+  PhysicalBoardDescription: {fileID: 11400000, guid: 3943f002f59e6e4429374b2fff193924,
+    type: 2}
+  PhysicalBoardPrefab: {fileID: 128470, guid: 730bcc061e02fff4dbe96bb5f16ba86d, type: 2}
+  PhysicalPieces:
+  - Type: default
+    Player: 0
+    Prefab: {fileID: 106502, guid: c85b91360f864384c92f53fc7535fde3, type: 2}
+  - Type: default
+    Player: 1
+    Prefab: {fileID: 187284, guid: 99ec9765718577e4a882dc102543019b, type: 2}
+  InitialWhitePieces:
+  - cellID: WhiteHand
+    pieceType: default
+  - cellID: G1
+    pieceType: default
+  - cellID: G2
+    pieceType: default
+  - cellID: G3
+    pieceType: default
+  InitialBlackPieces:
+  - cellID: BlackHand
+    pieceType: default
