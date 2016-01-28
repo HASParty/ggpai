@@ -1,40 +1,38 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using Boardgame.Script;
+using System;
 
 namespace Boardgame {
 public class Grid : MonoBehaviour {
 		[Tooltip("Game board configuration to load")]
 		public GridScriptable Source;
 		private Dictionary<string, Cell> cells;
+        private Dictionary<string, PhysicalCell> pcells;
 
-		private float boardHalfWidth;
+        private float boardHalfWidth;
 		private float boardHalfHeight;
 		private float scaleX;
 		private float scaleZ;
 
-		public void Awake() {
-			PopulateBoard ();
-            BoardgameManager.Instance.SetBoard(this);
-		}
-
-		public void PopulateBoard() {
-			if (Source == null) {
-				Debug.LogError ("Grid: Game board uninitialised. Please make sure to have set a board.");
-				return;
-			}
-			cells = new Dictionary<string, Cell>();
-            foreach (Cell cell in Source.grid)
+        public void LoadScriptable(GridScriptable physicalBoardDescription)
+        {
+            Source = physicalBoardDescription;
+            cells = new Dictionary<string, Cell>();
+            pcells = new Dictionary<string, PhysicalCell>();
+            foreach(Cell cell in Source.grid)
             {
+                PhysicalCell pcell = ScriptHelper<PhysicalCell>.spawn(transform);
+                pcell.gameObject.name = cell.id;
+                pcell.id = cell.id;
+                pcell.SetColliderRadius(cell.w / 2);
                 cells.Add(cell.id, cell);
-                if (cell.piece != null)
-                {
-                    Piece piece = Instantiate(cell.piece);
-                    PlacePiece(piece, cell.id, true);
-                }
-			}
-		}
+                pcells.Add(cell.id, pcell);
+                pcell.transform.localPosition = GetLocalCellPosition(cell.id);
+            }
+        }
 
-		public Cell GetCell(string cellID) {
+        public Cell GetCell(string cellID) {
 			return cells [cellID];
 		}
 
@@ -45,18 +43,24 @@ public class Grid : MonoBehaviour {
             return all;
         }
 
-        public Piece RemovePiece(string cellID)
+        public PhysicalCell[] GetAllPhysicalCells()
         {
-            if (cells.ContainsKey(cellID))
+            PhysicalCell[] all = new PhysicalCell[pcells.Count];
+            pcells.Values.CopyTo(all, 0);
+            return all;
+        }
+
+        public GameObject RemovePiece(string cellID)
+        {
+            if (pcells.ContainsKey(cellID))
             {
-                Cell cell = cells[cellID];
-                Piece piece = cell.piece;
-                cell.piece = null;
-                return piece;
-                //Must then place piece elsewhere in order to move it, or destroy it.
+                return pcells[cellID].RemovePiece();
             }
-            Debug.LogWarning("Grid: Illegal cell " + cellID + " or cell empty.");
-            return null;
+            else
+            {
+                Debug.LogWarning("Grid: Illegal cell " + cellID + " or cell empty.");
+                return null;
+            }
         }
 
         private Vector3 GetLocalCellPosition(string cellID)
@@ -69,24 +73,19 @@ public class Grid : MonoBehaviour {
 
         public Vector3 GetCellPosition(string cellID)
         {
-            Cell cell = cells[cellID];
-            MeshFilter meshfilter = gameObject.GetComponent<MeshFilter>();
-            return transform.position + transform.localToWorldMatrix.MultiplyVector(
-                new Vector3((cell.x + cell.w / 2) - meshfilter.sharedMesh.bounds.extents.x,
-                0.5f, (cell.y + cell.h / 2) - meshfilter.sharedMesh.bounds.extents.z));
+            return pcells[cellID].transform.position;
         }
 
-        public bool PlacePiece(Piece piece, string cellID, bool first = false)
+        public bool PlacePiece(GameObject go, string cellID, bool isInstantiated = true)
         {            
-            if (cells.ContainsKey(cellID) && (cells[cellID].piece == null || first))
+            if (cells.ContainsKey(cellID) && !pcells[cellID].HasPiece())
             {
-                piece.transform.SetParent(transform);
-				piece.Cell = cells[cellID];
-                piece.transform.localPosition = GetLocalCellPosition(cellID);
+                pcells[cellID].Place(go, isInstantiated);
                 return true;
             }
             Debug.LogWarning("Grid: Illegal cell " + cellID + " or cell already occupied.");
             return false;
         }
+
     }
 }

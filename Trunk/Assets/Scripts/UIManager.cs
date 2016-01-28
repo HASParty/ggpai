@@ -98,6 +98,8 @@ namespace Boardgame {
                 rt.localScale = legalCellImage.gameObject.GetComponent<RectTransform>().localScale;
                 rt.position = cellPos + legalOffset;
                 rt.Rotate(legalRotate);
+                rt.SetAsFirstSibling();
+                legalCellObjects.Add(legalCell);
             }
 
         }
@@ -106,7 +108,7 @@ namespace Boardgame {
         {
             foreach (GameObject cell in legalCellObjects)
             {
-                GameObject.Destroy(cell);
+                Destroy(cell);
             }
 
             legalCellObjects.Clear();

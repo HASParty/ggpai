@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEditor;
 
 namespace Boardgame {
-	[CustomEditor(typeof(GridScriptable))]
+	[CustomEditor(typeof(Script.GridScriptable))]
 	public class GridScriptableEditor : Editor {
 		
 		void OnEnable()

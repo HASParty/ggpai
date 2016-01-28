@@ -9,6 +9,5 @@ namespace Boardgame {
 		public float y;
 		public float w;
 		public float h;
-		public Piece piece;
 	}
 }
