@@ -9,6 +9,8 @@ namespace Boardgame {
 
         public Canvas canvas;
         [SerializeField]
+        private Image mouseCursor;
+        [SerializeField]
         private Image highlightImage;
         [SerializeField]
         private Vector3 highlightRotate;
