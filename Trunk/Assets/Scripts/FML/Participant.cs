@@ -1,15 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+namespace Fml
+{
+    public class Participant : MonoBehaviour
+    {
 
-public class Participant : MonoBehaviour {
+        Identikit identikit;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    }
 }

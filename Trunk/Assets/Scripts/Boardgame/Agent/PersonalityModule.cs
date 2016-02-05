@@ -1,30 +1,19 @@
 ﻿using UnityEngine;
 
 using System.Collections;
+using Fml;
 
 namespace Boardgame.Agent
 {
-    public enum PersonalityDegree {
-        Low,
-        Neutral,
-        High
-    };
 
+    [RequireComponent(typeof(Identikit))]
     public class PersonalityModule : MonoBehaviour
     {
         [SerializeField]
         private Mood mood;
         [Header("Personality values")]
         [SerializeField]
-        private PersonalityDegree extraversion;
-        [SerializeField]
-        private PersonalityDegree agreeableness;
-        [SerializeField]
-        private PersonalityDegree conscientousness;
-        [SerializeField]
-        private PersonalityDegree neuroticism;
-        [SerializeField]
-        private PersonalityDegree openness;
+        private Identikit identikit;
         [Header("Settings")]
         [Tooltip("The amount the arousal changes in a second"), SerializeField]
         private float arousalDecayRate = 0.005f;
@@ -40,19 +29,7 @@ namespace Boardgame.Agent
         // Use this for initialization
         void Start()
         {
-        }
-
-        public void InitialisePersonality(PersonalityDegree extraversion, 
-            PersonalityDegree agreeableness, PersonalityDegree conscientousness,
-            PersonalityDegree neuroticism, PersonalityDegree openness)
-        {
-            this.extraversion = extraversion;
-            this.conscientousness = conscientousness;
-            this.agreeableness = agreeableness;
-            this.neuroticism = neuroticism;
-            this.openness = openness;
-            mood.arousal = neutralVal;
-            mood.valence = neutralVal;
+            identikit = GetComponent<Identikit>();
         }
 
         // Update is called once per frame

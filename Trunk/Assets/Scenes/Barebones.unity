@@ -255,10 +255,45 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2df845d4caba50745adc2efcf528fb0d, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &803649734 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 106238, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+  m_PrefabInternal: {fileID: 1087361408}
+--- !u!114 &803649737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 803649734}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 487c00bdb97d8c44a8ab867a79578340, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 0
+  actorName: John
+  gender: 0
+  extraversion: 0
+  agreeableness: 0
+  neuroticism: 0
+  conscientiousness: 0
+  openness: 0
+  dominance: 0
 --- !u!1 &829674724 stripped
 GameObject:
   m_PrefabParentObject: {fileID: 105954, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
   m_PrefabInternal: {fileID: 1087361408}
+--- !u!114 &829674725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 829674724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40f1638d48e33404cac874c937d6e740, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &829674727
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -423,7 +458,8 @@ Prefab:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 52cad51d0dcd614488134a60720cb8a7, type: 2}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 11428368, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &1208223106
