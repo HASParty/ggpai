@@ -54,7 +54,7 @@ public class BoardgameManager : Singleton<BoardgameManager> {
             return grid.GetCellPosition(id);
         }
 
-		public List<string> GetLegalMoves(string cellID) {
+		public List<string> GetLegalMoves(string cellID, Player player) {
             //TODO: implement get legal moves
             //presumably will have to interface with GGP plugin or
             //a plugin which allows it to directly communicate
@@ -81,11 +81,7 @@ public class BoardgameManager : Singleton<BoardgameManager> {
 
 		public bool IsLegalMove(string cellFromID, string cellToID, Player player) {
             //TODO: actually implement is legal move
-            if (BelongsToPlayer(cellFromID, player))
-            {
-                return GetLegalMoves(cellFromID).Contains(cellToID);
-            }
-            return false;
+            return GetLegalMoves(cellFromID, player).Contains(cellToID);
 		}
 
         public bool MakeMove(string cellFromID, string cellToID, Player player)
