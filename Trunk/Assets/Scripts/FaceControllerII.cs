@@ -144,7 +144,6 @@ public class FaceControllerII : MonoBehaviour
             
         } else {            
 			EyeClose = CalculateEyeClose ();
-            if(EyeClose > 0) Debug.Log(EyeClose);
         }
 		
 		UpperLidL.localPosition = new Vector3 (UpperLidLOrigin.x + blinkDistance * EyeClose + EyeDroop * 0.001f, UpperLidL.localPosition.y, UpperLidL.localPosition.z);
