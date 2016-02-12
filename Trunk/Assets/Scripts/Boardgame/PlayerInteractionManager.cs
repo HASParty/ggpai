@@ -68,7 +68,7 @@ namespace Boardgame {
 
         private void ShowLegalCells()
         {
-            var legalMoves = BoardgameManager.Instance.GetLegalMoves(selectedPiece.id);
+            var legalMoves = BoardgameManager.Instance.GetLegalMoves(selectedPiece.id, player);
             List<Vector3> cellPos = new List<Vector3>();
             foreach (string id in legalMoves)
             {
