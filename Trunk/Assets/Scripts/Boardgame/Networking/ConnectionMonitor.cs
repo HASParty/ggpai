@@ -15,12 +15,24 @@ namespace Boardgame.Networking
         public int FeedPort { get { return Connection.FeedPort; } }
         public int GamePort { get { return Connection.GamePort; } }
 
+        public bool IsConnected()
+        {
+            return Connection.GameConnectionStatus == Connection.Status.ESTABLISHED && Connection.FeedConnectionStatus == Connection.Status.ESTABLISHED;
+        }
+
         void Start()
         {
             if (Connect())
             {
                 StartCoroutine(Read());
             }
+        }
+
+        public void UpdateSettings(string host, int gport, int fport)
+        {
+            Connection.Host = host;
+            Connection.GamePort = gport;
+            Connection.FeedPort = fport;
         }
 
         public bool Connect()
