@@ -46,6 +46,11 @@ namespace Boardgame.Networking
             Connection.Disconnect();
         }
 
+        public void Write(string write)
+        {
+            Connection.Write(write);
+        }
+
         IEnumerator Read()
         {
             while (true)

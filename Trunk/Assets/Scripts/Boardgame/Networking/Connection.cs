@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
@@ -63,22 +64,41 @@ namespace Boardgame.Networking
 
             return true;
         }
+
+        public static void Write(string message)
+        {
+            string formatted = String.Format("( UNITY {0} )\r\n", message);
+            string header = String.Format("POST / HTTP/1.0\r\nAccept: text/delim\r\nHost: {0}\r\nSender: UNITY\r\n"+
+                                          "Receiver: GAMESERVER\r\nContent-Type: text/acl\r\nContent-Length: {1}\r\n\r\n", Host, formatted.Length);
+            string write = header + formatted;
+            NetworkStream ns = gameConnection.GetStream();
+            StreamWriter sw = new StreamWriter(ns);
+
+            try {
+                Debug.Log("Sending message: " + write);
+                sw.Write(write);
+            } catch(Exception e) {
+                Debug.LogError(e.ToString());
+                GameConnectionStatus = Status.ERROR;
+            }
+
+        }
         
         public static void Read()
         {
             NetworkStream ns = gameConnection.GetStream();
+            StreamReader sr = new StreamReader(ns);
 
-            byte[] bytes = new byte[1024];
-            int bytesRead = ns.Read(bytes, 0, bytes.Length);
+            string response = sr.ReadToEnd();
 
-            Debug.Log("Read from game connection:" + Encoding.ASCII.GetString(bytes, 0, bytesRead));
+            Debug.Log("Read from game connection:" + response);
 
             ns = feedConnection.GetStream();
+            sr = new StreamReader(ns);
 
-            bytes = new byte[1024];
-            bytesRead = ns.Read(bytes, 0, bytes.Length);
+            response = sr.ReadToEnd();
 
-            Debug.Log("Read from feed connection:" + Encoding.ASCII.GetString(bytes, 0, bytesRead));
+            Debug.Log("Read from feed connection:" + response);
         }
 
         public static void Disconnect()

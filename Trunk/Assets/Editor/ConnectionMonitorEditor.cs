@@ -8,30 +8,33 @@ public class ConnectionMonitorEditor : Editor
     int newGPort;
     int newFPort;
     string newHost;
+    string sendTest;
     bool editSettings = false;
+    ConnectionMonitor c;
 
     public void OnEnable()
     {
-        newHost = ConnectionMonitor.Instance.Host;
-        newFPort = ConnectionMonitor.Instance.FeedPort;
-        newGPort = ConnectionMonitor.Instance.GamePort;
+        c = target as ConnectionMonitor;
+        newHost = c.Host;
+        newFPort = c.FeedPort;
+        newGPort = c.GamePort;
     }
 
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-        EditorGUILayout.LabelField("Game connection ("+ ConnectionMonitor.Instance.Host+":"+ ConnectionMonitor.Instance.GamePort +"): " + ConnectionMonitor.Instance.GameConnectionStatus);
-        EditorGUILayout.LabelField("Feed connection (" + ConnectionMonitor.Instance.Host + ":" + ConnectionMonitor.Instance.FeedPort + "): " + ConnectionMonitor.Instance.FeedConnectionStatus);
+        EditorGUILayout.LabelField("Game connection ("+ c.Host+":"+ c.GamePort +"): " + c.GameConnectionStatus);
+        EditorGUILayout.LabelField("Feed connection (" + c.Host + ":" + c.FeedPort + "): " + c.FeedConnectionStatus);
         if (editSettings)
         {
             newHost = EditorGUILayout.TextField("Change hostname:", newHost);
             newGPort = EditorGUILayout.IntField("Change game port:", newGPort);
             newFPort = EditorGUILayout.IntField("Change feed port:", newFPort);
-            if (newHost != ConnectionMonitor.Instance.Host || newGPort != ConnectionMonitor.Instance.GamePort || newFPort != ConnectionMonitor.Instance.FeedPort)
+            if (newHost != c.Host || newGPort != c.GamePort || newFPort != c.FeedPort)
             {
                 if (GUILayout.Button("Save changes"))
                 {
-                    ConnectionMonitor.Instance.UpdateSettings(newHost, newGPort, newFPort);
+                    c.UpdateSettings(newHost, newGPort, newFPort);
                 }
             } else
             {
@@ -47,18 +50,26 @@ public class ConnectionMonitorEditor : Editor
                 editSettings = true;
             }
         }
-        if (GUILayout.Button((ConnectionMonitor.Instance.IsConnected() ? "Reconnect" : "Connect")))
+        if (GUILayout.Button((c.IsConnected() ? "Reconnect" : "Connect")))
         {
-            ConnectionMonitor c = target as ConnectionMonitor;
             c.Disconnect();
             c.Connect();
         }
-        if(ConnectionMonitor.Instance.IsConnected())
+        if(c.IsConnected())
         {
             if(GUILayout.Button("Disconnect"))
             {
-                ConnectionMonitor c = target as ConnectionMonitor;
                 c.Disconnect();
+            }
+
+            sendTest = EditorGUILayout.TextField("Send test:", sendTest);
+            if (sendTest.Length > 0)
+            {
+                if (GUILayout.Button("Send"))
+                {
+                    c.Write(sendTest);
+                    sendTest = "";
+                }
             }
         }
         serializedObject.ApplyModifiedProperties();
