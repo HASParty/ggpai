@@ -9,13 +9,18 @@ public class Asteroid : MonoBehaviour {
 
 	void Start () {
         rb = GetComponent<Rigidbody>();
+        rb.AddForce(Random.Range(-0.5f, 0.5f),
+                    Random.Range(-0.2f, 0.2f),
+                    Random.Range(-0.5f, 0.5f),
+                    ForceMode.Impulse);
         sc = GetComponent<SphereCollider>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        //an example of adding force to a rigid body, happens every frame, results in strange movement
-        rb.AddForce(Random.Range(-0.5f, 0.5f), Random.Range(-0.1f, 0.1f), Random.Range(-0.5f, 0.5f), ForceMode.Impulse);
-        //can also manually adjust the position rather than making use of rigid body physics, but that will make collisions more confusing
+        //an example of adding force to a rigid body, happens every frame,
+        //results in strange movement
+        //can also manually adjust the position rather than making use of rigid body physics,
+        //but that will make collisions more confusing
 	}
 }

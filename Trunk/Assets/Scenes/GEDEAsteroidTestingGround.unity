@@ -199,7 +199,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AsteroidPrefabs:
-  - {fileID: 11415826, guid: 61fe32bb8a7709d4c9500cb15aca6f03, type: 2}
+  - {fileID: 11410934, guid: 0e67eb0c7bbcf6c4698a802648708136, type: 2}
+  - {fileID: 11410934, guid: 0e67eb0c7bbcf6c4698a802648708136, type: 2}
+  - {fileID: 11486118, guid: 48d80c9154a1c5e478596adaf47221f3, type: 2}
   SpawnMinFrequency: 2
   SpawnMaxFrequency: 8
   SpawnRadius: 5

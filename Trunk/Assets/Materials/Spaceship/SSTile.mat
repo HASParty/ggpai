@@ -21,7 +21,7 @@ Material:
         second:
           m_Texture: {fileID: 0}
           m_Scale: {x: 2, y: 2}
-          m_Offset: {x: 0.275, y: 0.25}
+          m_Offset: {x: 0.275, y: 0.5}
       data:
         first:
           name: _BumpMap
@@ -56,7 +56,7 @@ Material:
         second:
           m_Texture: {fileID: 0}
           m_Scale: {x: 2, y: 2}
-          m_Offset: {x: 0.275, y: 0.25}
+          m_Offset: {x: 0.275, y: 0.5}
       data:
         first:
           name: _DetailMask
