@@ -74,12 +74,23 @@ namespace Boardgame.Networking
             NetworkStream ns = gameConnection.GetStream();
             StreamWriter sw = new StreamWriter(ns);
 
-            try {
-                Debug.Log("Sending message: " + write);
-                sw.Write(write);
-            } catch(Exception e) {
-                Debug.LogError(e.ToString());
-                GameConnectionStatus = Status.ERROR;
+            if (ns.CanWrite)
+            {
+                try
+                {
+                    Debug.Log("Sending message: " + write);
+                    sw.Write(write);
+                    sw.Flush();
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e.ToString());
+                    GameConnectionStatus = Status.ERROR;
+                }
+            }
+            else
+            {
+                Debug.LogError("Can't write to network stream!");
             }
 
         }
@@ -94,6 +105,7 @@ namespace Boardgame.Networking
                 string response = sr.ReadToEnd();
 
                 Debug.Log("Read from game connection:" + response);
+                
             }
             else
             {

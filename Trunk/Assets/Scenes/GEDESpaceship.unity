@@ -41,7 +41,7 @@ RenderSettings:
 LightmapSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 6
-  m_GIWorkflowMode: 1
+  m_GIWorkflowMode: 0
   m_LightmapsMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -364,18 +364,6 @@ Prefab:
       propertyPath: m_Name
       value: Light (3)
       objectReference: {fileID: 0}
-    - target: {fileID: 415414, guid: 8eedc3408f2c9b749a2177bec831b89b, type: 2}
-      propertyPath: m_LocalScale.x
-      value: 0.19999996
-      objectReference: {fileID: 0}
-    - target: {fileID: 415414, guid: 8eedc3408f2c9b749a2177bec831b89b, type: 2}
-      propertyPath: m_LocalScale.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 415414, guid: 8eedc3408f2c9b749a2177bec831b89b, type: 2}
-      propertyPath: m_LocalScale.z
-      value: 0.19999996
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 8eedc3408f2c9b749a2177bec831b89b, type: 2}
   m_IsPrefabParent: 0
@@ -580,7 +568,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 6
   m_Type: 1
-  m_Color: {r: 0.8052231, g: 0.6013192, b: 0.9852941, a: 1}
+  m_Color: {r: 0.87647057, g: 0.8455882, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -615,7 +603,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
 --- !u!1001 &1992656991
 Prefab:
   m_ObjectHideFlags: 0
@@ -774,7 +762,7 @@ Prefab:
     - target: {fileID: 2300000, guid: 9e1cc775bf6518245a8de2660c9a472b, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: c6f1cba0e8d5ca74fbfe87e6840850e1, type: 2}
+      objectReference: {fileID: 2100000, guid: 401ad4983cc206c4f923a26dd2542db1, type: 2}
     - target: {fileID: 2300000, guid: 9e1cc775bf6518245a8de2660c9a472b, type: 3}
       propertyPath: m_CastShadows
       value: 2
