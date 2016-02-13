@@ -18,6 +18,7 @@ public class ConnectionMonitorEditor : Editor
         newHost = c.Host;
         newFPort = c.FeedPort;
         newGPort = c.GamePort;
+        sendTest = "";
     }
 
     public override void OnInspectorGUI()
@@ -70,6 +71,11 @@ public class ConnectionMonitorEditor : Editor
                     c.Write(sendTest);
                     sendTest = "";
                 }
+            }
+
+            if (GUILayout.Button("Read once"))
+            {
+                c.ReadOnce();
             }
         }
         serializedObject.ApplyModifiedProperties();

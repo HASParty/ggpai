@@ -60,6 +60,11 @@ namespace Boardgame.Networking
             }
         }
 
+        public void ReadOnce()
+        {
+            Connection.Read();
+        }
+
         // Update is called once per frame
         void Update()
         {

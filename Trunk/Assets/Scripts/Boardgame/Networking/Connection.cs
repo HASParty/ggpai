@@ -86,19 +86,31 @@ namespace Boardgame.Networking
         
         public static void Read()
         {
-            NetworkStream ns = gameConnection.GetStream();
-            StreamReader sr = new StreamReader(ns);
+            if (gameConnection.Available > 0)
+            {
+                NetworkStream ns = gameConnection.GetStream();
+                StreamReader sr = new StreamReader(ns);
 
-            string response = sr.ReadToEnd();
+                string response = sr.ReadToEnd();
 
-            Debug.Log("Read from game connection:" + response);
+                Debug.Log("Read from game connection:" + response);
+            }
+            else
+            {
+                Debug.Log("Nothing received from game connection.");
+            }
+            if(feedConnection.Available > 0) {
+                NetworkStream ns = feedConnection.GetStream();
+                StreamReader sr = new StreamReader(ns);
 
-            ns = feedConnection.GetStream();
-            sr = new StreamReader(ns);
+                string response = sr.ReadToEnd();
 
-            response = sr.ReadToEnd();
-
-            Debug.Log("Read from feed connection:" + response);
+                Debug.Log("Read from feed connection:" + response);
+            }
+            else
+            {
+                Debug.Log("Nothing received from feed.");
+            }
         }
 
         public static void Disconnect()
