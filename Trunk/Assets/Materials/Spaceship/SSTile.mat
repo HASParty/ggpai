@@ -20,8 +20,8 @@ Material:
           name: _MainTex
         second:
           m_Texture: {fileID: 0}
-          m_Scale: {x: 5, y: 5}
-          m_Offset: {x: 0, y: 0}
+          m_Scale: {x: 2, y: 2}
+          m_Offset: {x: 0.275, y: 0.5}
       data:
         first:
           name: _BumpMap
@@ -55,8 +55,8 @@ Material:
           name: _EmissionMap
         second:
           m_Texture: {fileID: 0}
-          m_Scale: {x: 5, y: 5}
-          m_Offset: {x: 0, y: 0}
+          m_Scale: {x: 2, y: 2}
+          m_Offset: {x: 0.275, y: 0.5}
       data:
         first:
           name: _DetailMask
