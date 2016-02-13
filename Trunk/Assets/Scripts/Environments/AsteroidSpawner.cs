@@ -26,7 +26,7 @@ public class AsteroidSpawner : MonoBehaviour {
 
     void Spawn()
     {
-        int pick = Random.Range(0, AsteroidPrefabs.Length - 1);
+        int pick = Random.Range(0, AsteroidPrefabs.Length);
         GameObject go = Instantiate(AsteroidPrefabs[pick].gameObject);
         //sort all asteroids in the hierarchy under the spawner
         go.transform.SetParent(transform);
