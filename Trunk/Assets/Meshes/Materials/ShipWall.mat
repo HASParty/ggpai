@@ -69,7 +69,7 @@ Material:
           name: _DetailAlbedoMap
         second:
           m_Texture: {fileID: 0}
-          m_Scale: {x: 1, y: 1}
+          m_Scale: {x: 10, y: 10}
           m_Offset: {x: 0, y: 0}
       data:
         first:
@@ -102,7 +102,7 @@ Material:
       data:
         first:
           name: _Glossiness
-        second: 0.715
+        second: 0.848
       data:
         first:
           name: _BumpScale
@@ -114,11 +114,11 @@ Material:
       data:
         first:
           name: _DetailNormalMapScale
-        second: 1
+        second: 2
       data:
         first:
           name: _UVSec
-        second: 0
+        second: 1
       data:
         first:
           name: _Mode
@@ -126,7 +126,7 @@ Material:
       data:
         first:
           name: _Metallic
-        second: 0.362
+        second: 0.514
     m_Colors:
       data:
         first:
@@ -135,4 +135,4 @@ Material:
       data:
         first:
           name: _Color
-        second: {r: 0.0254, g: 0.0272, b: 0.0352, a: 1}
+        second: {r: 0.19852942, g: 0.19852942, b: 0.19852942, a: 1}
