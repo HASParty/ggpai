@@ -23,7 +23,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 138110}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -4108}
+  m_LocalPosition: {x: 0, y: 0, z: -5141}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -40,12 +40,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AsteroidPrefabs:
-  - {fileID: 11410934, guid: 0e67eb0c7bbcf6c4698a802648708136, type: 2}
-  - {fileID: 11410934, guid: 0e67eb0c7bbcf6c4698a802648708136, type: 2}
-  - {fileID: 11486118, guid: 48d80c9154a1c5e478596adaf47221f3, type: 2}
+  - {fileID: 11410314, guid: ae4427e80dceffe47b5179ce000667cb, type: 2}
+  - {fileID: 11454626, guid: ead4c151b2850004782f62d3ac573cbe, type: 2}
+  - {fileID: 11413344, guid: eeb1c2ea47bc7f04cb234f63e9bbf4dc, type: 2}
+  - {fileID: 11470264, guid: 7f7566e20b9ffe54798c1bf42201e1a9, type: 2}
+  - {fileID: 11469774, guid: 965a95650c5ae2a48b35aa03ca4a0a31, type: 2}
+  - {fileID: 11455168, guid: 72776d15a565f3f499c3d02414de971e, type: 2}
+  - {fileID: 11485218, guid: c49caf18677eba3478784cd2f08b98b8, type: 2}
+  - {fileID: 11409906, guid: ece113bb09a725547ad15c6e1794fbe0, type: 2}
   SpawnMean: 500
   SpawnSTD: 8000
-  Asteroids: 2000
+  Asteroids: 1000
   MaxSize: 150
   MinSize: 1
   SizeSTD: 80

@@ -125,12 +125,43 @@ Prefab:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11421282, guid: c4a2fa9640b3be64a8b618845f46cbe1, type: 2}
+      propertyPath: SpawnSTD
+      value: 6000
+      objectReference: {fileID: 0}
+    - target: {fileID: 11421282, guid: c4a2fa9640b3be64a8b618845f46cbe1, type: 2}
       propertyPath: Asteroids
-      value: 1000
+      value: 2000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c4a2fa9640b3be64a8b618845f46cbe1, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &1112699407
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 4
+  m_Component:
+  - 4: {fileID: 1112699408}
+  m_Layer: 0
+  m_Name: Destination
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1112699408
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1112699407}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 5141}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
 --- !u!1 &1567146099
 GameObject:
   m_ObjectHideFlags: 0
@@ -156,7 +187,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 6
   m_Type: 1
-  m_Color: {r: 0.87647057, g: 0.8455882, b: 1, a: 1}
+  m_Color: {r: 0.8868153, g: 0.7352941, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -192,6 +223,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
+--- !u!1 &1653907517 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 138110, guid: c4a2fa9640b3be64a8b618845f46cbe1, type: 2}
+  m_PrefabInternal: {fileID: 804549881}
+--- !u!114 &1653907520
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1653907517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b20f96c718bc2040aab272d37fea365, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 1112699408}
+  velocity: {x: 0, y: 0, z: 0}
+  damp: 20
+  maxSpeed: 100
 --- !u!1001 &2054965108
 Prefab:
   m_ObjectHideFlags: 0
@@ -234,6 +284,14 @@ Prefab:
     - target: {fileID: 2087282, guid: d3bb19a36679f564cbe2c5cafbe0fd4c, type: 2}
       propertyPath: far clip plane
       value: 4000
+      objectReference: {fileID: 0}
+    - target: {fileID: 6420606, guid: d3bb19a36679f564cbe2c5cafbe0fd4c, type: 2}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2366712, guid: d3bb19a36679f564cbe2c5cafbe0fd4c, type: 2}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: d3bb19a36679f564cbe2c5cafbe0fd4c, type: 2}
