@@ -35,7 +35,9 @@ public class AsteroidSpawner : MonoBehaviour {
         float spawnRadius = Random.value * SpawnSTD + SpawnMean;
         size = Mathf.Max(size, MinSize);
         size = Mathf.Min(size, MaxSize);
-        go.transform.localScale += new Vector3(size, size, size);
+        go.transform.localScale += new Vector3(size * (1 + Random.value * 0.8f),
+                                               size * (1 + Random.value * 0.8f),
+                                               size * (1 + Random.value * 0.8f));
         go.transform.localPosition = Random.onUnitSphere*spawnRadius;
     }
 
