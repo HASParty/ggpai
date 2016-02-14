@@ -11,7 +11,6 @@ GameObject:
   - 135: {fileID: 13521250}
   - 54: {fileID: 5495576}
   - 114: {fileID: 11486118}
-  - 114: {fileID: 11490462}
   m_Layer: 0
   m_Name: AsteroidThree
   m_TagString: Untagged
@@ -120,18 +119,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bf40d47cae282c41b71c3a479e890a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &11490462
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 143456}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec8d40ea3526edb46bf4d4a5f5aa7cfe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 30
 --- !u!135 &13521250
 SphereCollider:
   m_ObjectHideFlags: 1

@@ -11,7 +11,6 @@ GameObject:
   - 135: {fileID: 13591558}
   - 54: {fileID: 5439112}
   - 114: {fileID: 11410934}
-  - 114: {fileID: 11475682}
   m_Layer: 0
   m_Name: AsteroidTwo
   m_TagString: Untagged
@@ -29,7 +28,6 @@ GameObject:
   - 4: {fileID: 409256}
   - 33: {fileID: 3371772}
   - 23: {fileID: 2366600}
-  - 114: {fileID: 11490402}
   m_Layer: 0
   m_Name: AsteroidTwo
   m_TagString: Untagged
@@ -121,30 +119,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0bf40d47cae282c41b71c3a479e890a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &11475682
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 132140}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec8d40ea3526edb46bf4d4a5f5aa7cfe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 30
---- !u!114 &11490402
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 145938}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec8d40ea3526edb46bf4d4a5f5aa7cfe, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 30
 --- !u!135 &13591558
 SphereCollider:
   m_ObjectHideFlags: 1
