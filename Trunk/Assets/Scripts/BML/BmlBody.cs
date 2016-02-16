@@ -8,8 +8,8 @@ namespace Behaviour
 	/// </summary>
 	public class BmlBody
 	{
-		public Dictionary<string, BmlChunk> Chunks { get { return chunks; } }
-		Dictionary<string, BmlChunk> chunks = new Dictionary<string, BmlChunk>();
+		public Dictionary<string, BMLChunk> Chunks { get { return chunks; } }
+		Dictionary<string, BMLChunk> chunks = new Dictionary<string, BMLChunk>();
 
 		public bool isDone = false;
 		public bool syncComplete = false;
@@ -35,7 +35,7 @@ namespace Behaviour
 			return executeWith != null;
 		}
 
-		public Dictionary<string, BmlChunk> GetSyncChunks() {
+		public Dictionary<string, BMLChunk> GetSyncChunks() {
 			if (executeWith != null) {
 				return executeWith.Chunks;
 			} else {
@@ -52,8 +52,8 @@ namespace Behaviour
 			executeWith = body;
 		}
 
-		public void AddChunk(BmlChunk chunk) {
-			if (chunk.Type == BmlChunkType.Speech)
+		public void AddChunk(BMLChunk chunk) {
+			if (chunk.Type == BMLChunkType.Speech)
 				SpeechChunk = chunk as Speech;
 			else {
 				if(chunks.ContainsKey(chunk.ID)) return;

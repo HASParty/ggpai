@@ -2,7 +2,7 @@
 
 namespace Fml
 {
-    public class FMLChunk
+    public abstract class FMLChunk
     {
         public enum TrackType
         {
@@ -11,7 +11,14 @@ namespace Fml
             MentalState
         };
 
-        public TrackType trackType;
+        public virtual TrackType track { get; protected set; }
         public Timing timing;
+
+        public virtual List<FMLFunction> functions { get; protected set; }
+
+        public virtual bool AddFunction(FMLFunction func)
+        {
+            return false;
+        }
     }
 }

@@ -3,8 +3,8 @@ using System.Collections;
 using Fml;
 
 namespace Behaviour {
-	public class Head : BmlChunk {
-		public override BmlChunkType Type { get { return BmlChunkType.Head; } }
+	public class Head : BMLChunk {
+		public override BMLChunkType Type { get { return BMLChunkType.Head; } }
 		/// <summary>
 		/// Get how many times the head behaviour should be repeated, if repeatable.
 		/// </summary>

@@ -3,8 +3,8 @@ using System.Collections;
 using Fml;
 
 namespace Behaviour {
-	public class Locomotion : BmlChunk {
-		public override BmlChunkType Type { get { return BmlChunkType.Locomotion; } }
+	public class Locomotion : BMLChunk {
+		public override BMLChunkType Type { get { return BMLChunkType.Locomotion; } }
 		public GameObject Target { get; private set; }
 		public Lexemes.Locomotion Manner { get; private set; }
 

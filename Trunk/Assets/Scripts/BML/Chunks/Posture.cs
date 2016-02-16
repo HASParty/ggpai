@@ -18,8 +18,8 @@ namespace Behaviour {
 		}
 	}
 
-	public class Posture : BmlChunk {
-		public override BmlChunkType Type { get { return BmlChunkType.Posture; } }
+	public class Posture : BMLChunk {
+		public override BMLChunkType Type { get { return BMLChunkType.Posture; } }
 		public Lexemes.Stance Stance { get; private set; }
 		public List<Pose> Poses { get; private set; }
 

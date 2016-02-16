@@ -6,8 +6,8 @@ namespace Behaviour {
 	/// <summary>
 	/// Temporarily have the actor gaze upon another target.
 	/// </summary>
-	public class Gaze : BmlChunk {
-		public override BmlChunkType Type { get { return BmlChunkType.Gaze; } }
+	public class Gaze : BMLChunk {
+		public override BMLChunkType Type { get { return BMLChunkType.Gaze; } }
 		/// <summary>
 		/// Returns the target to be gazed at.
 		/// </summary>

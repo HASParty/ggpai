@@ -2,7 +2,7 @@
 using Fml;
 
 namespace Behaviour {
-	public class BmlChunk {
+	public class BMLChunk {
 		public string ID { get; set; }
 		/// <summary>
 		/// Return the character that is to execute the behaviour chunk.
@@ -13,7 +13,7 @@ namespace Behaviour {
 		/// Get the type of the chunk.
 		/// </summary>
 		/// <value>The type of the chunk.</value>
-		public virtual BmlChunkType Type { get; protected set; }
+		public virtual BMLChunkType Type { get; protected set; }
 
 		/// <summary>
 		/// Returns the start sync point of the behaviour.

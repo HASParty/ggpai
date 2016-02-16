@@ -3,8 +3,8 @@ using System.Collections;
 using Fml;
 
 namespace Behaviour {
-	public class Gesture : BmlChunk {
-		public override BmlChunkType Type { get { return BmlChunkType.Gesture; } }
+	public class Gesture : BMLChunk {
+		public override BMLChunkType Type { get { return BMLChunkType.Gesture; } }
 		/// <summary>
 		/// Gets which hand the behaviour is to be executed on.
 		/// </summary>

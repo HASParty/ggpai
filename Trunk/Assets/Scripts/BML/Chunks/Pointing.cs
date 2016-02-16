@@ -2,8 +2,8 @@
 using Fml;
 
 namespace Behaviour {
-	public class Pointing : BmlChunk {
-		public override BmlChunkType Type { get { return BmlChunkType.Pointing; } }
+	public class Pointing : BMLChunk {
+		public override BMLChunkType Type { get { return BMLChunkType.Pointing; } }
 		/// <summary>
 		/// Gets which hand the behaviour is to be executed on.
 		/// </summary>

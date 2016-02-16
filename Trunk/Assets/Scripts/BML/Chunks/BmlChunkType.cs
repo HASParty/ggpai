@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace Behaviour
 {
-	public enum BmlChunkType
+	public enum BMLChunkType
 	{
 		Face,
 		Gaze,

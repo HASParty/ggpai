@@ -16,13 +16,13 @@ namespace Fml
     public class Timing
     {
 
-        public Primitive primitive { get; set; }
-        public FMLChunk chunkReference { get; set; } // Reference to another FML chunk when required by the timing primitive chosen
+        public Primitive Primitive { get; set; }
+        public FMLChunk ChunkReference { get; set; } // Reference to another FML chunk when required by the timing primitive chosen
 
         public Timing(Primitive prim, FMLChunk refChunk)
         {
-            primitive = prim;
-            chunkReference = refChunk;
+            Primitive = prim;
+            ChunkReference = refChunk;
         }
     }
 }

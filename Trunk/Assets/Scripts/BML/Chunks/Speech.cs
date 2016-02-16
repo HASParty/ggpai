@@ -1,8 +1,8 @@
 ﻿using Fml;
 
 namespace Behaviour {
-	public class Speech : BmlChunk {
-		public override BmlChunkType Type { get { return BmlChunkType.Speech; } }
+	public class Speech : BMLChunk {
+		public override BMLChunkType Type { get { return BMLChunkType.Speech; } }
 
 		public string Content {
 			get;

@@ -6,8 +6,8 @@ namespace Behaviour {
 	/// <summary>
 	/// Gaze shift - permanently shifts the actor's target.
 	/// </summary>
-	public class GazeShift : BmlChunk {
-		public override BmlChunkType Type { get { return BmlChunkType.Gaze; } }
+	public class GazeShift : BMLChunk {
+		public override BMLChunkType Type { get { return BMLChunkType.Gaze; } }
 		/// <summary>
 		/// Returns the target to be gazed at.
 		/// </summary>

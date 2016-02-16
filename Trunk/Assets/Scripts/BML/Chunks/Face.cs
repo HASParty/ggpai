@@ -4,8 +4,8 @@ namespace Behaviour {
 	/// <summary>
 	/// Temporarily change the actor's facial expression.
 	/// </summary>
-	public class Face : BmlChunk {
-		public override BmlChunkType Type { get { return BmlChunkType.Face; } }
+	public class Face : BMLChunk {
+		public override BMLChunkType Type { get { return BMLChunkType.Face; } }
 		/// <summary>
 		/// Gets the facial expression to be shown.
 		/// </summary>
