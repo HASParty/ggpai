@@ -5,31 +5,50 @@ using Fml;
 
 namespace Boardgame.Agent
 {
-
+    [SerializePrivateVariables]
     [RequireComponent(typeof(Identikit))]
     public class PersonalityModule : MonoBehaviour
     {
-        [SerializeField]
         private Mood mood;
-        [Header("Personality values")]
-        [SerializeField]
+        private EmotionFunction.EmotionalState approximateEmotion;
+        private float emotionIntensity;
         private Identikit identikit;
-        [Header("Settings")]
-        [Tooltip("The amount the arousal changes in a second"), SerializeField]
         private float arousalDecayRate = 0.005f;
-        [Tooltip("The amount the valence changes in a second"), SerializeField]
         private float valenceDecayRate = 0.005f;
-        [SerializeField]
         private float lowVal = 0f;
-        [SerializeField]
         private float neutralVal = 1f;
-        [SerializeField]
         private float highVal = 2f;
+
+        private float agreeableness,    agreeablenessModifier;
+        private float conscientiousness, conscientousnessModifier;
+        private float extraversion,     extraversionModifier;
+        private float neuroticism,      neuroticismModifier;
+        private float openness,         opennessModifier;
 
         // Use this for initialization
         void Start()
         {
-            identikit = GetComponent<Identikit>();
+            mood.valence = neutralVal;
+            mood.arousal = neutralVal;
+            ReloadIdentikit();
+        }
+
+        public void ReloadIdentikit()
+        {
+            if(identikit == null) identikit = GetComponent<Identikit>();
+            agreeableness = GetValue(identikit.agreeableness.ToString());
+            conscientiousness = GetValue(identikit.conscientiousness.ToString());
+            extraversion = GetValue(identikit.extraversion.ToString());
+            neuroticism = GetValue(identikit.neuroticism.ToString());
+            openness = GetValue(identikit.openness.ToString());
+        }
+
+        float GetValue(string val)
+        {
+            val = val.ToLower();
+            if (val == "low") return lowVal;
+            else if (val == "neutral") return neutralVal;
+            else return highVal;
         }
 
         // Update is called once per frame
@@ -46,6 +65,23 @@ namespace Boardgame.Agent
 
             Mathf.Clamp(mood.arousal, lowVal, highVal);
             Mathf.Clamp(mood.valence, lowVal, highVal);
+
+#if UNITY_EDITOR
+            emotionIntensity = GetIntensity();
+            approximateEmotion = GetEmotion();
+#endif
+        }
+
+        public float GetIntensity()
+        {
+
+            //TODO: have 
+            return Mathf.Sqrt(Mathf.Pow(mood.arousal-1, 2) + Mathf.Pow(mood.valence-1, 2));
+        }
+
+        public EmotionFunction.EmotionalState GetEmotion()
+        {
+            return EmotionFunction.EmotionalState.NEUTRAL;
         }
 
         public void ReceiveEvent(Event e)

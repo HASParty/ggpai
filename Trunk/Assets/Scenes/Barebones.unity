@@ -285,11 +285,11 @@ MonoBehaviour:
   id: 0
   actorName: Joe
   gender: 0
-  extraversion: 0
+  extraversion: 1
   agreeableness: 0
   neuroticism: 0
   conscientiousness: 0
-  openness: 0
+  openness: 2
 --- !u!4 &906503242 stripped
 Transform:
   m_PrefabParentObject: {fileID: 470106, guid: 2df845d4caba50745adc2efcf528fb0d, type: 2}

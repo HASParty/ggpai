@@ -13,7 +13,8 @@ namespace Fml
             HAPPINESS,
             SADNESS,
             SURPRISE,
-            SHAME
+            SHAME,
+            NEUTRAL
         }
 
         public enum EmotionRegulation

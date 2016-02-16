@@ -5,6 +5,7 @@ namespace Boardgame.Agent
     [RequireComponent(typeof(PersonalityModule), typeof(InputModule))]
     public class BrainModule : MonoBehaviour
     {
+        //Generate FML here? 
         private PersonalityModule pm;
         private InputModule im;
 
