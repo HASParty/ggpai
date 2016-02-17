@@ -18,7 +18,7 @@ public class ConnectionMonitorEditor : Editor
         newHost = c.Host;
         newFPort = c.FeedPort;
         newGPort = c.GamePort;
-        sendTest = "UNITY MatchA xplayer ticTacToe 5000 5000";
+        sendTest = "UNITY MatchA oplayer ticTacToe 5000 5000";
     }
 
     public override void OnInspectorGUI()
@@ -58,6 +58,10 @@ public class ConnectionMonitorEditor : Editor
         }
         if(c.IsConnected())
         {
+            if(GUILayout.Button("Send start"))
+            {
+                c.StartGame();
+            }
             if(GUILayout.Button("Disconnect"))
             {
                 c.Disconnect();

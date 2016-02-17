@@ -65,21 +65,32 @@ namespace Boardgame.Networking
             return true;
         }
 
-        public static void Write(string message)
+        private static string Compose(string message)
         {
             string formatted = String.Format("( {0} )\r\n", message);
-            string header = String.Format("POST / HTTP/1.0\r\nAccept: text/delim\r\nHost: {0}\r\nSender: UNITY\r\n"+
-                                          "Receiver: GAMESERVER\r\nContent-Type: text/acl\r\nContent-Length: {1}\r\n\r\n", Host, formatted.Length);
-            string write = header + formatted;
-            NetworkStream ns = gameConnection.GetStream();
+            return String.Format("POST / HTTP/1.0\r\nAccept: text/delim\r\nHost: {0}\r\nSender: UNITY\r\n" +
+                                 "Receiver: GAMESERVER\r\nContent-Type: text/acl\r\nContent-Length: {1}\r\n\r\n{2}", Host, formatted.Length, formatted);
+        }
+
+        public static void StartGame(string game, bool first, int startTime, int playTime)
+        {
+            string unityStart = Compose(String.Format("UNITY 1234 {1} {0} {2} {3}", game, (first ? "first" : "second"), startTime, playTime));
+            Write(unityStart, gameConnection.GetStream());
+            string response = Read(gameConnection);
+            Debug.Log(response);
+            Write(Compose("ready"), feedConnection.GetStream());
+        }
+
+        public static void Write(string message, NetworkStream ns)
+        {
             StreamWriter sw = new StreamWriter(ns);
 
             if (ns.CanWrite)
             {
                 try
                 {
-                    Debug.Log("Sending message: " + write);
-                    sw.Write(write);
+                    Debug.Log("Sending message: " + message);
+                    sw.Write(message);
                     sw.Flush();
                 }
                 catch (Exception e)
@@ -95,33 +106,31 @@ namespace Boardgame.Networking
 
         }
         
-        public static void Read()
+        public static string Read(TcpClient connection)
         {
-            if (gameConnection.Available > 0)
+            NetworkStream ns = connection.GetStream();
+            StreamReader sr = new StreamReader(ns);
+
+            string response = sr.ReadToEnd();
+            return response;
+        }
+
+        public static string ReadLine(TcpClient connection)
+        {
+            if (connection.Available > 0)
             {
-                NetworkStream ns = gameConnection.GetStream();
+                NetworkStream ns = connection.GetStream();
                 StreamReader sr = new StreamReader(ns);
 
-                string response = sr.ReadToEnd();
+                string response = sr.ReadLine();
+                Debug.Log(response);
+                return response;
 
-                Debug.Log("Read from game connection:" + response);
-                
             }
             else
             {
-                Debug.Log("Nothing received from game connection.");
-            }
-            if(feedConnection.Available > 0) {
-                NetworkStream ns = feedConnection.GetStream();
-                StreamReader sr = new StreamReader(ns);
-
-                string response = sr.ReadToEnd();
-
-                Debug.Log("Read from feed connection:" + response);
-            }
-            else
-            {
-                Debug.Log("Nothing received from feed.");
+                Debug.Log("Nothing received from connection.");
+                return "";
             }
         }
 

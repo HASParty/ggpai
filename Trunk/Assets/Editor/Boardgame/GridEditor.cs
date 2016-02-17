@@ -34,24 +34,13 @@ namespace Boardgame {
 		void OnSceneGUI()
 		{
 			if (board.Source.grid != null) {
-				MeshFilter meshfilter = board.gameObject.GetComponent<MeshFilter>();
-				//if(meshfilter == null) return;
-				float scaleX = board.transform.localScale.x;
-				float scaleZ = board.transform.localScale.z;
-				float offsetX = board.transform.position.x - meshfilter.sharedMesh.bounds.extents.x*scaleX;
-				float offsetY = board.transform.position.y + meshfilter.sharedMesh.bounds.extents.y*board.transform.localScale.y;
-				float offsetZ = board.transform.position.z - meshfilter.sharedMesh.bounds.extents.z*scaleZ;
+				
 				for(int i = 0; i < board.Source.grid.Length; i++) {
 					Cell cell = board.Source.grid[i];
-					Vector3[] loc = new Vector3[4];
 
-
-					loc [0] = new Vector3 (cell.x*scaleX + offsetX, offsetY, cell.y*scaleZ + offsetZ);
-					loc [1] = new Vector3 ((cell.x + cell.w)*scaleX + offsetX, offsetY, cell.y*scaleZ + offsetZ);
-					loc [2] = new Vector3 ((cell.x + cell.w)*scaleX + offsetX, offsetY, (cell.y + cell.h)*scaleZ + offsetZ);
-					loc [3] = new Vector3 (cell.x*scaleX + offsetX, offsetY, (cell.y + cell.h)*scaleZ + offsetZ);
-
-					Vector3 center = loc[0] + (loc[2] - loc[0])/2;
+                    Vector3[] loc = new Vector3[4];
+                    Vector3 center = Vector3.zero;
+                    CalculateCell(cell, ref loc, ref center);
 
 					Handles.DrawSolidRectangleWithOutline (loc, Color.clear, Color.red);
 					Handles.Label(center, cell.id);
@@ -67,10 +56,37 @@ namespace Boardgame {
 							selectedCell = i;
 						}
 					}
-
 				}
-			}
+
+                Vector3[] locBlack = new Vector3[4];
+                Vector3 centerBlack = Vector3.zero;
+                CalculateCell(board.Source.BlackHand, ref locBlack, ref centerBlack);
+                Handles.DrawSolidRectangleWithOutline(locBlack, Color.clear, Color.black);
+
+                Vector3[] locWhite = new Vector3[4];
+                Vector3 centerWhite = Vector3.zero;
+                CalculateCell(board.Source.WhiteHand, ref locWhite, ref centerWhite);
+                Handles.DrawSolidRectangleWithOutline(locWhite, Color.clear, Color.white);
+
+
+            }
 		}
+
+        void CalculateCell(Cell cell, ref Vector3[] loc, ref Vector3 center)
+        {
+            MeshFilter meshfilter = board.gameObject.GetComponent<MeshFilter>();
+            float scaleX = board.transform.localScale.x;
+            float scaleZ = board.transform.localScale.z;
+            float offsetX = board.transform.position.x - meshfilter.sharedMesh.bounds.extents.x * scaleX;
+            float offsetY = board.transform.position.y + meshfilter.sharedMesh.bounds.extents.y * board.transform.localScale.y;
+            float offsetZ = board.transform.position.z - meshfilter.sharedMesh.bounds.extents.z * scaleZ;
+
+            loc[0] = new Vector3(cell.x * scaleX + offsetX, offsetY, cell.y * scaleZ + offsetZ);
+            loc[1] = new Vector3((cell.x + cell.w) * scaleX + offsetX, offsetY, cell.y * scaleZ + offsetZ);
+            loc[2] = new Vector3((cell.x + cell.w) * scaleX + offsetX, offsetY, (cell.y + cell.h) * scaleZ + offsetZ);
+            loc[3] = new Vector3(cell.x * scaleX + offsetX, offsetY, (cell.y + cell.h) * scaleZ + offsetZ);
+            center = loc[0] + (loc[2] - loc[0]) / 2;
+        }
 	
 
 	}

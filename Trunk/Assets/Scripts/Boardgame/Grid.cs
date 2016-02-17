@@ -71,6 +71,22 @@ public class Grid : MonoBehaviour {
                 0.5f, (cell.y + cell.h / 2) - meshfilter.sharedMesh.bounds.extents.z);
         }
 
+        public Vector3 GetWhiteHandPosition()
+        {
+            Cell cell = Source.WhiteHand;
+            MeshFilter meshfilter = gameObject.GetComponent<MeshFilter>();
+            return new Vector3((cell.x + cell.w / 2) - meshfilter.sharedMesh.bounds.extents.x,
+                0.5f, (cell.y + cell.h / 2) - meshfilter.sharedMesh.bounds.extents.z);
+        }
+
+        public Vector3 GetBlackHandPosition()
+        {
+            Cell cell = Source.BlackHand;
+            MeshFilter meshfilter = gameObject.GetComponent<MeshFilter>();
+            return new Vector3((cell.x + cell.w / 2) - meshfilter.sharedMesh.bounds.extents.x,
+                0.5f, (cell.y + cell.h / 2) - meshfilter.sharedMesh.bounds.extents.z);
+        }
+
         public Vector3 GetCellPosition(string cellID)
         {
             return pcells[cellID].transform.position;
