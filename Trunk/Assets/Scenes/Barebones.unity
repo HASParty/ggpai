@@ -353,11 +353,19 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
       propertyPath: mood.valence
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
       propertyPath: mood.arousal
-      value: 1.0400001
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: restingArousal
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: restingValence
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
       propertyPath: agreeableness.arousalInterpolation
@@ -366,86 +374,6 @@ Prefab:
     - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
       propertyPath: agreeableness.valenceInterpolation
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: agreeableness.arousalInterpolationWeight
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: agreeableness.valenceInterpolationWeight
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: conscientiousness.arousalInterpolationWeight
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: conscientiousness.valenceInterpolationWeight
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: extraversion.arousalInterpolationWeight
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: extraversion.valenceInterpolationWeight
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: neuroticism.arousalInterpolationWeight
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: neuroticism.valenceInterpolationWeight
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: openness.arousalInterpolationWeight
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: openness.valenceInterpolationWeight
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: conscientiousness.arousalInterpolation
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: conscientiousness.valenceInterpolation
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: extraversion.arousalInterpolation
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: extraversion.valenceInterpolation
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: neuroticism.arousalInterpolation
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: neuroticism.valenceInterpolation
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: openness.arousalInterpolation
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: openness.valenceInterpolation
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: restingArousal
-      value: 1.0400001
-      objectReference: {fileID: 0}
-    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: restingValence
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}

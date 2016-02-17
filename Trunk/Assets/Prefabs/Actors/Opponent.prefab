@@ -3100,65 +3100,65 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mood:
-    valence: 1
-    arousal: 1
-  restingArousal: 1
-  restingValence: 1
+    valence: 1.22
+    arousal: 1.24
+  restingArousal: 1.24
+  restingValence: 1.22
   identikit: {fileID: 11462162}
   arousalBaseDecayRate: 0.005
   valenceBaseDecayRate: 0.005
   arousalDecayRate: 0.005
   valenceDecayRate: 0.005
   agreeableness:
-    value: 0
-    valenceInterpolation: 0.5
-    arousalInterpolation: 0.5
-    valenceInterpolationWeight: 0.2
-    arousalInterpolationWeight: 0.2
-    valenceDecayAdd: 0
-    valenceDecayMod: 1
-    arousalDecayAdd: 0
-    arousalDecayMod: 1
-  conscientiousness:
-    value: 0
-    valenceInterpolation: 0.5
-    arousalInterpolation: 0.5
-    valenceInterpolationWeight: 0.2
-    arousalInterpolationWeight: 0.2
-    valenceDecayAdd: 0
-    valenceDecayMod: 1
-    arousalDecayAdd: 0
-    arousalDecayMod: 1
-  extraversion:
     value: 2
-    valenceInterpolation: 0.5
-    arousalInterpolation: 0.5
-    valenceInterpolationWeight: 0.2
-    arousalInterpolationWeight: 0.2
-    valenceDecayAdd: 0
-    valenceDecayMod: 1
-    arousalDecayAdd: 0
-    arousalDecayMod: 1
-  neuroticism:
+    valenceEffectHigh: 1
+    arousalEffectHigh: 1
+    valenceEffectLow: 1
+    arousalEffectLow: 1
+    valenceInterpolation: 0.8
+    arousalInterpolation: 0
+    valenceDecay: 0
+    arousalDecay: 0
+  conscientiousness:
     value: 1
-    valenceInterpolation: 0.5
-    arousalInterpolation: 0.5
-    valenceInterpolationWeight: 0.2
-    arousalInterpolationWeight: 0.2
-    valenceDecayAdd: 0
-    valenceDecayMod: 1
-    arousalDecayAdd: 0
-    arousalDecayMod: 1
+    valenceEffectHigh: 1
+    arousalEffectHigh: 1
+    valenceEffectLow: 1
+    arousalEffectLow: 1
+    valenceInterpolation: 0
+    arousalInterpolation: 0
+    valenceDecay: 0
+    arousalDecay: 0
+  extraversion:
+    value: 1
+    valenceEffectHigh: 1
+    arousalEffectHigh: 1
+    valenceEffectLow: 1
+    arousalEffectLow: 1
+    valenceInterpolation: 0
+    arousalInterpolation: 0
+    valenceDecay: 0
+    arousalDecay: 0
+  neuroticism:
+    value: 2
+    valenceEffectHigh: 1
+    arousalEffectHigh: 1.2
+    valenceEffectLow: 1
+    arousalEffectLow: 0.8
+    valenceInterpolation: -0.25
+    arousalInterpolation: 0.6
+    valenceDecay: 0
+    arousalDecay: 0
   openness:
     value: 1
-    valenceInterpolation: 0.5
-    arousalInterpolation: 0.5
-    valenceInterpolationWeight: 0.2
-    arousalInterpolationWeight: 0.2
-    valenceDecayAdd: 0
-    valenceDecayMod: 1
-    arousalDecayAdd: 0
-    arousalDecayMod: 1
+    valenceEffectHigh: 1
+    arousalEffectHigh: 1
+    valenceEffectLow: 1
+    arousalEffectLow: 1
+    valenceInterpolation: 0
+    arousalInterpolation: 0
+    valenceDecay: 0
+    arousalDecay: 0
 --- !u!114 &11416628
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3241,10 +3241,10 @@ MonoBehaviour:
   id: 0
   actorName: Joe
   gender: 0
-  extraversion: 2
-  agreeableness: 1
-  neuroticism: 0
-  conscientiousness: 1
+  extraversion: 0
+  agreeableness: 2
+  neuroticism: 2
+  conscientiousness: 0
   openness: 0
 --- !u!114 &11465358
 MonoBehaviour:
