@@ -15,15 +15,18 @@ namespace Boardgame.Agent
         private Identikit identikit;
         private float arousalDecayRate = 0.005f;
         private float valenceDecayRate = 0.005f;
+        private float arousalIntensityWeight = 0.5f;
+        private float valenceIntensityWeight = 0.5f;
+
         private float lowVal = 0f;
         private float neutralVal = 1f;
         private float highVal = 2f;
 
-        private float agreeableness,    agreeablenessModifier;
-        private float conscientiousness, conscientousnessModifier;
-        private float extraversion,     extraversionModifier;
-        private float neuroticism,      neuroticismModifier;
-        private float openness,         opennessModifier;
+        private float agreeableness,    agreeablenessWeight = 1;
+        private float conscientiousness, conscientiousnessWeight = 1;
+        private float extraversion,     extraversionWeight = 1;
+        private float neuroticism,      neuroticismWeight = 1;
+        private float openness,         opennessWeight = 1;
 
         // Use this for initialization
         void Start()
@@ -51,6 +54,16 @@ namespace Boardgame.Agent
             else return highVal;
         }
 
+        public float GetArousal()
+        {
+            return mood.arousal;
+        }
+
+        public float GetValence()
+        {
+            return mood.valence;
+        }
+
         // Update is called once per frame
         void Update()
         {
@@ -74,13 +87,14 @@ namespace Boardgame.Agent
 
         public float GetIntensity()
         {
-
-            //TODO: have 
-            return Mathf.Sqrt(Mathf.Pow(mood.arousal-1, 2) + Mathf.Pow(mood.valence-1, 2));
+            //TODO: have traits affect this?
+            return mood.arousal * arousalIntensityWeight + mood.valence * valenceIntensityWeight;
         }
 
         public EmotionFunction.EmotionalState GetEmotion()
         {
+            float angle = Vector2.Angle(new Vector2(neutralVal, neutralVal), new Vector2(mood.arousal, mood.valence));
+            Debug.Log(angle);
             return EmotionFunction.EmotionalState.NEUTRAL;
         }
 

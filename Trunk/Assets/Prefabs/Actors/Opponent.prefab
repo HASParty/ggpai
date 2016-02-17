@@ -152,8 +152,8 @@ GameObject:
   - 4: {fileID: 476282}
   - 114: {fileID: 11412294}
   - 114: {fileID: 11465358}
-  - 114: {fileID: 11428368}
   - 114: {fileID: 11448172}
+  - 114: {fileID: 11462162}
   m_Layer: 0
   m_Name: Modules
   m_TagString: Untagged
@@ -1950,7 +1950,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 132526}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.0630982, y: 0, z: 0.863}
+  m_LocalPosition: {x: -5.494838, y: 1.2503016, z: -2.4778514}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 449620}
@@ -3102,16 +3102,24 @@ MonoBehaviour:
   mood:
     valence: 0
     arousal: 0
-  extraversion: 0
-  agreeableness: 0
-  conscientousness: 0
-  neuroticism: 0
-  openness: 0
-  arousalDecayRate: 0.02
-  valenceDecayRate: 0.02
+  approximateEmotion: 0
+  emotionIntensity: 0
+  identikit: {fileID: 11462162}
+  arousalDecayRate: 0.005
+  valenceDecayRate: 0.005
   lowVal: 0
   neutralVal: 1
   highVal: 2
+  agreeableness: 1
+  agreeablenessWeight: 1
+  conscientiousness: 1
+  conscientiousnessWeight: 1
+  extraversion: 0
+  extraversionWeight: 1
+  neuroticism: 1
+  neuroticismWeight: 1
+  openness: 2
+  opennessWeight: 1
 --- !u!114 &11416628
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3133,17 +3141,6 @@ MonoBehaviour:
   BlinkIntervalMax: 7
   BlinkDuration: 0.2
   blinkDistance: 0.009
---- !u!114 &11428368
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 106238}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59c9f9f14e1c40348addcde1183d2b68, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &11448172
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3191,6 +3188,25 @@ MonoBehaviour:
   headShake: 0
   headOverride: 0
   eyeOverride: 0
+--- !u!114 &11462162
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 106238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 487c00bdb97d8c44a8ab867a79578340, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 0
+  actorName: Joe
+  gender: 0
+  extraversion: 1
+  agreeableness: 0
+  neuroticism: 0
+  conscientiousness: 0
+  openness: 2
 --- !u!114 &11465358
 MonoBehaviour:
   m_ObjectHideFlags: 1
