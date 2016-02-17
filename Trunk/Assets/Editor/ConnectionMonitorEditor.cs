@@ -18,7 +18,7 @@ public class ConnectionMonitorEditor : Editor
         newHost = c.Host;
         newFPort = c.FeedPort;
         newGPort = c.GamePort;
-        sendTest = "";
+        sendTest = "UNITY MatchA xplayer ticTacToe 5000 5000";
     }
 
     public override void OnInspectorGUI()
