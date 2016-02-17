@@ -18,7 +18,7 @@ namespace Boardgame.Networking
 
         public static string Host = "127.0.0.1";
         public static int GamePort = 9147;
-        public static int FeedPort = 9155;
+        public static int FeedPort = 9149;
 
         public static Status FeedConnectionStatus = Status.OFF;
         public static Status GameConnectionStatus = Status.OFF;
@@ -67,7 +67,7 @@ namespace Boardgame.Networking
 
         public static void Write(string message)
         {
-            string formatted = String.Format("( UNITY {0} )\r\n", message);
+            string formatted = String.Format("( {0} )\r\n", message);
             string header = String.Format("POST / HTTP/1.0\r\nAccept: text/delim\r\nHost: {0}\r\nSender: UNITY\r\n"+
                                           "Receiver: GAMESERVER\r\nContent-Type: text/acl\r\nContent-Length: {1}\r\n\r\n", Host, formatted.Length);
             string write = header + formatted;
