@@ -12,6 +12,8 @@ namespace Boardgame.Script {
     [System.Serializable]
     public struct PiecePosition
     {
+        public bool notOnBoard;
+        public int count;
         public string cellID;
         public string pieceType;
     }

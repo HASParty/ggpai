@@ -2755,7 +2755,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 106238}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -1.124, y: 1.454, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 422204}
@@ -3100,26 +3100,65 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mood:
-    valence: 0
-    arousal: 0
-  approximateEmotion: 0
-  emotionIntensity: 0
+    valence: 1
+    arousal: 1
+  restingArousal: 1
+  restingValence: 1
   identikit: {fileID: 11462162}
+  arousalBaseDecayRate: 0.005
+  valenceBaseDecayRate: 0.005
   arousalDecayRate: 0.005
   valenceDecayRate: 0.005
-  lowVal: 0
-  neutralVal: 1
-  highVal: 2
-  agreeableness: 1
-  agreeablenessWeight: 1
-  conscientiousness: 1
-  conscientiousnessWeight: 1
-  extraversion: 0
-  extraversionWeight: 1
-  neuroticism: 1
-  neuroticismWeight: 1
-  openness: 2
-  opennessWeight: 1
+  agreeableness:
+    value: 0
+    valenceInterpolation: 0.5
+    arousalInterpolation: 0.5
+    valenceInterpolationWeight: 0.2
+    arousalInterpolationWeight: 0.2
+    valenceDecayAdd: 0
+    valenceDecayMod: 1
+    arousalDecayAdd: 0
+    arousalDecayMod: 1
+  conscientiousness:
+    value: 0
+    valenceInterpolation: 0.5
+    arousalInterpolation: 0.5
+    valenceInterpolationWeight: 0.2
+    arousalInterpolationWeight: 0.2
+    valenceDecayAdd: 0
+    valenceDecayMod: 1
+    arousalDecayAdd: 0
+    arousalDecayMod: 1
+  extraversion:
+    value: 2
+    valenceInterpolation: 0.5
+    arousalInterpolation: 0.5
+    valenceInterpolationWeight: 0.2
+    arousalInterpolationWeight: 0.2
+    valenceDecayAdd: 0
+    valenceDecayMod: 1
+    arousalDecayAdd: 0
+    arousalDecayMod: 1
+  neuroticism:
+    value: 1
+    valenceInterpolation: 0.5
+    arousalInterpolation: 0.5
+    valenceInterpolationWeight: 0.2
+    arousalInterpolationWeight: 0.2
+    valenceDecayAdd: 0
+    valenceDecayMod: 1
+    arousalDecayAdd: 0
+    arousalDecayMod: 1
+  openness:
+    value: 1
+    valenceInterpolation: 0.5
+    arousalInterpolation: 0.5
+    valenceInterpolationWeight: 0.2
+    arousalInterpolationWeight: 0.2
+    valenceDecayAdd: 0
+    valenceDecayMod: 1
+    arousalDecayAdd: 0
+    arousalDecayMod: 1
 --- !u!114 &11416628
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3202,11 +3241,11 @@ MonoBehaviour:
   id: 0
   actorName: Joe
   gender: 0
-  extraversion: 1
-  agreeableness: 0
+  extraversion: 2
+  agreeableness: 1
   neuroticism: 0
-  conscientiousness: 0
-  openness: 2
+  conscientiousness: 1
+  openness: 0
 --- !u!114 &11465358
 MonoBehaviour:
   m_ObjectHideFlags: 1

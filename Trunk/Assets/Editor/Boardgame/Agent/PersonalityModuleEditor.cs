@@ -10,89 +10,134 @@ public class PersonalityModuleEditor : Editor {
     SerializedProperty neuroticism, neuroticismWeight;
     SerializedProperty openness, opennessWeight;
 
-    SerializedProperty low, neutral, high;
 
-    SerializedProperty arousalDecay, valenceDecay, arousalMod, valenceMod;
+    SerializedProperty arousalDecay, valenceDecay, arousalActualDecay, valenceActualDecay;
 
     PersonalityModule pm;
+
+    bool showTraits = false;
 
     void OnEnable()
     {
         pm = target as PersonalityModule;
         pm.ReloadIdentikit();
-
-        low = serializedObject.FindProperty("lowVal");
-        neutral = serializedObject.FindProperty("neutralVal");
-        high = serializedObject.FindProperty("highVal");
+        pm.RecalcDecayRate();
+        pm.RecalcRestingMood();
+        pm.ResetMood();
 
         agreeableness = serializedObject.FindProperty("agreeableness");
-        agreeablenessWeight = serializedObject.FindProperty("agreeablenessWeight");
         conscientiousness = serializedObject.FindProperty("conscientiousness");
-        conscientiousnessWeight = serializedObject.FindProperty("conscientiousnessWeight");
         extraversion = serializedObject.FindProperty("extraversion");
-        extraversionWeight = serializedObject.FindProperty("extraversionWeight");
         neuroticism = serializedObject.FindProperty("neuroticism");
-        neuroticismWeight = serializedObject.FindProperty("neuroticismWeight");
         openness = serializedObject.FindProperty("openness");
-        opennessWeight = serializedObject.FindProperty("opennessWeight");
 
-        arousalDecay = serializedObject.FindProperty("arousalDecayRate");
-        valenceDecay = serializedObject.FindProperty("valenceDecayRate");
+        arousalDecay = serializedObject.FindProperty("arousalBaseDecayRate");
+        valenceDecay = serializedObject.FindProperty("valenceBaseDecayRate");
 
-        arousalMod = serializedObject.FindProperty("arousalIntensityWeight");
-        valenceMod = serializedObject.FindProperty("valenceIntensityWeight");
+        arousalActualDecay = serializedObject.FindProperty("arousalDecayRate");
+        valenceActualDecay = serializedObject.FindProperty("valenceDecayRate");
+    }
+
+    void OnSceneGUI()
+    {
+        float lo = PersonalityModule.Low;
+        float ne = PersonalityModule.Neutral;
+        float hi = PersonalityModule.High;
+        Transform transform = pm.transform;
+        Handles.DrawLine(new Vector3(lo, ne) + transform.position, new Vector3(hi, ne) + transform.position);
+        Handles.DrawLine(new Vector3(ne, lo) + transform.position, new Vector3(ne, hi) + transform.position);
+        Handles.DrawWireDisc(new Vector3(ne, ne) + transform.position, Vector3.forward, (hi-lo)/2);
+        Handles.color = Color.red;
+        Handles.DrawLine(new Vector3(ne, ne) + transform.position, new Vector3(pm.GetValence(), pm.GetArousal()) + transform.position);
+        Handles.DrawWireDisc(new Vector3(pm.GetValence(), pm.GetArousal()) + transform.position, Vector3.forward, 0.05f);
     }
 
     public override void OnInspectorGUI()
     {
         GUIStyle bold = new GUIStyle() { fontStyle = FontStyle.Bold };
         serializedObject.Update();
-        EditorGUILayout.LabelField("Low/Neutral/High values", bold);
-        EditorGUILayout.BeginHorizontal();
-        low.floatValue = EditorGUILayout.FloatField(low.floatValue);
-        neutral.floatValue = EditorGUILayout.FloatField(neutral.floatValue);
-        high.floatValue = EditorGUILayout.FloatField(high.floatValue);
-        EditorGUILayout.EndHorizontal();
         EditorGUILayout.LabelField("Personality and modifiers", bold);
-        EditorGUI.indentLevel = 1;
-        DisplayTrait("Agreeableness", agreeableness, agreeablenessWeight);
-        DisplayTrait("Conscientiousness", conscientiousness, conscientiousnessWeight);
-        DisplayTrait("Extraversion", extraversion, extraversionWeight);
-        DisplayTrait("Neuroticism", neuroticism, neuroticismWeight);
-        DisplayTrait("Openness", openness, opennessWeight);
+        EditorGUI.indentLevel++;
+        if (showTraits)
+        {
+            EditorGUILayout.LabelField("Arousal | Valence");
+        }
+        DisplayTrait("Agreeableness", agreeableness);
+        DisplayTrait("Conscientiousness", conscientiousness);
+        DisplayTrait("Extraversion", extraversion);
+        DisplayTrait("Neuroticism", neuroticism);
+        DisplayTrait("Openness", openness);
         if (GUILayout.Button("Reload identikit"))
         {
             pm.ReloadIdentikit();
         }
-        EditorGUI.indentLevel = 0;
+        if (GUILayout.Button(showTraits ? "Show less" : "Show more"))
+        {
+            showTraits = !showTraits;
+        }
+        EditorGUI.indentLevel--;
         EditorGUILayout.LabelField("Mood", bold);
-        EditorGUI.indentLevel = 1;
+        EditorGUI.indentLevel++;
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("Arousal: " + pm.GetArousal(), GUILayout.Width(120));
         EditorGUILayout.LabelField("Valence: " + pm.GetValence(), GUILayout.Width(120));
         EditorGUILayout.EndHorizontal();
+        EditorGUILayout.LabelField("Arousal decay / s: " + arousalActualDecay.floatValue);
+        EditorGUILayout.LabelField("Valence decay / s: " + valenceActualDecay.floatValue);
         EditorGUILayout.PropertyField(arousalDecay);
         EditorGUILayout.PropertyField(valenceDecay);
-        EditorGUILayout.PropertyField(arousalMod);
-        EditorGUILayout.PropertyField(valenceMod);
-        EditorGUI.indentLevel = 0;
+        if(GUILayout.Button("Recalculate"))
+        {
+            pm.RecalcDecayRate();
+            pm.RecalcRestingMood();
+            pm.ResetMood();
+        }
+        EditorGUI.indentLevel--;
         EditorGUILayout.LabelField("Resulting data", bold);
-        EditorGUI.indentLevel = 1;
-        EditorGUILayout.LabelField("Currently feeling " + pm.GetEmotion().ToString().ToLower().Replace('_',' '));
-        EditorGUILayout.LabelField("At the intensity of " + pm.GetIntensity());
+        EditorGUI.indentLevel++;
+        EditorGUILayout.LabelField("emotion = " + pm.GetEmotion().ToString().ToLower().Replace('_',' ') + ", intensity = "+ pm.GetArousal());
         serializedObject.ApplyModifiedProperties();
-
     }
 
-    private void DisplayTrait(string name, SerializedProperty trait, SerializedProperty weight)
+    private void DisplayTrait(string name, SerializedProperty trait)
     {
-        EditorGUILayout.LabelField(name + ":", new GUIStyle() { fontStyle = FontStyle.Bold });
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("Value:", GUILayout.Width(64));
-        EditorGUILayout.LabelField(trait.floatValue.ToString(), GUILayout.Width(40));
-        EditorGUILayout.LabelField("Weight:", GUILayout.Width(64));
-        weight.floatValue = EditorGUILayout.FloatField(weight.floatValue, GUILayout.Width(40));
-        EditorGUILayout.EndHorizontal();
+        var bold = new GUIStyle() { fontStyle = FontStyle.Bold };
+        EditorGUILayout.LabelField(name + ":", bold);
+        EditorGUI.indentLevel++;
+        SerializedProperty value = trait.FindPropertyRelative("value");
+        EditorGUILayout.LabelField("Value is " + value.intValue);
+        if (showTraits)
+        {
+            SerializedProperty v = trait.FindPropertyRelative("valenceInterpolation");
+            SerializedProperty a = trait.FindPropertyRelative("arousalInterpolation");
+            EditorGUILayout.LabelField("Interpolation");
+            EditorGUILayout.BeginHorizontal();
+            a.floatValue = EditorGUILayout.FloatField(a.floatValue);
+            v.floatValue = EditorGUILayout.FloatField(v.floatValue);
+            EditorGUILayout.EndHorizontal();
+            v = trait.FindPropertyRelative("valenceInterpolationWeight");
+            a = trait.FindPropertyRelative("arousalInterpolationWeight");
+            EditorGUILayout.LabelField("Interpolation weight");
+            EditorGUILayout.BeginHorizontal();
+            a.floatValue = EditorGUILayout.FloatField(a.floatValue);
+            v.floatValue = EditorGUILayout.FloatField(v.floatValue);
+            EditorGUILayout.EndHorizontal();
+            v = trait.FindPropertyRelative("valenceDecayMod");
+            a = trait.FindPropertyRelative("arousalDecayMod");
+            EditorGUILayout.LabelField("Decay effect");
+            EditorGUILayout.BeginHorizontal();
+            a.floatValue = EditorGUILayout.FloatField(a.floatValue);
+            v.floatValue = EditorGUILayout.FloatField(v.floatValue);
+            EditorGUILayout.EndHorizontal();
+            v = trait.FindPropertyRelative("valenceDecayAdd");
+            a = trait.FindPropertyRelative("arousalDecayAdd");
+            EditorGUILayout.LabelField("Decay addition");
+            EditorGUILayout.BeginHorizontal();
+            a.floatValue = EditorGUILayout.FloatField(a.floatValue);
+            v.floatValue = EditorGUILayout.FloatField(v.floatValue);
+            EditorGUILayout.EndHorizontal();
+        }
+        EditorGUI.indentLevel--;
     }
 
 

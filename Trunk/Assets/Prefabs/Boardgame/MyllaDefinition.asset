@@ -23,14 +23,12 @@ MonoBehaviour:
     Player: 1
     Prefab: {fileID: 187284, guid: 99ec9765718577e4a882dc102543019b, type: 2}
   InitialWhitePieces:
-  - cellID: WhiteHand
-    pieceType: default
-  - cellID: G1
-    pieceType: default
-  - cellID: G2
-    pieceType: default
-  - cellID: G3
+  - notOnBoard: 1
+    count: 12
+    cellID: 
     pieceType: default
   InitialBlackPieces:
-  - cellID: BlackHand
+  - notOnBoard: 1
+    count: 12
+    cellID: 
     pieceType: default

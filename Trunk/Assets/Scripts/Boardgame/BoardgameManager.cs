@@ -40,11 +40,18 @@ public class BoardgameManager : Singleton<BoardgameManager> {
                 }
                 foreach(var white in gameScriptable.InitialWhitePieces)
                 {
-                    grid.PlacePiece(whitePiecePrefabs[white.pieceType], white.cellID, false);
+                    if (!white.notOnBoard)
+                    {
+                        grid.PlacePiece(whitePiecePrefabs[white.pieceType], white.cellID, false);
+                    }
+
                 }
                 foreach (var black in gameScriptable.InitialBlackPieces)
                 {
-                    grid.PlacePiece(blackPiecePrefabs[black.pieceType], black.cellID, false);
+                    if (!black.notOnBoard)
+                    {
+                        grid.PlacePiece(blackPiecePrefabs[black.pieceType], black.cellID, false);
+                    }
                 }
             }
         }

@@ -194,7 +194,8 @@ Prefab:
       propertyPath: m_Name
       value: Stool (1)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 9509770, guid: 5faeeda50a2bd4246b78a13093fdd049, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 5faeeda50a2bd4246b78a13093fdd049, type: 2}
   m_IsPrefabParent: 0
 --- !u!1001 &711358264
@@ -267,29 +268,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 2df845d4caba50745adc2efcf528fb0d, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &873615938 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 106238, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-  m_PrefabInternal: {fileID: 1087361408}
---- !u!114 &873615939
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 873615938}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 487c00bdb97d8c44a8ab867a79578340, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  id: 0
-  actorName: Joe
-  gender: 0
-  extraversion: 1
-  agreeableness: 0
-  neuroticism: 0
-  conscientiousness: 0
-  openness: 2
 --- !u!4 &906503242 stripped
 Transform:
   m_PrefabParentObject: {fileID: 470106, guid: 2df845d4caba50745adc2efcf528fb0d, type: 2}
@@ -365,32 +343,111 @@ Prefab:
       propertyPath: m_RootOrder
       value: 3
       objectReference: {fileID: 0}
-    - target: {fileID: 132526, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: m_Name
-      value: Agent
-      objectReference: {fileID: 0}
     - target: {fileID: 11497828, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
       propertyPath: targetObject
       value: 
       objectReference: {fileID: 928143060}
-    - target: {fileID: 148416, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: m_IsActive
-      value: 1
+    - target: {fileID: 132526, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: m_Name
+      value: Agent
       objectReference: {fileID: 0}
-    - target: {fileID: 106130, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 156450, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: m_IsActive
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: mood.valence
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
-      propertyPath: identikit
-      value: 
-      objectReference: {fileID: 873615939}
-    m_RemovedComponents:
-    - {fileID: 11428368, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: mood.arousal
+      value: 1.0400001
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: agreeableness.arousalInterpolation
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: agreeableness.valenceInterpolation
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: agreeableness.arousalInterpolationWeight
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: agreeableness.valenceInterpolationWeight
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: conscientiousness.arousalInterpolationWeight
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: conscientiousness.valenceInterpolationWeight
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: extraversion.arousalInterpolationWeight
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: extraversion.valenceInterpolationWeight
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: neuroticism.arousalInterpolationWeight
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: neuroticism.valenceInterpolationWeight
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: openness.arousalInterpolationWeight
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: openness.valenceInterpolationWeight
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: conscientiousness.arousalInterpolation
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: conscientiousness.valenceInterpolation
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: extraversion.arousalInterpolation
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: extraversion.valenceInterpolation
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: neuroticism.arousalInterpolation
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: neuroticism.valenceInterpolation
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: openness.arousalInterpolation
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: openness.valenceInterpolation
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: restingArousal
+      value: 1.0400001
+      objectReference: {fileID: 0}
+    - target: {fileID: 11412294, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: restingValence
+      value: 1
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &1208223106
@@ -468,7 +525,8 @@ Prefab:
       propertyPath: m_Name
       value: Table
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 9576728, guid: adbb19f28aa465948bea29f692473c45, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: adbb19f28aa465948bea29f692473c45, type: 2}
   m_IsPrefabParent: 0
 --- !u!4 &1305792306 stripped
@@ -598,7 +656,8 @@ Prefab:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: c6f1cba0e8d5ca74fbfe87e6840850e1, type: 2}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 9509770, guid: 5faeeda50a2bd4246b78a13093fdd049, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 5faeeda50a2bd4246b78a13093fdd049, type: 2}
   m_IsPrefabParent: 0
 --- !u!1 &1777521947
