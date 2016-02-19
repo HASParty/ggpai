@@ -48,12 +48,12 @@ namespace Boardgame.Networking
 
         public void StartGame()
         {
-            Connection.StartGame("ticTacToe", true, 5000, 5000);
+            Connection.StartGame("ticTacToe", false, 5, 5);
         }
 
         public void Write(string write)
         {
-            Connection.Write(write, Connection.gameConnection.GetStream());
+            Connection.Write(Connection.Compose(write), Connection.gameConnection.GetStream());
         }
 
       /*  IEnumerator Read()

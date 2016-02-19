@@ -65,7 +65,7 @@ namespace Boardgame.Networking
             return true;
         }
 
-        private static string Compose(string message)
+        public static string Compose(string message)
         {
             string formatted = String.Format("( {0} )\r\n", message);
             return String.Format("POST / HTTP/1.0\r\nAccept: text/delim\r\nHost: {0}\r\nSender: UNITY\r\n" +
@@ -112,6 +112,7 @@ namespace Boardgame.Networking
             StreamReader sr = new StreamReader(ns);
 
             string response = sr.ReadToEnd();
+            Debug.Log(response);
             return response;
         }
 
