@@ -4,23 +4,22 @@ using Boardgame.Script;
 
 namespace Boardgame {
 
-public enum Player { Black, White };
+    public enum Player { Black, White };
 
-public class BoardgameManager : Singleton<BoardgameManager> {
+    public class BoardgameManager : Singleton<BoardgameManager> {
 
         [SerializeField]
         private BoardgameScriptable gameScriptable;
 
         public Transform BoardSpawnLocation;
 
-		private Grid grid;
+        private Grid grid;
         private Dictionary<string, GameObject> whitePiecePrefabs;
         private Dictionary<string, GameObject> blackPiecePrefabs;
         //Some board game state info, needs to be generic to work for multiple games
 
 
-        void Awake()
-        {
+        void Awake() {
             if (gameScriptable != null) {
                 whitePiecePrefabs = new Dictionary<string, GameObject>();
                 blackPiecePrefabs = new Dictionary<string, GameObject>();
@@ -28,42 +27,35 @@ public class BoardgameManager : Singleton<BoardgameManager> {
                 grid.LoadScriptable(gameScriptable.PhysicalBoardDescription);
                 grid.transform.SetParent(BoardSpawnLocation);
                 grid.transform.localPosition = Vector3.zero;
-                foreach(var pieces in gameScriptable.PhysicalPieces)
-                {
-                    if(pieces.Player == Player.White)
-                    {
+                foreach (var pieces in gameScriptable.PhysicalPieces) {
+                    if (pieces.Player == Player.White) {
                         whitePiecePrefabs.Add(pieces.Type, pieces.Prefab);
-                    } else
-                    {
+                    } else {
                         blackPiecePrefabs.Add(pieces.Type, pieces.Prefab);
                     }
                 }
-                foreach(var white in gameScriptable.InitialWhitesOnBoard)
-                {
+                foreach (var white in gameScriptable.InitialWhitesOnBoard) {
                     grid.PlacePiece(whitePiecePrefabs[white.pieceType], white.cellID, false);
                 }
 
-                for(int i = 0; i < gameScriptable.pieceInHandCount; i++)
-                {
+                for (int i = 0; i < gameScriptable.pieceInHandCount; i++) {
                     GameObject w = Instantiate(whitePiecePrefabs[gameScriptable.pieceTypeInHand]);
                     w.AddComponent<Rigidbody>();
                     w.transform.SetParent(grid.transform);
                     w.transform.localPosition = grid.GetWhiteHandPosition();
                     w.transform.SetParent(transform.root.parent);
                 }
-                foreach (var black in gameScriptable.InitialBlackPieces)
-                {
+                foreach (var black in gameScriptable.InitialBlackPieces) {
                     grid.PlacePiece(blackPiecePrefabs[black.pieceType], black.cellID, false);
                 }
             }
         }
 
-        public Vector3 GetCellPosition(string id)
-        {
+        public Vector3 GetCellPosition(string id) {
             return grid.GetCellPosition(id);
         }
 
-		public List<string> GetLegalMoves(string cellID, Player player) {
+        public List<string> GetLegalMoves(string cellID, Player player) {
             //TODO: implement get legal moves
             //presumably will have to interface with GGP plugin or
             //a plugin which allows it to directly communicate
@@ -72,38 +64,33 @@ public class BoardgameManager : Singleton<BoardgameManager> {
 
             //for now just returns empty cells
             List<string> moves = new List<string>();
-            foreach(PhysicalCell cell in grid.GetAllPhysicalCells())
-            {
-                if(!cell.HasPiece())
-                {
+            foreach (PhysicalCell cell in grid.GetAllPhysicalCells()) {
+                if (!cell.HasPiece()) {
                     moves.Add(cell.id);
                 }
             }
             return moves;
-		}
+        }
 
-        public bool BelongsToPlayer(string cellFromID, Player player)
-        {
+        public bool BelongsToPlayer(string cellFromID, Player player) {
             //TODO: check if piece at cell belongs to player
             return true;
         }
 
-		public bool IsLegalMove(string cellFromID, string cellToID, Player player) {
+        public bool IsLegalMove(string cellFromID, string cellToID, Player player) {
             //TODO: actually implement is legal move
             return GetLegalMoves(cellFromID, player).Contains(cellToID);
-		}
+        }
 
-        public bool MakeMove(string cellFromID, string cellToID, Player player)
-        {
+        public bool MakeMove(string cellFromID, string cellToID, Player player) {
             //TODO: characters physically move pieces
             //TODO: update game state
-            if(IsLegalMove(cellFromID, cellToID, player))
-            {
+            if (IsLegalMove(cellFromID, cellToID, player)) {
                 GameObject piece = grid.RemovePiece(cellFromID);
                 grid.PlacePiece(piece, cellToID);
                 return true;
             }
             return false;
         }
-	}
+    }
 }

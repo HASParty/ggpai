@@ -12,122 +12,122 @@ MonoBehaviour:
   m_Name: MyllaGrid
   m_EditorClassIdentifier: 
   grid:
-  - id: A1
+  - id: outer sw
     x: 0.044409707
     y: 0.0472292
     w: 0.1
     h: 0.1
-  - id: G1
+  - id: outer nw
     x: 0.045654222
     y: 0.8528746
     w: 0.1
     h: 0.1
-  - id: A2
+  - id: outer s
     x: 0.45
     y: 0.045581236
     w: 0.1
     h: 0.1
-  - id: G2
+  - id: outer n
     x: 0.4500872
     y: 0.85339665
     w: 0.1
     h: 0.1
-  - id: A3
+  - id: outer se
     x: 0.85360634
     y: 0.045429528
     w: 0.1
     h: 0.1
-  - id: G3
+  - id: outer ne
     x: 0.8548561
     y: 0.85372746
     w: 0.1
     h: 0.1
-  - id: B1
+  - id: middle sw
     x: 0.18215124
     y: 0.18126386
     w: 0.1
     h: 0.1
-  - id: F1
+  - id: middle nw
     x: 0.17932273
     y: 0.7166101
     w: 0.1
     h: 0.1
-  - id: B2
+  - id: middle s
     x: 0.4513886
     y: 0.17996223
     w: 0.1
     h: 0.1
-  - id: F2
+  - id: middle n
     x: 0.44974232
     y: 0.72128093
     w: 0.1
     h: 0.1
-  - id: B3
+  - id: middle se
     x: 0.72067
     y: 0.18247108
     w: 0.1
     h: 0.1
-  - id: F3
+  - id: middle ne
     x: 0.720167
     y: 0.7182196
     w: 0.1
     h: 0.1
-  - id: C1
+  - id: inner sw
     x: 0.30575508
     y: 0.3064242
     w: 0.1
     h: 0.1
-  - id: E1
+  - id: inner nw
     x: 0.30425394
     y: 0.59288514
     w: 0.1
     h: 0.1
-  - id: C2
+  - id: inner s
     x: 0.44931045
     y: 0.3011139
     w: 0.1
     h: 0.1
-  - id: E2
+  - id: inner n
     x: 0.44895482
     y: 0.59566575
     w: 0.1
     h: 0.1
-  - id: C3
+  - id: inner se
     x: 0.5928379
     y: 0.3070621
     w: 0.1
     h: 0.1
-  - id: E3
+  - id: inner ne
     x: 0.5964084
     y: 0.5923782
     w: 0.1
     h: 0.1
-  - id: D1
+  - id: outer w
     x: 0.045916647
     y: 0.44877216
     w: 0.1
     h: 0.1
-  - id: D4
+  - id: inner e
     x: 0.5964059
     y: 0.44935182
     w: 0.1
     h: 0.1
-  - id: D2
+  - id: middle w
     x: 0.17771675
     y: 0.44906363
     w: 0.1
     h: 0.1
-  - id: D5
+  - id: middle e
     x: 0.7207464
     y: 0.4490638
     w: 0.1
     h: 0.1
-  - id: D3
+  - id: inner w
     x: 0.30329394
     y: 0.45058766
     w: 0.1
     h: 0.1
-  - id: D6
+  - id: outer e
     x: 0.8559443
     y: 0.44998518
     w: 0.1

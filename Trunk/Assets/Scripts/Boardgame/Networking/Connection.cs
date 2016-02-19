@@ -4,12 +4,9 @@ using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
 
-namespace Boardgame.Networking
-{
-    static class Connection
-    {
-        public enum Status
-        {
+namespace Boardgame.Networking {
+    static class Connection {
+        public enum Status {
             OFF,
             ESTABLISHING,
             ESTABLISHED,
@@ -26,36 +23,27 @@ namespace Boardgame.Networking
         public static TcpClient feedConnection;
         public static TcpClient gameConnection;
 
-        public static bool Connect()
-        {
-            if (GameConnectionStatus == Status.ERROR || GameConnectionStatus == Status.OFF)
-            {
+        public static bool Connect() {
+            if (GameConnectionStatus == Status.ERROR || GameConnectionStatus == Status.OFF) {
                 GameConnectionStatus = Status.ESTABLISHING;
 
-                try
-                {
+                try {
                     gameConnection = new TcpClient(Host, GamePort);
                     GameConnectionStatus = Status.ESTABLISHED;
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     GameConnectionStatus = Status.ERROR;
                     Debug.LogError(e.ToString());
                     return false;
                 }
             }
 
-            if (FeedConnectionStatus == Status.ERROR || FeedConnectionStatus == Status.OFF)
-            {
+            if (FeedConnectionStatus == Status.ERROR || FeedConnectionStatus == Status.OFF) {
                 FeedConnectionStatus = Status.ESTABLISHING;
 
-                try
-                {
+                try {
                     feedConnection = new TcpClient(Host, FeedPort);
                     FeedConnectionStatus = Status.ESTABLISHED;
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     FeedConnectionStatus = Status.ERROR;
                     Debug.LogError(e.ToString());
                     return false;
@@ -65,61 +53,58 @@ namespace Boardgame.Networking
             return true;
         }
 
-        public static string Compose(string message)
-        {
+        public static string Compose(string message) {
             string formatted = String.Format("( {0} )\r\n", message);
             return String.Format("POST / HTTP/1.0\r\nAccept: text/delim\r\nHost: {0}\r\nSender: UNITY\r\n" +
                                  "Receiver: GAMESERVER\r\nContent-Type: text/acl\r\nContent-Length: {1}\r\n\r\n{2}", Host, formatted.Length, formatted);
         }
 
-        public static void StartGame(string game, bool first, int startTime, int playTime)
-        {
+        public static void StartGame(string game, bool first, int startTime, int playTime) {
             string unityStart = Compose(String.Format("UNITY 1234 {1} {0} {2} {3}", game, (first ? "first" : "second"), startTime, playTime));
             Write(unityStart, gameConnection.GetStream());
-            string response = Read(gameConnection);
-            Debug.Log(response);
+            string response = HttpRead(gameConnection);
+            TestLex(response);
             Write(Compose("ready"), feedConnection.GetStream());
         }
 
-        public static void Write(string message, NetworkStream ns)
-        {
+        public static void TestLex(string message) {
+            GDL.MyllaReader cr = new GDL.MyllaReader();
+            cr.GetBoardState(message);
+        }
+
+        public static void Write(string message, NetworkStream ns) {
             StreamWriter sw = new StreamWriter(ns);
 
-            if (ns.CanWrite)
-            {
-                try
-                {
+            if (ns.CanWrite) {
+                try {
                     Debug.Log("Sending message: " + message);
                     sw.Write(message);
                     sw.Flush();
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     Debug.LogError(e.ToString());
                     GameConnectionStatus = Status.ERROR;
                 }
-            }
-            else
-            {
+            } else {
                 Debug.LogError("Can't write to network stream!");
             }
 
         }
-        
-        public static string Read(TcpClient connection)
-        {
+
+        public static string HttpRead(TcpClient connection) {
             NetworkStream ns = connection.GetStream();
             StreamReader sr = new StreamReader(ns);
 
             string response = sr.ReadToEnd();
-            Debug.Log(response);
-            return response;
+            var split = response.Split(new string[] { "\r\n\r\n" }, 2, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length == 2) {
+                return split[1];
+            }
+            //TODO: exception
+            return null;
         }
 
-        public static string ReadLine(TcpClient connection)
-        {
-            if (connection.Available > 0)
-            {
+        public static string ReadLine(TcpClient connection) {
+            if (connection.Available > 0) {
                 NetworkStream ns = connection.GetStream();
                 StreamReader sr = new StreamReader(ns);
 
@@ -127,23 +112,18 @@ namespace Boardgame.Networking
                 Debug.Log(response);
                 return response;
 
-            }
-            else
-            {
+            } else {
                 Debug.Log("Nothing received from connection.");
                 return "";
             }
         }
 
-        public static void Disconnect()
-        {
-            if (gameConnection != null)
-            {
+        public static void Disconnect() {
+            if (gameConnection != null) {
                 gameConnection.Close();
                 GameConnectionStatus = Status.OFF;
             }
-            if (feedConnection != null)
-            {
+            if (feedConnection != null) {
                 feedConnection.Close();
                 FeedConnectionStatus = Status.OFF;
             }
