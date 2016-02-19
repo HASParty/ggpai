@@ -12,8 +12,6 @@ namespace Boardgame.Script {
     [System.Serializable]
     public struct PiecePosition
     {
-        public bool notOnBoard;
-        public int count;
         public string cellID;
         public string pieceType;
     }
@@ -25,7 +23,9 @@ namespace Boardgame.Script {
         public GameObject PhysicalBoardPrefab;
         public PhysicalPieces[] PhysicalPieces;
         //temporary until this can be generated from the GDL
-        public PiecePosition[] InitialWhitePieces;
+        public string pieceTypeInHand;
+        public int pieceInHandCount;
+        public PiecePosition[] InitialWhitesOnBoard;
         public PiecePosition[] InitialBlackPieces;
     }
 }

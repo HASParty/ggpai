@@ -22,10 +22,10 @@ namespace Boardgame.Networking
 
         void Start()
         {
-            if (Connect())
+           /* if (Connect())
             {
                 StartCoroutine(Read());
-            }
+            }*/
         }
 
         public void UpdateSettings(string host, int gport, int fport)
@@ -42,27 +42,33 @@ namespace Boardgame.Networking
 
         public void Disconnect()
         {
-            StopCoroutine(Read());
+            //StopCoroutine(Read());
             Connection.Disconnect();
+        }
+
+        public void StartGame()
+        {
+            Connection.StartGame("ticTacToe", true, 5000, 5000);
         }
 
         public void Write(string write)
         {
-            Connection.Write(write);
+            Connection.Write(write, Connection.gameConnection.GetStream());
         }
 
-        IEnumerator Read()
+      /*  IEnumerator Read()
         {
             while (true)
             {
                 Connection.Read();
                 yield return new WaitForSeconds(0.2f);
             }
-        }
+        }*/
 
         public void ReadOnce()
         {
-            Connection.Read();
+            Connection.Read(Connection.gameConnection);
+            Connection.ReadLine(Connection.feedConnection);
         }
 
         // Update is called once per frame

@@ -38,20 +38,22 @@ public class BoardgameManager : Singleton<BoardgameManager> {
                         blackPiecePrefabs.Add(pieces.Type, pieces.Prefab);
                     }
                 }
-                foreach(var white in gameScriptable.InitialWhitePieces)
+                foreach(var white in gameScriptable.InitialWhitesOnBoard)
                 {
-                    if (!white.notOnBoard)
-                    {
-                        grid.PlacePiece(whitePiecePrefabs[white.pieceType], white.cellID, false);
-                    }
+                    grid.PlacePiece(whitePiecePrefabs[white.pieceType], white.cellID, false);
+                }
 
+                for(int i = 0; i < gameScriptable.pieceInHandCount; i++)
+                {
+                    GameObject w = Instantiate(whitePiecePrefabs[gameScriptable.pieceTypeInHand]);
+                    w.AddComponent<Rigidbody>();
+                    w.transform.SetParent(grid.transform);
+                    w.transform.localPosition = grid.GetWhiteHandPosition();
+                    w.transform.SetParent(transform.root.parent);
                 }
                 foreach (var black in gameScriptable.InitialBlackPieces)
                 {
-                    if (!black.notOnBoard)
-                    {
-                        grid.PlacePiece(blackPiecePrefabs[black.pieceType], black.cellID, false);
-                    }
+                    grid.PlacePiece(blackPiecePrefabs[black.pieceType], black.cellID, false);
                 }
             }
         }
