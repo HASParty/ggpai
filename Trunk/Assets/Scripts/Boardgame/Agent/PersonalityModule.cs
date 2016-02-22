@@ -138,7 +138,6 @@ namespace Boardgame.Agent
 
         public void RecalcRestingMood()
         {
-            Debug.Log(agreeableness.value / High);
             float arousalInterpolate = GetArousalInterpolation(agreeableness) +
                                        GetArousalInterpolation(conscientiousness) +
                                        GetArousalInterpolation(extraversion) +

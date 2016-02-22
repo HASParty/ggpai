@@ -140,6 +140,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameScriptable: {fileID: 11400000, guid: 2795ed79484d10c49855d4628e1e9da9, type: 2}
   BoardSpawnLocation: {fileID: 1941410599}
+  PileSpawnTransform: {fileID: 2021581287}
+  MoveMade:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Boardgame.BoardgameManager+MoveEvent, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!114 &79785554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -327,6 +333,10 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 2021581287}
     m_Modifications:
+    - target: {fileID: 11448172, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: ev.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 422204, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
       propertyPath: m_LocalPosition.x
       value: -5.494838
@@ -367,6 +377,18 @@ Prefab:
       propertyPath: m_Name
       value: Agent
       objectReference: {fileID: 0}
+    - target: {fileID: 11448172, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: ev.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11448172, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: ev.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11448172, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+      propertyPath: ev.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1382069343}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
   m_IsPrefabParent: 0
@@ -456,6 +478,10 @@ Transform:
 --- !u!4 &1322416218 stripped
 Transform:
   m_PrefabParentObject: {fileID: 422204, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
+  m_PrefabInternal: {fileID: 1087361408}
+--- !u!1 &1382069343 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 132526, guid: 07fe7c417865e4c4b9752f50f6419ee4, type: 2}
   m_PrefabInternal: {fileID: 1087361408}
 --- !u!1 &1445584652 stripped
 GameObject:

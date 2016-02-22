@@ -25,5 +25,7 @@ namespace Boardgame.Script {
         public int pieceInHandCount;
         public PiecePosition[] InitialWhitesOnBoard;
         public PiecePosition[] InitialBlackPieces;
+        public string whitePile;
+        public string blackPile;
     }
 }

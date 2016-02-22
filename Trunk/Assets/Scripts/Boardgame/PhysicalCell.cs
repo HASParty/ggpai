@@ -1,11 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
 
 namespace Boardgame {
     [RequireComponent(typeof(SphereCollider))]
     public class PhysicalCell : MonoBehaviour {
-        private GameObject piece;
+        private List<GameObject> piece = new List<GameObject>();
+        public bool isPile = false;
 
         public string id;
 
@@ -36,24 +38,26 @@ namespace Boardgame {
         }
 
         public void Place(GameObject go, bool isInstantiated = true) {
-            if (!HasPiece()) {
-                if (!isInstantiated) {
-                    piece = Instantiate(go);
-                } else {
-                    piece = go;
-                }
-                piece.transform.SetParent(transform);
-                piece.transform.localPosition = Vector3.zero;
+            if (!isInstantiated) {
+                piece.Add(Instantiate(go));
+            } else {
+                piece.Add(go);
             }
+            piece[piece.Count-1].transform.SetParent(transform);
+            piece[piece.Count-1].transform.localPosition = Vector3.zero;
         }
 
         public bool HasPiece() {
-            return piece != null;
+            return piece.Count > 0;
         }
 
         public GameObject RemovePiece() {
-            GameObject ret = piece;
-            piece = null;
+            GameObject ret = piece[piece.Count-1];
+            piece.RemoveAt(piece.Count - 1);
+            if (isPile) {
+                Destroy(ret.GetComponent<Rigidbody>());
+                ret.transform.localRotation = Quaternion.Euler(Vector3.zero);
+            }
             return ret;
         }
     }

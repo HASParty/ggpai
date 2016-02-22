@@ -9,6 +9,8 @@ namespace Boardgame.Agent
         private PersonalityModule pm;
         private InputModule im;
 
+        public Player player;
+
         void Start()
         {
 

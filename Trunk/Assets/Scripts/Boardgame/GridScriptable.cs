@@ -9,7 +9,5 @@ namespace Boardgame.Script
     public class GridScriptable : ScriptableObject
     {
         public Cell[] grid;
-        public Cell BlackHand;
-        public Cell WhiteHand;
     }
 }

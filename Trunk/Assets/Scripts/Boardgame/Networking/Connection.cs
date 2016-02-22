@@ -103,18 +103,20 @@ namespace Boardgame.Networking {
             return null;
         }
 
-        public static string ReadLine(TcpClient connection) {
+        public static bool ReadLine(TcpClient connection, out string data) {
             if (connection.Available > 0) {
                 NetworkStream ns = connection.GetStream();
                 StreamReader sr = new StreamReader(ns);
 
                 string response = sr.ReadLine();
                 Debug.Log(response);
-                return response;
+                data = response;
+                return true;
 
             } else {
                 Debug.Log("Nothing received from connection.");
-                return "";
+                data = "";
+                return false;
             }
         }
 

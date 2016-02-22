@@ -58,17 +58,6 @@ namespace Boardgame {
 					}
 				}
 
-                Vector3[] locBlack = new Vector3[4];
-                Vector3 centerBlack = Vector3.zero;
-                CalculateCell(board.Source.BlackHand, ref locBlack, ref centerBlack);
-                Handles.DrawSolidRectangleWithOutline(locBlack, Color.clear, Color.black);
-
-                Vector3[] locWhite = new Vector3[4];
-                Vector3 centerWhite = Vector3.zero;
-                CalculateCell(board.Source.WhiteHand, ref locWhite, ref centerWhite);
-                Handles.DrawSolidRectangleWithOutline(locWhite, Color.clear, Color.white);
-
-
             }
 		}
 

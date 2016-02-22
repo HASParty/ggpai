@@ -54,12 +54,6 @@ namespace Boardgame.GDL {
             return state;
         }
 
-        private void Advance(ref List<Token>.Enumerator tok, TokenType expect = TokenType.CONSTANT) {
-            if (!tok.MoveNext() || tok.Current.type != expect) {
-                throw new Exception("INVALID GDL");
-            }
-        }
-
         public override List<KeyValuePair<string, string>> GetMove(string message) {
             string lexify = Parser.BreakMessage(message).action;
             return ParseMoves(lexify);
