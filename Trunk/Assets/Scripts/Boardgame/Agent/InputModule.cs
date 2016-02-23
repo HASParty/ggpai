@@ -11,7 +11,6 @@ namespace Boardgame.Agent
     {
         private PersonalityModule pm;
         private BrainModule bm;
-        private GameWriter writer;
 
         void Start()
         {
