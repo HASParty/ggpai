@@ -15,6 +15,10 @@ namespace Boardgame {
             GetComponent<SphereCollider>().radius = radius;
         }
 
+        public bool isEmpty() {
+            return piece.Count == 0;
+        }
+
         public void OnMouseEnter() {
             if (HasPiece()) {
                 PlayerInteractionManager.Instance.PieceHighlight(this);

@@ -35,6 +35,10 @@ namespace Boardgame {
             pcells[cellID].isPile = true;
         }
 
+        public bool IsPile(string cellID) {
+            return pcells[cellID].isPile && !pcells[cellID].isEmpty();
+        }
+
         public Cell GetCell(string cellID) {
             return cells[cellID];
         }
@@ -71,8 +75,8 @@ namespace Boardgame {
             return pcells[cellID].transform.position;
         }
 
-        public bool PlacePiece(GameObject go, string cellID, bool isInstantiated = true, bool pile = false) {
-            if (cells.ContainsKey(cellID) && (!pcells[cellID].HasPiece() || pile)) {
+        public bool PlacePiece(GameObject go, string cellID, bool isInstantiated = true) {
+            if (cells.ContainsKey(cellID) && (!pcells[cellID].HasPiece() || pcells[cellID].isPile)) {
                 pcells[cellID].Place(go, isInstantiated);
                 return true;
             }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Boardgame.Script;
 using UnityEngine.Events;
 using Boardgame.GDL;
+using System;
+using Boardgame.Networking;
 
 namespace Boardgame {
 
@@ -17,59 +19,93 @@ namespace Boardgame {
         public Transform PileSpawnTransform;
 
         [System.Serializable]
-        public class MoveEvent : UnityEvent<List<KeyValuePair<string, string>>, Player> { }
+        public class MoveEvent : UnityEvent<List<Move>, Player> { }
 
         public MoveEvent OnMakeMove;
 
 
         private Player turn;
         private Grid grid;
-        private Dictionary<string, GameObject> whitePiecePrefabs;
-        private Dictionary<string, GameObject> blackPiecePrefabs;
+        private Dictionary<string, GameObject> piecePrefabs;
         //Some board game state info, needs to be generic to work for multiple games
 
-        private GameReader reader;
-        private GameWriter writer;
+        public GameReader reader;
+        public GameWriter writer;
 
 
         void Awake() {
             if (gameScriptable != null) {
-                whitePiecePrefabs = new Dictionary<string, GameObject>();
-                blackPiecePrefabs = new Dictionary<string, GameObject>();
+                reader = Activator.CreateInstance(Type.GetType("Boardgame.GDL."+gameScriptable.ID+"Reader")) as GameReader;
+                writer = Activator.CreateInstance(Type.GetType("Boardgame.GDL."+gameScriptable.ID+"Writer")) as GameWriter;
+
+                piecePrefabs = new Dictionary<string, GameObject>();
+
                 grid = Instantiate(gameScriptable.PhysicalBoardPrefab).AddComponent<Grid>();
                 grid.LoadScriptable(gameScriptable.PhysicalBoardDescription);
-                if (gameScriptable.pieceInHandCount > 0) {
-                    grid.SetPile(gameScriptable.whitePile);
-                    grid.SetPile(gameScriptable.blackPile);
-                }
                 grid.transform.SetParent(BoardSpawnLocation);
                 grid.transform.localPosition = Vector3.zero;
                 foreach (var pieces in gameScriptable.PhysicalPieces) {
-                    if (pieces.Player == Player.White) {
-                        whitePiecePrefabs.Add(pieces.Type, pieces.Prefab);
-                    } else {
-                        blackPiecePrefabs.Add(pieces.Type, pieces.Prefab);
-                    }
-                }
-                foreach (var white in gameScriptable.InitialWhitesOnBoard) {
-                    grid.PlacePiece(whitePiecePrefabs[white.pieceType], white.cellID, false);
+                    piecePrefabs.Add(pieces.Type, pieces.Prefab);
                 }
 
-                for (int i = 0; i < gameScriptable.pieceInHandCount; i++) {
-                    GameObject w = Instantiate(whitePiecePrefabs[gameScriptable.pieceTypeInHand]);
-                    GameObject b = Instantiate(blackPiecePrefabs[gameScriptable.pieceTypeInHand]);
-                    w.AddComponent<Rigidbody>();
-                    b.AddComponent<Rigidbody>();
-                    grid.PlacePiece(w, gameScriptable.whitePile, pile: true);
-                    grid.PlacePiece(b, gameScriptable.blackPile, pile: true);
-                    w.transform.SetParent(PileSpawnTransform);
-                    b.transform.SetParent(PileSpawnTransform);
-                }
-                foreach (var black in gameScriptable.InitialBlackPieces) {
-                    grid.PlacePiece(blackPiecePrefabs[black.pieceType], black.cellID, false);
-                }
+                ConnectionMonitor.Instance.OnGameUpdate.AddListener(CheckGame);
+
             } else {
                 Debug.LogError("No gamescriptable set!");
+            }
+        }
+
+        public void CheckGame(GameData data) {
+            if (data.IsStart) GameStart(data.GameState);
+            SetLegalMoves(data.LegalMoves);
+            turn = data.GameState.Control;
+            if (data.LegalMoves.Count > 0) Debug.Log(Tools.Stringify<Move>.List(data.LegalMoves));
+            else Debug.Log("No legal moves currently.");
+        }
+
+        public void GameStart(State state) {
+            foreach(GDL.Cell cell in state.Cells) {
+                if (piecePrefabs.ContainsKey(cell.Type)) {
+                    if (cell.Count > 0) {
+                        grid.SetPile(cell.ID);
+                        for (int i = 0; i < cell.Count; i++) {
+                            GameObject p = Instantiate(piecePrefabs[cell.Type]);
+                            p.AddComponent<Rigidbody>();
+                            grid.PlacePiece(p, cell.ID);
+                            p.transform.SetParent(PileSpawnTransform);
+                        }                     
+                    } else {
+                        grid.PlacePiece(piecePrefabs[cell.Type], cell.ID, false);
+                    }
+                }
+            }
+        }
+
+        List<string> placeableIDs = new List<string>();
+        List<string> removeableIDs = new List<string>();
+        Dictionary<string, List<string>> moveableIDS = new Dictionary<string, List<string>>();
+        public void SetLegalMoves(List<Move> moves) {
+            placeableIDs.Clear();
+            removeableIDs.Clear();
+            moveableIDS.Clear();
+            foreach(Move m in moves) {
+                switch(m.Type) {
+                    case MoveType.MOVE:
+                        if(moveableIDS.ContainsKey(m.From)) {
+                            moveableIDS[m.From].Add(m.To);
+                        } else {
+                            List<string> vals = new List<string>();
+                            vals.Add(m.To);
+                            moveableIDS.Add(m.From, vals);
+                        }
+                        break;
+                    case MoveType.REMOVE:
+                        removeableIDs.Add(m.From);
+                        break;
+                    case MoveType.PLACE:
+                        placeableIDs.Add(m.To);
+                        break;
+                }
             }
         }
 
@@ -77,53 +113,62 @@ namespace Boardgame {
             return grid.GetCellPosition(id);
         }
 
-        public void MakeMove(List<KeyValuePair<string,string>> moves, Player player) {
+        public void MakeMove(List<Move> moves) {
             foreach(var move in moves) {
-                var fromOrType = move.Key;
-                var to = move.Value;
-                Debug.Log(fromOrType + to);
-            }
-            //notify listeners the move has been made
-            OnMakeMove.Invoke(moves, player);
-        }
-
-        public List<string> GetLegalMoves(string cellID, Player player) {
-            //TODO: implement get legal moves
-            //presumably will have to interface with GGP plugin or
-            //a plugin which allows it to directly communicate
-            //with the GDL stuff in order to maintain game state and
-            //check for legal moves
-        
-            //for now just returns empty cells
-            List<string> moves = new List<string>();
-            foreach (PhysicalCell cell in grid.GetAllPhysicalCells()) {
-                if (!cell.HasPiece()) {
-                    moves.Add(cell.id);
+                Debug.Log(move);
+                GameObject piece;
+                switch (move.Type) {
+                    case MoveType.PLACE:
+                        string heap = turn == Player.Black ? gameScriptable.BlackPile : gameScriptable.WhitePile;
+                        piece = grid.RemovePiece(heap);
+                        grid.PlacePiece(piece, move.To);
+                        break;
+                    case MoveType.REMOVE:
+                        piece = grid.RemovePiece(move.From);
+                        Destroy(piece);
+                        break;
+                    case MoveType.MOVE:
+                        piece = grid.RemovePiece(move.From);
+                        grid.PlacePiece(piece, move.To);
+                        break;
                 }
             }
-            return moves;
+            //notify listeners the move has been made
+            OnMakeMove.Invoke(moves, turn);
         }
 
-        public bool BelongsToPlayer(string cellFromID, Player player) {
-            //TODO: check if piece at cell belongs to player
-            return true;
+        public bool CanSelectCell(string cellID) {
+            string pile = turn == Player.Black ? gameScriptable.BlackPile : gameScriptable.WhitePile;
+            if (placeableIDs.Count > 0 && cellID == pile) return true;
+            if (removeableIDs.Contains(cellID)) return true;
+            if (moveableIDS.ContainsKey(cellID)) return true;
+            return false;
         }
 
-        public bool IsLegalMove(string cellFromID, string cellToID, Player player) {
-            //TODO: actually implement is legal move
-            return GetLegalMoves(cellFromID, player).Contains(cellToID);
+        public List<string> GetLegalMoves(string cellID) {
+            if(cellID == gameScriptable.WhitePile || cellID == gameScriptable.BlackPile) {
+                return placeableIDs;
+            }
+            return moveableIDS[cellID];
         }
 
-        public bool MakeMove(string cellFromID, string cellToID, Player player) {
+
+        //player makes move
+        public bool MakeMove(string cellFromID, string cellToID) {
             //TODO: characters physically move pieces
             //TODO: update game state
-            
-            if (IsLegalMove(cellFromID, cellToID, player)) {
-                GameObject piece = grid.RemovePiece(cellFromID);
-                grid.PlacePiece(piece, cellToID);
-                return true;
+            Move move;
+            string pile = turn == Player.Black ? gameScriptable.BlackPile : gameScriptable.WhitePile;
+            if(cellFromID == pile) {
+                move = new Move(MoveType.PLACE, cellToID);
+            } else { 
+                move = new Move(cellFromID, cellToID);
             }
-            return false;
+
+            List<Move> moves = new List<Move>();
+            moves.Add(move);
+            OnMakeMove.Invoke(moves, turn);
+            return true;
         }
     }
 }

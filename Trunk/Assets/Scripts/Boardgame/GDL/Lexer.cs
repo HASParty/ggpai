@@ -14,7 +14,8 @@ namespace Boardgame.GDL {
         MOVE,
         REMOVE,
         CONSTANT,
-        HAND
+        HAND,
+        CONTROL
     }
 
     public class Token {
@@ -36,8 +37,10 @@ namespace Boardgame.GDL {
         string moveID;
         string removeID;
         string handID;
+        string controlID;
 
-        public Lexer(string cellID, string placeID, string moveID = "", string removeID = "", string handID = "") {
+        public Lexer(string cellID, string placeID, string moveID = "", string removeID = "",
+            string handID = "", string controlID = "") {
             this.cellID = cellID;
             this.placeID = placeID;
             this.moveID = moveID;
@@ -66,6 +69,8 @@ namespace Boardgame.GDL {
                     token.type = TokenType.TRUE;
                 } else if (word == handID) {
                     token.type = TokenType.HAND;
+                } else if (word == controlID) {
+                    token.type = TokenType.CONTROL;
                 } else {
                     token.value = word;
                 }

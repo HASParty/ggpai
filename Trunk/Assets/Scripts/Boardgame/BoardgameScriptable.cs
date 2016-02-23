@@ -5,7 +5,6 @@ namespace Boardgame.Script {
     [System.Serializable]
     public struct PhysicalPieces {
         public string Type;
-        public Player Player;
         public GameObject Prefab;
     }
 
@@ -20,12 +19,7 @@ namespace Boardgame.Script {
         public GridScriptable PhysicalBoardDescription;
         public GameObject PhysicalBoardPrefab;
         public PhysicalPieces[] PhysicalPieces;
-        //temporary until this can be generated from the GDL
-        public string pieceTypeInHand;
-        public int pieceInHandCount;
-        public PiecePosition[] InitialWhitesOnBoard;
-        public PiecePosition[] InitialBlackPieces;
-        public string whitePile;
-        public string blackPile;
+        public string WhitePile;
+        public string BlackPile;
     }
 }

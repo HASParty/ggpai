@@ -26,15 +26,17 @@ namespace Boardgame {
 
         public void CellHighlight(PhysicalCell cell)
         {
-            if (cell == currentPiece || selectedPiece == null) return;
-            currentPiece = cell;
-            UIManager.Instance.ShowHighlightEffect(currentPiece.transform.position);
+            if (BoardgameManager.Instance.CanSelectCell(cell.id)) {
+                if (cell == currentPiece || selectedPiece == null) return;
+                currentPiece = cell;
+                UIManager.Instance.ShowHighlightEffect(currentPiece.transform.position);
+            }
         }
 
         public void CellSelect(PhysicalCell cell)
         {
             if (selectedPiece == null || cell.HasPiece()) return;
-            if (BoardgameManager.Instance.MakeMove(selectedPiece.id, cell.id, player))
+            if (BoardgameManager.Instance.MakeMove(selectedPiece.id, cell.id))
             {
                 UIManager.Instance.HideSelectEffect();
                 selectedPiece = null;
@@ -50,25 +52,26 @@ namespace Boardgame {
 		}
 
 		public void PieceSelect(PhysicalCell piece) {
-            if (piece == selectedPiece) return;
-            UIManager.Instance.HideLegalCells();
-            if (BoardgameManager.Instance.BelongsToPlayer(piece.id, player))
-            {
-                if (piece == selectedPiece)
-                    return;
-                if (piece == currentPiece)
-                {
-                    PieceLeave(piece);
+            if (BoardgameManager.Instance.CanSelectCell(piece.id)) {
+                if (piece == selectedPiece) return;
+                UIManager.Instance.HideLegalCells();
+                if (BoardgameManager.Instance.CanSelectCell(piece.id)) {
+                    if (piece == selectedPiece)
+                        return;
+                    if (piece == currentPiece) {
+                        PieceLeave(piece);
+                    }
+                    selectedPiece = piece;
+
+                    UIManager.Instance.ShowSelectEffect(selectedPiece.transform.position);
+                    ShowLegalCells();
                 }
-                selectedPiece = piece;
             }
-            UIManager.Instance.ShowSelectEffect(selectedPiece.transform.position);
-            ShowLegalCells();
         }
 
         private void ShowLegalCells()
         {
-            var legalMoves = BoardgameManager.Instance.GetLegalMoves(selectedPiece.id, player);
+            var legalMoves = BoardgameManager.Instance.GetLegalMoves(selectedPiece.id);
             List<Vector3> cellPos = new List<Vector3>();
             foreach (string id in legalMoves)
             {

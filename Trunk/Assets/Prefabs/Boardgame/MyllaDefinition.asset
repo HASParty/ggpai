@@ -16,15 +16,9 @@ MonoBehaviour:
     type: 2}
   PhysicalBoardPrefab: {fileID: 128470, guid: 730bcc061e02fff4dbe96bb5f16ba86d, type: 2}
   PhysicalPieces:
-  - Type: default
-    Player: 0
+  - Type: black
     Prefab: {fileID: 106502, guid: c85b91360f864384c92f53fc7535fde3, type: 2}
-  - Type: default
-    Player: 1
+  - Type: white
     Prefab: {fileID: 187284, guid: 99ec9765718577e4a882dc102543019b, type: 2}
-  pieceTypeInHand: default
-  pieceInHandCount: 9
-  InitialWhitesOnBoard: []
-  InitialBlackPieces: []
-  whitePile: white heap
-  blackPile: black heap
+  WhitePile: white heap
+  BlackPile: black heap

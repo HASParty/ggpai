@@ -5,13 +5,12 @@ using UnityEngine;
 namespace Boardgame.GDL {
     public class MyllaReader : GameReader {
         public MyllaReader() {
-            lexer = new Lexer("cell", "place", "move", "remove", "heap");
+            lexer = new Lexer("cell", "place", "move", "remove", "heap", "control");
         }
 
         public override State GetBoardState(string message) {
             State state;
-            state.WhiteHandCount = 0;
-            state.BlackHandCount = 0;
+            state.Control = Player.Black;
 
             var list = new List<Cell>();
             string lexify = Parser.BreakMessage(message).state;
@@ -39,30 +38,38 @@ namespace Boardgame.GDL {
                     }
                     switch (who) {
                         case "white":
-                            state.WhiteHandCount = count;
+                            list.Add(new Cell("white heap", "white", count));
                             break;
                         case "black":
-                            state.BlackHandCount = count;
+                            list.Add(new Cell("black heap", "black", count));
+                            break;
+                    }
+                } else if (token.Current.type == TokenType.CONTROL) {
+                    Advance(ref token);
+                    switch (token.Current.value) {
+                        case "white":
+                            state.Control = Player.White;
+                            break;
+                        case "black":
+                            state.Control = Player.Black;
                             break;
                     }
                 }
             }
 
             state.Cells = list.ToArray();
-            Debug.Log("Black: " + state.BlackHandCount + " White: " + state.WhiteHandCount);
-            Debug.Log(Tools.Stringify<Cell>.Array(state.Cells));
             return state;
         }
 
-        public override List<KeyValuePair<string, string>> GetMove(string message) {
+        public override List<Move> GetMove(string message) {
             string lexify = Parser.BreakMessage(message).action;
             return ParseMoves(lexify);
         }
 
-        private List<KeyValuePair<string, string>> ParseMoves(string moves) {
+        private List<Move> ParseMoves(string moves) {
             var lexed = lexer.Lex(moves);
             var token = lexed.GetEnumerator();
-            var list = new List<KeyValuePair<string, string>>();
+            var list = new List<Move>();
 
             while (token.MoveNext()) {
                 string cellID;
@@ -72,25 +79,33 @@ namespace Boardgame.GDL {
                         Advance(ref token);
                         cellID = token.Current.value;
                         Advance(ref token);
+                        cellID += " " + token.Current.value;
+                        Advance(ref token);
                         toID = token.Current.value;
-                        list.Add(new KeyValuePair<string, string>(cellID, toID));
+                        Advance(ref token);
+                        toID += " " + token.Current.value;
+                        list.Add(new Move(cellID, toID));
                         break;
                     case TokenType.PLACE:
                         Advance(ref token);
                         cellID = token.Current.value;
-                        list.Add(new KeyValuePair<string, string>("PLACE", cellID));
+                        Advance(ref token);
+                        cellID += " " + token.Current.value;
+                        list.Add(new Move(MoveType.PLACE, cellID));
                         break;
                     case TokenType.REMOVE:
                         Advance(ref token);
                         cellID = token.Current.value;
-                        list.Add(new KeyValuePair<string, string>("REMOVE", cellID));
+                        Advance(ref token);
+                        cellID += " " + token.Current.value;
+                        list.Add(new Move(MoveType.REMOVE, cellID));
                         break;
                 }
             }
             return list;
         }
 
-        public override List<KeyValuePair<string, string>> GetLegalMoves(string message) {
+        public override List<Move> GetLegalMoves(string message) {
             string lexify = Parser.BreakMessage(message).legalMoves;
             return ParseMoves(lexify);
         }

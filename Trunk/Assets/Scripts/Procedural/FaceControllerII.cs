@@ -365,6 +365,7 @@ public class FaceControllerII : MonoBehaviour
     void LateUpdate()
     {
         timeElapsed += Time.deltaTime;
+        if (queue == null) throw new UnityException("What the fuck");
         while (queue.Count > 0 && queue.Keys[0] <= timeElapsed)
         {
             currentExpressions.Add(queue.Values[0]);

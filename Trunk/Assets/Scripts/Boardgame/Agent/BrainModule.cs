@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
+using Boardgame.GDL;
+
 namespace Boardgame.Agent
 {
     [RequireComponent(typeof(PersonalityModule), typeof(InputModule))]
@@ -19,6 +21,10 @@ namespace Boardgame.Agent
         // Update is called once per frame
         void Update()
         {
+
+        }
+
+        public void GenerateMove(List<Move> moves) {
 
         }
     }

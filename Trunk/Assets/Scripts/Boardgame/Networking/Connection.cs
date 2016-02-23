@@ -62,14 +62,7 @@ namespace Boardgame.Networking {
         public static void StartGame(string game, bool first, int startTime, int playTime) {
             string unityStart = Compose(String.Format("UNITY 1234 {1} {0} {2} {3}", game, (first ? "first" : "second"), startTime, playTime));
             Write(unityStart, gameConnection.GetStream());
-            string response = HttpRead(gameConnection);
-            TestLex(response);
             Write(Compose("ready"), feedConnection.GetStream());
-        }
-
-        public static void TestLex(string message) {
-            GDL.MyllaReader cr = new GDL.MyllaReader();
-            cr.GetBoardState(message);
         }
 
         public static void Write(string message, NetworkStream ns) {
@@ -93,12 +86,15 @@ namespace Boardgame.Networking {
         public static string HttpRead(TcpClient connection) {
             NetworkStream ns = connection.GetStream();
             StreamReader sr = new StreamReader(ns);
-
             string response = sr.ReadToEnd();
             var split = response.Split(new string[] { "\r\n\r\n" }, 2, StringSplitOptions.RemoveEmptyEntries);
             if (split.Length == 2) {
+                GameConnectionStatus = Status.OFF;
+                Connect();
                 return split[1];
             }
+            GameConnectionStatus = Status.OFF;
+            Connect();
             //TODO: exception
             return null;
         }
@@ -109,7 +105,10 @@ namespace Boardgame.Networking {
                 StreamReader sr = new StreamReader(ns);
 
                 string response = sr.ReadLine();
-                Debug.Log(response);
+                if(response.Trim().Length == 0) {
+                    data = "";
+                    return false;
+                }
                 data = response;
                 return true;
 
