@@ -21,7 +21,7 @@ namespace Boardgame.Networking {
         private float turnTimer;
         private string gameID;
 
-        Player human;
+        Player human = Player.White;
 
 
         public bool IsConnected() {
@@ -30,7 +30,7 @@ namespace Boardgame.Networking {
 
         void Start() {
             if(Connect()) StartGame();
-            OnGameUpdate.AddListener(FinishInit);
+            OnGameUpdate.AddListener(TurnMonitor);
             turnTimer = 5f; //later read from config
             gameID = "1234";
             BoardgameManager.Instance.OnMakeMove.AddListener(MoveMade);
@@ -41,7 +41,6 @@ namespace Boardgame.Networking {
                 foreach (var m in moves) {
                     Push(BoardgameManager.Instance.writer.WriteMove(m));
                 }
-                StartCoroutine(Request());
             }
         }
 
@@ -50,13 +49,12 @@ namespace Boardgame.Networking {
             Pull();
         }
 
-        void FinishInit(GameData data) {
+        void TurnMonitor(GameData data) {
             if(data.IsStart && data.LegalMoves.Count == 0) {
                 human = Player.Black;
                 Push("nil");
-            } else {
-                human = Player.White;
-                OnGameUpdate.RemoveListener(FinishInit);
+            } else if (data.LegalMoves.Count == 0) {
+                StartCoroutine(Request());
             }
         }
 
