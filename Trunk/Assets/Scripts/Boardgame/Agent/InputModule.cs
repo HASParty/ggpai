@@ -30,7 +30,7 @@ namespace Boardgame.Agent
                 bm.player = data.GameState.Control;
                 Debug.Log(bm.player);
             }
-            if (!data.IsStart && bm.player == data.Control) {
+            if (!data.IsStart && bm.player == data.Control && data.MovesMade.Count > 0) {
                 var move = data.MovesMade;
                 BoardgameManager.Instance.MakeMove(move, bm.player);
             }

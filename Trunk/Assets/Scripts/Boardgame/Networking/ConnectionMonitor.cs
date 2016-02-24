@@ -61,8 +61,7 @@ namespace Boardgame.Networking {
             if(data.IsStart && data.LegalMoves.Count == 0) {
                 other = data.Control == Player.First ? Player.Second : Player.First;
                 StartCoroutine(Request());
-            } else if (data.Control == other) {
-                Debug.Log("wtf");
+            } else if (data.LegalMoves.Count == 0) {
                 StartCoroutine(Request());
             }
         }
