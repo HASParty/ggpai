@@ -22,6 +22,7 @@ namespace Boardgame {
         }
 
         public void OnGameUpdate(GameData data) {
+            Debug.Log("why no update");
             updated = true;
             waitingForUpdate = false;
         }

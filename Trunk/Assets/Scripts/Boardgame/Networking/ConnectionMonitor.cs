@@ -67,6 +67,15 @@ namespace Boardgame.Networking {
             }
         }
 
+        public void EndGame() {
+            Write("STOP " + gameID + " ( nil )");
+        }
+
+        void OnDestroy() {
+            Write("ABORT " + gameID);
+            Disconnect();
+        }
+
         public void Pull() {
             Write("PULL " + gameID);
         }

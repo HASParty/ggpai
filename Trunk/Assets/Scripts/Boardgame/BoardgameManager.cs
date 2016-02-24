@@ -21,6 +21,10 @@ namespace Boardgame {
         [System.Serializable]
         public class MoveEvent : UnityEvent<List<Move>, Player> { }
 
+        [System.Serializable]
+        public class GameEnd : UnityEvent { }
+
+        public GameEnd OnGameEnd;
         public MoveEvent OnMakeMove;
 
 
