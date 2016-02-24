@@ -21,7 +21,7 @@ namespace Boardgame.Networking {
         private float turnTimer;
         private string gameID;
 
-        Player human = Player.White;
+        public Player other = Player.Second;
 
 
         public bool IsConnected() {
@@ -37,22 +37,32 @@ namespace Boardgame.Networking {
         }
 
         public void MoveMade(List<GDL.Move> moves, Player player) {
-            if (player == human) {
+            if (player == other) {
+                Debug.Log(player + " " + other);
                 foreach (var m in moves) {
                     Push(BoardgameManager.Instance.writer.WriteMove(m));
                 }
             }
         }
 
+        bool requesting = false;
         IEnumerator Request() {
-            yield return new WaitForSeconds(turnTimer);
-            Pull();
+            if (!requesting) {
+                requesting = true;
+                yield return new WaitForSeconds(turnTimer);
+                Pull();
+                requesting = false;
+            } else {
+                Debug.Log("Duplicate pull request");
+            }
         }
 
         void TurnMonitor(GameData data) {
             if(data.IsStart && data.LegalMoves.Count == 0) {
-                human = Player.Black;
-            } else if (data.LegalMoves.Count == 0) {
+                other = data.Control == Player.First ? Player.Second : Player.First;
+                StartCoroutine(Request());
+            } else if (data.Control == other) {
+                Debug.Log("wtf");
                 StartCoroutine(Request());
             }
         }

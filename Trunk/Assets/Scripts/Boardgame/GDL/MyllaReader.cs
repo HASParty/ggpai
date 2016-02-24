@@ -10,7 +10,7 @@ namespace Boardgame.GDL {
 
         public override State GetBoardState(string message) {
             State state;
-            state.Control = Player.Black;
+            state.Control = Player.First;
 
             var list = new List<Cell>();
             string lexify = Parser.BreakMessage(message).state;
@@ -48,10 +48,10 @@ namespace Boardgame.GDL {
                     Advance(ref token);
                     switch (token.Current.value) {
                         case "white":
-                            state.Control = Player.White;
+                            state.Control = Player.Second;
                             break;
                         case "black":
-                            state.Control = Player.Black;
+                            state.Control = Player.First;
                             break;
                     }
                 }

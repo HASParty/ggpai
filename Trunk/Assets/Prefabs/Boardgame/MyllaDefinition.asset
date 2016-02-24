@@ -20,5 +20,5 @@ MonoBehaviour:
     Prefab: {fileID: 106502, guid: c85b91360f864384c92f53fc7535fde3, type: 2}
   - Type: white
     Prefab: {fileID: 187284, guid: 99ec9765718577e4a882dc102543019b, type: 2}
-  WhitePile: white heap
-  BlackPile: black heap
+  SecondPile: white heap
+  FirstPile: black heap

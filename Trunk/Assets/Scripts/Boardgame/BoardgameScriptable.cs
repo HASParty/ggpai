@@ -19,7 +19,7 @@ namespace Boardgame.Script {
         public GridScriptable PhysicalBoardDescription;
         public GameObject PhysicalBoardPrefab;
         public PhysicalPieces[] PhysicalPieces;
-        public string WhitePile;
-        public string BlackPile;
+        public string SecondPile;
+        public string FirstPile;
     }
 }

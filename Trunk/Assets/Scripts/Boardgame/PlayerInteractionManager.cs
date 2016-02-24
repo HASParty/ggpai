@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
+using Boardgame.Networking;
 
 namespace Boardgame {
 	public class PlayerInteractionManager : Singleton<PlayerInteractionManager> {
@@ -8,13 +9,17 @@ namespace Boardgame {
     	private PhysicalCell selectedPiece;
 		private PhysicalCell currentPiece;
         [SerializeField]
-        private Player player = Player.White;
+        private Player player = Player.Second;
 
 		// Use this for initialization
 		void Start () {
 			selectedPiece = null;
 			currentPiece = null;
 		}
+
+        void Update() {
+            if (ConnectionMonitor.Instance.other != player) player = ConnectionMonitor.Instance.other;
+        }
 
 		public void PieceHighlight(PhysicalCell piece) {
 			//TODO: check if piece belongs to player and can actually be highlighted

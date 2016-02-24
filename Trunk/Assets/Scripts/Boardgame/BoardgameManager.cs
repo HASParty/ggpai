@@ -8,7 +8,7 @@ using Boardgame.Networking;
 
 namespace Boardgame {
 
-    public enum Player { Black, White };
+    public enum Player { First, Second };
 
     public class BoardgameManager : Singleton<BoardgameManager> {
 
@@ -58,7 +58,7 @@ namespace Boardgame {
         public void CheckGame(GameData data) {
             if (data.IsStart) GameStart(data.GameState);
             SetLegalMoves(data.LegalMoves);
-            turn = data.GameState.Control;
+            turn = data.GameState.Control == Player.First ? Player.Second : Player.First;
             if (data.LegalMoves.Count > 0) Debug.Log(Tools.Stringify<Move>.List(data.LegalMoves));
             else Debug.Log("No legal moves currently.");
         }
@@ -113,13 +113,13 @@ namespace Boardgame {
             return grid.GetCellPosition(id);
         }
 
-        public void MakeMove(List<Move> moves) {
+        public void MakeMove(List<Move> moves, Player player) {
             foreach(var move in moves) {
                 Debug.Log(move);
                 GameObject piece;
                 switch (move.Type) {
                     case MoveType.PLACE:
-                        string heap = turn == Player.Black ? gameScriptable.BlackPile : gameScriptable.WhitePile;
+                        string heap = player == Player.First ? gameScriptable.FirstPile : gameScriptable.SecondPile;
                         piece = grid.RemovePiece(heap);
                         grid.PlacePiece(piece, move.To);
                         break;
@@ -134,11 +134,11 @@ namespace Boardgame {
                 }
             }
             //notify listeners the move has been made
-            OnMakeMove.Invoke(moves, turn);
+            OnMakeMove.Invoke(moves, player);
         }
 
         public bool CanSelectCell(string cellID) {
-            string pile = turn == Player.Black ? gameScriptable.BlackPile : gameScriptable.WhitePile;
+            string pile = turn == Player.First ? gameScriptable.FirstPile : gameScriptable.SecondPile;
             if (placeableIDs.Count > 0 && cellID == pile) return true;
             if (removeableIDs.Contains(cellID)) return true;
             if (moveableIDS.ContainsKey(cellID)) return true;
@@ -146,7 +146,7 @@ namespace Boardgame {
         }
 
         public List<string> GetLegalMoves(string cellID) {
-            if(cellID == gameScriptable.WhitePile || cellID == gameScriptable.BlackPile) {
+            if(cellID == gameScriptable.SecondPile || cellID == gameScriptable.FirstPile) {
                 return placeableIDs;
             }
             return moveableIDS[cellID];
@@ -155,10 +155,11 @@ namespace Boardgame {
 
         //player makes move
         public bool MakeMove(string cellFromID, string cellToID) {
+            Debug.Log(cellFromID + " " + cellToID);
             //TODO: characters physically move pieces
             //TODO: update game state
             Move move;
-            string pile = turn == Player.Black ? gameScriptable.BlackPile : gameScriptable.WhitePile;
+            string pile = turn == Player.First ? gameScriptable.FirstPile : gameScriptable.SecondPile;
             if(cellFromID == pile) {
                 move = new Move(MoveType.PLACE, cellToID);
             } else { 
