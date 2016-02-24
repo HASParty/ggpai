@@ -59,7 +59,7 @@ namespace Boardgame {
             if (data.IsStart) GameStart(data.GameState);
             SetLegalMoves(data.LegalMoves);
             turn = data.GameState.Control == Player.First ? Player.Second : Player.First;
-            if (data.LegalMoves.Count > 0) Debug.Log(Tools.Stringify<Move>.List(data.LegalMoves));
+            if (data.IsHumanPlayerTurn) Debug.Log(Tools.Stringify<Move>.List(data.LegalMoves));
             else Debug.Log("No legal moves currently.");
         }
 
@@ -152,11 +152,25 @@ namespace Boardgame {
             return false;
         }
 
-        public List<string> GetLegalMoves(string cellID) {
-            if(cellID == gameScriptable.SecondPile || cellID == gameScriptable.FirstPile) {
+        public List<string> GetLegalMoves(string cellID, Player player) {
+            string pile = player == Player.First ? gameScriptable.FirstPile : gameScriptable.SecondPile;
+            if (cellID == pile) {
                 return placeableIDs;
+            } else if (cellID == "") {
+                List<string> legals = new List<string>();
+                legals.AddRange(removeableIDs);
+                legals.AddRange(moveableIDS.Keys);
+                if (placeableIDs.Count > 0) {
+                    legals.Add(pile);
+                }
+                return legals;
+            } else if (moveableIDS.ContainsKey(cellID)) {
+                List<string> legals = new List<string>();
+                legals.AddRange(moveableIDS[cellID]);
+                legals.AddRange(moveableIDS.Keys);
+                return legals;
             }
-            return moveableIDS[cellID];
+            return new List<string>();
         }
 
         public bool IsRemoveablePiece(PhysicalCell piece) {

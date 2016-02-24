@@ -11,14 +11,24 @@ namespace Boardgame {
         [SerializeField]
         private Player player = Player.Second;
 
+        private bool updated = false;
+        private bool waitingForUpdate = false;
+
         // Use this for initialization
         void Start() {
             selectedPiece = null;
             currentPiece = null;
+            ConnectionMonitor.Instance.OnGameUpdate.AddListener(OnGameUpdate);
+        }
+
+        public void OnGameUpdate(GameData data) {
+            updated = true;
+            waitingForUpdate = false;
         }
 
         void Update() {
             if (ConnectionMonitor.Instance.other != player) player = ConnectionMonitor.Instance.other;
+            ShowLegalCells();
         }
 
         public void PieceHighlight(PhysicalCell piece) {
@@ -45,7 +55,7 @@ namespace Boardgame {
                     UIManager.Instance.HideSelectEffect();
                     UIManager.Instance.HideHighlightEffect();
                     selectedPiece = null;
-                    UIManager.Instance.HideLegalCells();
+                    waitingForUpdate = true;
                 }
             }
         }
@@ -60,10 +70,10 @@ namespace Boardgame {
         public void PieceSelect(PhysicalCell piece) {
             if (BoardgameManager.Instance.CanSelectPiece(piece)) {
                 if (piece == selectedPiece) return;
-                UIManager.Instance.HideLegalCells();
                 UIManager.Instance.HideHighlightEffect();
                 if (BoardgameManager.Instance.IsRemoveablePiece(piece)) {
                     BoardgameManager.Instance.MakeMove(piece.id, null);
+                    waitingForUpdate = true;
                     UIManager.Instance.HideHighlightEffect();
                 } else {
                     if (piece == selectedPiece)
@@ -73,13 +83,27 @@ namespace Boardgame {
                     }                
                     selectedPiece = piece;
                     UIManager.Instance.ShowSelectEffect(selectedPiece.transform.position);
-                    ShowLegalCells();
                 }
             }
         }
 
+        string lastPiece;
         private void ShowLegalCells() {
-            var legalMoves = BoardgameManager.Instance.GetLegalMoves(selectedPiece.id);
+            if(waitingForUpdate) {
+                UIManager.Instance.HideLegalCells();
+                return;
+            }
+            var cid = "";
+            if (currentPiece != null && currentPiece.HasPiece()) {
+                cid = currentPiece.id;
+            } else if(selectedPiece != null) {
+                cid = selectedPiece.id;
+            }
+            if (lastPiece == cid && !updated) return;
+            lastPiece = cid;
+            updated = false;
+            UIManager.Instance.HideLegalCells();
+            var legalMoves = BoardgameManager.Instance.GetLegalMoves(cid, player);
             List<Vector3> cellPos = new List<Vector3>();
             foreach (string id in legalMoves) {
                 cellPos.Add(BoardgameManager.Instance.GetCellPosition(id));
