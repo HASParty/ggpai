@@ -1,8 +1,6 @@
 ﻿using Boardgame.GDL;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using UnityEngine;
 
 namespace Boardgame.Networking {
     public class GameData {
@@ -15,30 +13,27 @@ namespace Boardgame.Networking {
                 IsStart = true;
             } else {                
                 MovesMade = r.GetMove(data);
-                IsStart = false;
             }
+
+            Debug.Log(data);
 
             GameState = r.GetBoardState(data);
             LegalMoves = r.GetLegalMoves(data);
+            State = r.GetTerminal(data);
+            IsBusy = r.IsBusy(data);
+
+            if (LegalMoves.Count == 0) IsHumanPlayerTurn = false;
         }
 
         public Player Control { get; protected set; }
 
-        public bool IsStart {
-            get;
-            protected set;
-        }
-        public List<Move> LegalMoves {
-            get;
-            protected set;
-        }
-        public List<Move> MovesMade {
-            get;
-            protected set;
-        }
-        public State GameState {
-            get;
-            protected set;
-        }
+        public readonly bool IsStart = false;
+        public readonly Terminal State;
+        public readonly bool IsHumanPlayerTurn = true;
+        public readonly bool IsBusy;
+
+        public readonly List<Move> LegalMoves;
+        public readonly List<Move> MovesMade;
+        public readonly State GameState;
     }
 }

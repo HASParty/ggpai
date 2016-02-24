@@ -113,7 +113,6 @@ namespace Boardgame.Networking {
                 return true;
 
             } else {
-                Debug.Log("Nothing received from connection.");
                 data = "";
                 return false;
             }

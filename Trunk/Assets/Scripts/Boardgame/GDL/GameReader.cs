@@ -22,6 +22,13 @@ namespace Boardgame.GDL {
         public Player Control;
     }
 
+    public enum Terminal {
+        FALSE,
+        WIN,
+        LOSS,
+        DRAW
+    }
+
     public abstract class GameReader {
         protected Lexer lexer;      
 
@@ -33,6 +40,24 @@ namespace Boardgame.GDL {
 
         public bool IsStart(string data) {
             return Parser.BreakMessage(data).action.Trim() == "ready";
+        }
+
+        public bool IsBusy(string data) {
+            return Parser.BreakMessage(data).action.Trim() == "busy";
+        }
+
+        public Terminal GetTerminal(string data) {
+            var s = Parser.BreakMessage(data).action.Trim();
+            switch (s) {
+                case "loss":
+                    return Terminal.LOSS;
+                case "win":
+                    return Terminal.WIN;
+                case "draw":
+                    return Terminal.DRAW;
+                default:
+                    return Terminal.FALSE;
+            }
         }
 
         public abstract State GetBoardState(string message);

@@ -38,7 +38,6 @@ namespace Boardgame.Networking {
 
         public void MoveMade(List<GDL.Move> moves, Player player) {
             if (player == other) {
-                Debug.Log(player + " " + other);
                 foreach (var m in moves) {
                     Push(BoardgameManager.Instance.writer.WriteMove(m));
                 }
@@ -58,11 +57,13 @@ namespace Boardgame.Networking {
         }
 
         void TurnMonitor(GameData data) {
-            if(data.IsStart && data.LegalMoves.Count == 0) {
-                other = data.Control == Player.First ? Player.Second : Player.First;
-                StartCoroutine(Request());
-            } else if (data.LegalMoves.Count == 0) {
-                StartCoroutine(Request());
+            if (data.State == GDL.Terminal.FALSE) {
+                if (data.IsStart && !data.IsHumanPlayerTurn) {
+                    other = data.Control == Player.First ? Player.Second : Player.First;
+                }
+                if (!data.IsHumanPlayerTurn) {
+                    StartCoroutine(Request());
+                }
             }
         }
 
