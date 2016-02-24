@@ -52,7 +52,6 @@ namespace Boardgame.Networking {
         void TurnMonitor(GameData data) {
             if(data.IsStart && data.LegalMoves.Count == 0) {
                 human = Player.Black;
-                Push("nil");
             } else if (data.LegalMoves.Count == 0) {
                 StartCoroutine(Request());
             }
