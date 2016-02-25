@@ -124,9 +124,33 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 11457256, guid: cf1588a9c50a18f42a027f345e39c054, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: cf1588a9c50a18f42a027f345e39c054, type: 2}
   m_IsPrefabParent: 0
+--- !u!1 &222358594 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 109824, guid: cf1588a9c50a18f42a027f345e39c054, type: 2}
+  m_PrefabInternal: {fileID: 222358593}
+--- !u!114 &222358595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 222358594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 487c00bdb97d8c44a8ab867a79578340, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 0
+  actorName: 
+  gender: 0
+  extraversion: 0
+  agreeableness: 0
+  neuroticism: 0
+  conscientiousness: 0
+  openness: 0
 --- !u!1001 &1698470510
 Prefab:
   m_ObjectHideFlags: 0
