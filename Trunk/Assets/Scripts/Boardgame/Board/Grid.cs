@@ -66,9 +66,9 @@ namespace Boardgame {
 
         private Vector3 GetLocalCellPosition(string cellID) {
             Cell cell = cells[cellID];
-            MeshFilter meshfilter = gameObject.GetComponent<MeshFilter>();
+            MeshFilter meshfilter = gameObject.GetComponentInChildren<MeshFilter>();
             return new Vector3((cell.x + cell.w / 2) - meshfilter.sharedMesh.bounds.extents.x,
-                0.5f, (cell.y + cell.h / 2) - meshfilter.sharedMesh.bounds.extents.z);
+                meshfilter.sharedMesh.bounds.extents.y, (cell.y + cell.h / 2) - meshfilter.sharedMesh.bounds.extents.z);
         }
 
         public Vector3 GetCellPosition(string cellID) {

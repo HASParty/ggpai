@@ -101,7 +101,7 @@ Material:
       data:
         first:
           name: _Parallax
-        second: 0.01
+        second: 0.0146
       data:
         first:
           name: _ZWrite
@@ -109,7 +109,7 @@ Material:
       data:
         first:
           name: _Glossiness
-        second: 0.638
+        second: 0.585
       data:
         first:
           name: _BumpScale
@@ -117,7 +117,7 @@ Material:
       data:
         first:
           name: _OcclusionStrength
-        second: 0.1
+        second: 0.248
       data:
         first:
           name: _DetailNormalMapScale
