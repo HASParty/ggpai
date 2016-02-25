@@ -1,8 +1,8 @@
 ﻿namespace Fml
 {
+    using Boardgame.Configuration;
+    using System;
     using UnityEngine;
-    using System.Collections;
-    using System.Collections.Generic;
 
     public class Identikit : MonoBehaviour
     {
@@ -15,11 +15,10 @@
         public Neuroticism neuroticism;
         public Conscientiousness conscientiousness;
         public Openness openness;
-        //public Dominance dominance;
 
-        // Use this for initialization
-        void Awake()
-        {
+        public void SetValues(int extrav, int agreeab, int neurot, int conscient, int open) {
+        //TODO: set this for fml stuff
+        //not really imperative yet   
         }
     }
 }

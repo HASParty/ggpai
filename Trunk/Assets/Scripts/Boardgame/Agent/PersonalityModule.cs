@@ -2,16 +2,13 @@
 
 using System.Collections;
 using Fml;
+using Boardgame.Configuration;
 
-namespace Boardgame.Agent
-{
+namespace Boardgame.Agent {
     [SerializePrivateVariables]
-    [RequireComponent(typeof(Identikit))]
-    public class PersonalityModule : MonoBehaviour
-    {
+    public class PersonalityModule : MonoBehaviour {
         [System.Serializable]
-        public struct Trait
-        {
+        public struct Trait {
             public int value;
             //how much the mood swings as a result
             //of events when trait high
@@ -27,20 +24,19 @@ namespace Boardgame.Agent
             public float valenceDecay;
             public float arousalDecay;
         }
-         
+
         private Mood mood;
         private float restingArousal;
         private float restingValence;
 
-        private Identikit identikit;
         private float arousalBaseDecayRate = 0.005f;
         private float valenceBaseDecayRate = 0.005f;
         private float arousalDecayRate;
         private float valenceDecayRate;
 
-        public static readonly int Low = 0;
-        public static readonly int Neutral = 1;
-        public static readonly int High = 2;
+        private int Low;
+        private int Neutral;
+        private int High;
 
         private Trait agreeableness;
         private Trait conscientiousness;
@@ -48,96 +44,81 @@ namespace Boardgame.Agent
         private Trait neuroticism;
         private Trait openness;
 
+        private Identikit identikit;
+
         // Use this for initialization
-        void Start()
-        {
+        void Start() {
+            Low = Config.Low;
+            Neutral = Config.Neutral;
+            High = Config.High;
             RecalcDecayRate();
             RecalcRestingMood();
             ResetMood();
-            ReloadIdentikit();       
+            ReloadPersonality();
         }
 
-        public void ResetMood()
-        {
+        public void ResetMood() {
             mood.valence = restingValence;
             mood.arousal = restingArousal;
         }
 
-        public void ReloadIdentikit()
-        {
-            if(identikit == null) identikit = GetComponent<Identikit>();
-            agreeableness.value = GetValue(identikit.agreeableness.ToString());
-            conscientiousness.value = GetValue(identikit.conscientiousness.ToString());
-            extraversion.value = GetValue(identikit.extraversion.ToString());
-            neuroticism.value = GetValue(identikit.neuroticism.ToString());
-            openness.value = GetValue(identikit.openness.ToString());
+        public void ReloadPersonality() {
+            agreeableness.value = Config.Agreeableness;
+            conscientiousness.value = Config.Conscientiousness;
+            extraversion.value = Config.Extraversion;
+            neuroticism.value = Config.Neuroticism;
+            openness.value = Config.Openness;
+
+            if (identikit == null) {
+                identikit = gameObject.AddComponent<Identikit>();
+            }
+
+            identikit.SetValues(extraversion.value, agreeableness.value, neuroticism.value, conscientiousness.value, openness.value);
+
+
         }
 
-        float GetArousalEffectWeight(Trait trait)
-        {
-            if (trait.value == Low)
-            {
+        float GetArousalEffectWeight(Trait trait) {
+            if (trait.value == Low) {
                 return trait.arousalEffectLow;
-            }
-            else if (trait.value == High)
-            {
+            } else if (trait.value == High) {
                 return trait.arousalEffectHigh;
             }
 
             return 1f;
         }
 
-        float GetValenceEffectWeight(Trait trait)
-        {
-            if (trait.value == Low)
-            {
+        float GetValenceEffectWeight(Trait trait) {
+            if (trait.value == Low) {
                 return trait.valenceEffectLow;
-            }
-            else if (trait.value == High)
-            {
+            } else if (trait.value == High) {
                 return trait.valenceEffectHigh;
             }
 
             return 1f;
         }
 
-        int GetValue(string val)
-        {
-            val = val.ToLower();
-            if (val == "low") return Low;
-            else if (val == "neutral") return Neutral;
-            else return High;
-        }
-
-        float GetArousalInterpolation(Trait trait)
-        {
-            if (trait.value == Low)
-            {
+        float GetArousalInterpolation(Trait trait) {
+            if (trait.value == Low) {
                 return (0.5f - trait.arousalInterpolation) * 0.2f;
-            } else if (trait.value == High)
-            {
+            } else if (trait.value == High) {
                 return (0.5f + trait.arousalInterpolation) * 0.2f;
             }
 
             return 0.5f * 0.2f;
         }
 
-        float GetValenceInterpolation(Trait trait)
-        {
-            if (trait.value == Low)
-            {
+        float GetValenceInterpolation(Trait trait) {
+            if (trait.value == Low) {
                 return (0.5f - trait.valenceInterpolation) * 0.2f;
-            }
-            else if (trait.value == High)
-            {
+            } else if (trait.value == High) {
                 return (0.5f + trait.valenceInterpolation) * 0.2f;
             }
 
             return 0.5f * 0.2f;
         }
 
-        public void RecalcRestingMood()
-        {
+        public void RecalcRestingMood() {
             float arousalInterpolate = GetArousalInterpolation(agreeableness) +
                                        GetArousalInterpolation(conscientiousness) +
                                        GetArousalInterpolation(extraversion) +
@@ -152,43 +133,34 @@ namespace Boardgame.Agent
             restingValence = Mathf.Lerp(Low, High, Mathf.Clamp01(valenceInterpolate));
         }
 
-        float GetArousalDecay(Trait trait)
-        {
-            if (trait.value == Low)
-            {
+        float GetArousalDecay(Trait trait) {
+            if (trait.value == Low) {
                 return -trait.arousalDecay;
-            }
-            else if (trait.value == High)
-            {
+            } else if (trait.value == High) {
                 return trait.arousalDecay;
             }
 
             return 0;
         }
 
-        float GetValenceDecay(Trait trait)
-        {
-            if (trait.value == Low)
-            {
+        float GetValenceDecay(Trait trait) {
+            if (trait.value == Low) {
                 return -trait.valenceDecay;
-            }
-            else if (trait.value == High)
-            {
+            } else if (trait.value == High) {
                 return trait.valenceDecay;
             }
 
             return 0;
         }
 
-        public void RecalcDecayRate()
-        {
-            arousalDecayRate =  GetArousalDecay(agreeableness) +
+        public void RecalcDecayRate() {
+            arousalDecayRate = GetArousalDecay(agreeableness) +
                                 GetArousalDecay(conscientiousness) +
                                 GetArousalDecay(extraversion) +
                                 GetArousalDecay(neuroticism) +
                                 GetArousalDecay(openness) +
                                 arousalBaseDecayRate;
-            valenceDecayRate =  GetValenceDecay(agreeableness) +
+            valenceDecayRate = GetValenceDecay(agreeableness) +
                                 GetValenceDecay(conscientiousness) +
                                 GetValenceDecay(extraversion) +
                                 GetValenceDecay(neuroticism) +
@@ -196,19 +168,16 @@ namespace Boardgame.Agent
                                 valenceBaseDecayRate;
         }
 
-        public float GetArousal()
-        {
+        public float GetArousal() {
             return mood.arousal;
         }
 
-        public float GetValence()
-        {
+        public float GetValence() {
             return mood.valence;
         }
 
         // Update is called once per frame
-        void Update()
-        {
+        void Update() {
             //Mood decay, mood strays back to neutral gradually. 
             //Values need to be tested to determine best rate.
             float dt = Time.deltaTime;
@@ -222,46 +191,39 @@ namespace Boardgame.Agent
             Mathf.Clamp(mood.valence, Low, High);
         }
 
-        public EmotionFunction.EmotionalState GetEmotion()
-        {
+        public EmotionFunction.EmotionalState GetEmotion() {
             //MAP EMOTIONS
             return EmotionFunction.EmotionalState.NEUTRAL;
         }
 
-        public void ReceiveEvent(Event e)
-        {
+        public void ReceiveEvent(Event e) {
             //TODO: define custom event system
             //TODO: receive events and modify mood accordingly
         }
 
 
         //will we need these?
-        public float GetExtraversion()
-        {
+        public float GetExtraversion() {
             //TODO: determine personality value based on trait degree and current mood
             return 0f;
         }
 
-        public float GetConscientousness()
-        {
+        public float GetConscientousness() {
             //TODO: determine personality value based on trait degree and current mood
             return 0f;
         }
 
-        public float GetAgreeableness()
-        {
+        public float GetAgreeableness() {
             //TODO: determine personality value based on trait degree and current mood
             return 0f;
         }
 
-        public float GetNeuroticism()
-        {
+        public float GetNeuroticism() {
             //TODO: determine personality value based on trait degree and current mood
             return 0f;
         }
 
-        public float GetOpenness()
-        {
+        public float GetOpenness() {
             //TODO: determine personality value based on trait degree and current mood
             return 0f;
         }

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using Boardgame.Agent;
+using Boardgame.Configuration;
 
 [CustomEditor(typeof(PersonalityModule))]
 public class PersonalityModuleEditor : Editor {
@@ -17,10 +18,9 @@ public class PersonalityModuleEditor : Editor {
 
     bool showTraits = false;
 
-    void OnEnable()
-    {
+    void OnEnable() {
         pm = target as PersonalityModule;
-        pm.ReloadIdentikit();
+        pm.ReloadPersonality();
         pm.RecalcDecayRate();
         pm.RecalcRestingMood();
         pm.ResetMood();
@@ -38,28 +38,25 @@ public class PersonalityModuleEditor : Editor {
         valenceActualDecay = serializedObject.FindProperty("valenceDecayRate");
     }
 
-    void OnSceneGUI()
-    {
-        float lo = PersonalityModule.Low;
-        float ne = PersonalityModule.Neutral;
-        float hi = PersonalityModule.High;
+    void OnSceneGUI() {
+        float lo = Config.Low;
+        float ne = Config.Neutral;
+        float hi = Config.High;
         Transform transform = pm.transform;
         Handles.DrawLine(new Vector3(lo, ne) + transform.position, new Vector3(hi, ne) + transform.position);
         Handles.DrawLine(new Vector3(ne, lo) + transform.position, new Vector3(ne, hi) + transform.position);
-        Handles.DrawWireDisc(new Vector3(ne, ne) + transform.position, Vector3.forward, (hi-lo)/2);
+        Handles.DrawWireDisc(new Vector3(ne, ne) + transform.position, Vector3.forward, (hi - lo) / 2);
         Handles.color = Color.red;
         Handles.DrawLine(new Vector3(ne, ne) + transform.position, new Vector3(pm.GetValence(), pm.GetArousal()) + transform.position);
         Handles.DrawWireDisc(new Vector3(pm.GetValence(), pm.GetArousal()) + transform.position, Vector3.forward, 0.05f);
     }
 
-    public override void OnInspectorGUI()
-    {
+    public override void OnInspectorGUI() {
         GUIStyle bold = new GUIStyle() { fontStyle = FontStyle.Bold };
         serializedObject.Update();
         EditorGUILayout.LabelField("Personality and modifiers", bold);
         EditorGUI.indentLevel++;
-        if (showTraits)
-        {
+        if (showTraits) {
             EditorGUILayout.LabelField("Arousal | Valence");
         }
         DisplayTrait("Agreeableness", agreeableness);
@@ -67,12 +64,10 @@ public class PersonalityModuleEditor : Editor {
         DisplayTrait("Extraversion", extraversion);
         DisplayTrait("Neuroticism", neuroticism);
         DisplayTrait("Openness", openness);
-        if (GUILayout.Button("Reload identikit"))
-        {
-            pm.ReloadIdentikit();
+        if (GUILayout.Button("Reload personality config")) {
+            pm.ReloadPersonality();
         }
-        if (GUILayout.Button(showTraits ? "Show less" : "Show more"))
-        {
+        if (GUILayout.Button(showTraits ? "Show less" : "Show more")) {
             showTraits = !showTraits;
         }
         EditorGUI.indentLevel--;
@@ -86,8 +81,7 @@ public class PersonalityModuleEditor : Editor {
         EditorGUILayout.LabelField("Valence decay / s: " + valenceActualDecay.floatValue);
         EditorGUILayout.PropertyField(arousalDecay);
         EditorGUILayout.PropertyField(valenceDecay);
-        if(GUILayout.Button("Recalculate"))
-        {
+        if (GUILayout.Button("Recalculate")) {
             pm.RecalcDecayRate();
             pm.RecalcRestingMood();
             pm.ResetMood();
@@ -95,19 +89,17 @@ public class PersonalityModuleEditor : Editor {
         EditorGUI.indentLevel--;
         EditorGUILayout.LabelField("Resulting data", bold);
         EditorGUI.indentLevel++;
-        EditorGUILayout.LabelField("emotion = " + pm.GetEmotion().ToString().ToLower().Replace('_',' ') + ", intensity = "+ pm.GetArousal());
+        EditorGUILayout.LabelField("emotion = " + pm.GetEmotion().ToString().ToLower().Replace('_', ' ') + ", intensity = " + pm.GetArousal());
         serializedObject.ApplyModifiedProperties();
     }
 
-    private void DisplayTrait(string name, SerializedProperty trait)
-    {
+    private void DisplayTrait(string name, SerializedProperty trait) {
         var bold = new GUIStyle() { fontStyle = FontStyle.Bold };
         EditorGUILayout.LabelField(name + ":", bold);
         EditorGUI.indentLevel++;
         SerializedProperty value = trait.FindPropertyRelative("value");
         EditorGUILayout.LabelField("Value is " + value.intValue);
-        if (showTraits)
-        {
+        if (showTraits) {
             SerializedProperty v = trait.FindPropertyRelative("valenceEffectHigh");
             SerializedProperty a = trait.FindPropertyRelative("arousalEffectHigh");
             EditorGUILayout.LabelField("High mood effect (weight)");

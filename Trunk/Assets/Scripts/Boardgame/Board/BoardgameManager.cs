@@ -60,11 +60,15 @@ namespace Boardgame {
         }
 
         public void CheckGame(GameData data) {
-            if (data.IsStart) GameStart(data.GameState);
-            SetLegalMoves(data.LegalMoves);
-            turn = data.GameState.Control == Player.First ? Player.Second : Player.First;
-            if (data.IsHumanPlayerTurn) Debug.Log(Tools.Stringify<Move>.List(data.LegalMoves));
-            else Debug.Log("No legal moves currently.");
+            if (data.State == Terminal.FALSE) {
+                if (data.IsStart) GameStart(data.GameState);
+                SetLegalMoves(data.LegalMoves);
+                turn = data.GameState.Control == Player.First ? Player.Second : Player.First;
+                if (data.IsHumanPlayerTurn) Debug.Log(Tools.Stringify<Move>.List(data.LegalMoves));
+                else Debug.Log("No legal moves currently.");
+            } else {
+                Debug.Log(data.State);
+            }
         }
 
         public void GameStart(State state) {

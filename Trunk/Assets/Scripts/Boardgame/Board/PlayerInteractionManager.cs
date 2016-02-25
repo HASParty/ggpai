@@ -13,6 +13,7 @@ namespace Boardgame {
 
         private bool updated = false;
         private bool waitingForUpdate = false;
+        private bool gameOver = false;
 
         // Use this for initialization
         void Start() {
@@ -22,9 +23,16 @@ namespace Boardgame {
         }
 
         public void OnGameUpdate(GameData data) {
-            Debug.Log("why no update");
             updated = true;
             waitingForUpdate = false;
+            if(data.State != GDL.Terminal.FALSE) {
+                UIManager.Instance.HideHighlightEffect();
+                UIManager.Instance.HideLegalCells();
+                UIManager.Instance.HideSelectEffect();
+                selectedPiece = null;
+                currentPiece = null;
+                gameOver = true;
+            }
         }
 
         void Update() {
@@ -33,6 +41,7 @@ namespace Boardgame {
         }
 
         public void PieceHighlight(PhysicalCell piece) {
+            if (gameOver) return;
             if (BoardgameManager.Instance.CanSelectPiece(piece)) {
                 if (piece == currentPiece || piece == selectedPiece)
                     return;
@@ -42,6 +51,7 @@ namespace Boardgame {
         }
 
         public void CellHighlight(PhysicalCell cell) {
+            if (gameOver) return;
             if (BoardgameManager.Instance.CanSelectCell(cell, selectedPiece)) {
                 if (cell == currentPiece) return;
                 currentPiece = cell;
@@ -50,6 +60,7 @@ namespace Boardgame {
         }
 
         public void CellSelect(PhysicalCell cell) {
+            if (gameOver) return;
             if (BoardgameManager.Instance.CanSelectCell(cell, selectedPiece)) {
                 if (selectedPiece == null || cell.HasPiece()) return;
                 if (BoardgameManager.Instance.MakeMove(selectedPiece.id, cell.id)) {
@@ -62,6 +73,7 @@ namespace Boardgame {
         }
 
         public void PieceLeave(PhysicalCell piece) {
+            if (gameOver) return;
             if (piece == currentPiece) {
                 UIManager.Instance.HideHighlightEffect();
                 currentPiece = null;
@@ -69,6 +81,7 @@ namespace Boardgame {
         }
 
         public void PieceSelect(PhysicalCell piece) {
+            if (gameOver) return;
             if (BoardgameManager.Instance.CanSelectPiece(piece)) {
                 if (piece == selectedPiece) return;
                 UIManager.Instance.HideHighlightEffect();
@@ -90,7 +103,8 @@ namespace Boardgame {
 
         string lastPiece;
         private void ShowLegalCells() {
-            if(waitingForUpdate) {
+            if (gameOver) return;
+            if (waitingForUpdate) {
                 UIManager.Instance.HideLegalCells();
                 return;
             }

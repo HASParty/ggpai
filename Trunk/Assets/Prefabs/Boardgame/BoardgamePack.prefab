@@ -191,6 +191,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 476458}
+  - 114: {fileID: 11451504}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -299,7 +300,7 @@ GameObject:
   - 114: {fileID: 11445844}
   - 114: {fileID: 11400166}
   - 114: {fileID: 11481858}
-  - 114: {fileID: 11438942}
+  - 114: {fileID: 11457256}
   m_Layer: 0
   m_Name: Modules
   m_TagString: Untagged
@@ -2576,7 +2577,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 124296}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.318763, y: 2.7571316, z: -6.396151}
+  m_LocalPosition: {x: 2.318763, y: 2.7571316, z: -5.58}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 476458}
@@ -3756,25 +3757,6 @@ MonoBehaviour:
   m_InputActionsPerSecond: 10
   m_RepeatDelay: 0.5
   m_ForceModuleActive: 0
---- !u!114 &11438942
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 109824}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 487c00bdb97d8c44a8ab867a79578340, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  id: 0
-  actorName: Joe
-  gender: 0
-  extraversion: 0
-  agreeableness: 2
-  neuroticism: 2
-  conscientiousness: 0
-  openness: 0
 --- !u!114 &11439286
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3809,17 +3791,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mood:
-    valence: 1.22
-    arousal: 1.24
-  restingArousal: 1.24
-  restingValence: 1.22
-  identikit: {fileID: 11438942}
+    valence: 0
+    arousal: 0
+  restingArousal: 0
+  restingValence: 0
   arousalBaseDecayRate: 0.005
   valenceBaseDecayRate: 0.005
   arousalDecayRate: 0.005
   valenceDecayRate: 0.005
+  Low: 0
+  Neutral: 0
+  High: 0
   agreeableness:
-    value: 2
+    value: 0
     valenceEffectHigh: 1
     arousalEffectHigh: 1
     valenceEffectLow: 1
@@ -3849,7 +3833,7 @@ MonoBehaviour:
     valenceDecay: 0
     arousalDecay: 0
   neuroticism:
-    value: 2
+    value: 1
     valenceEffectHigh: 1
     arousalEffectHigh: 1.2
     valenceEffectLow: 1
@@ -3859,7 +3843,7 @@ MonoBehaviour:
     valenceDecay: 0
     arousalDecay: 0
   openness:
-    value: 1
+    value: 2
     valenceEffectHigh: 1
     arousalEffectHigh: 1
     valenceEffectLow: 1
@@ -3868,6 +3852,7 @@ MonoBehaviour:
     arousalInterpolation: 0
     valenceDecay: 0
     arousalDecay: 0
+  identikit: {fileID: 11457256}
 --- !u!114 &11449404
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3882,11 +3867,40 @@ MonoBehaviour:
   gameScriptable: {fileID: 11400000, guid: 2795ed79484d10c49855d4628e1e9da9, type: 2}
   BoardSpawnLocation: {fileID: 464164}
   PileSpawnTransform: {fileID: 456626}
+  OnGameEnd:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: Boardgame.BoardgameManager+GameEnd, Assembly-CSharp, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   OnMakeMove:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: Boardgame.BoardgameManager+MoveEvent, Assembly-CSharp, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &11451504
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 106722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec2f14891cb394943a6a047a46961728, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Override: 1
+  MatchID: 1234
+  GameName: Asdfsa
+  StartTime: 10
+  TurnTime: 5
+  Low: 0
+  Neutral: 1
+  High: 2
+  Extraversion: 1
+  Agreeableness: 1
+  Neuroticism: 1
+  Conscientiousness: 1
+  Openness: 1
 --- !u!114 &11452950
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -3929,6 +3943,25 @@ MonoBehaviour:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 5
+--- !u!114 &11457256
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 109824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 487c00bdb97d8c44a8ab867a79578340, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 0
+  actorName: 
+  gender: 0
+  extraversion: 0
+  agreeableness: 0
+  neuroticism: 0
+  conscientiousness: 0
+  openness: 0
 --- !u!114 &11465334
 MonoBehaviour:
   m_ObjectHideFlags: 1

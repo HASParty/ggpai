@@ -64,6 +64,10 @@ namespace Boardgame.Networking {
                 if (!data.IsHumanPlayerTurn) {
                     StartCoroutine(Request());
                 }
+            } else {
+                //just in case
+                StopCoroutine(Request());
+                EndGame();
             }
         }
 
