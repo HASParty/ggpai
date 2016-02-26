@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
+using Boardgame.Configuration;
 
 namespace Boardgame.Networking {
     public class ConnectionMonitor : Singleton<ConnectionMonitor> {
@@ -103,7 +104,7 @@ namespace Boardgame.Networking {
         }
 
         public void StartGame() {
-            Connection.StartGame("mylla", false, 5, 5);
+            Connection.StartGame(Config.GameName, Config.MatchID, false, Config.StartTime, Config.TurnTime);
         }
 
         public void Write(string write) {

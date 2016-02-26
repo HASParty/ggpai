@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityStandardAssets.Characters.FirstPerson;
+using UnityEngine.VR;
 
 public class CameraController : MonoBehaviour {
 
@@ -15,8 +16,7 @@ public class CameraController : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-        if (!Input.GetButton("PauseCam"))
-        {
+        if (!Input.GetButton("PauseCam") && !VRSettings.enabled) {
             ml.LookRotation(transform.parent, transform);
         }
 	}

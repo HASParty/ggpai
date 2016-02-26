@@ -9,8 +9,8 @@ namespace Boardgame.Configuration {
 
         public string MatchID;
         public string GameName;
-        public float StartTime;
-        public float TurnTime;
+        public int StartTime;
+        public int TurnTime;
 
         public int Low;
         public int Neutral;

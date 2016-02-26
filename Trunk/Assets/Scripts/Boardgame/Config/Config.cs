@@ -8,8 +8,8 @@ namespace Boardgame.Configuration {
     public static class Config {
         public static string MatchID;
         public static string GameName;
-        public static float StartTime;
-        public static float TurnTime;
+        public static int StartTime;
+        public static int TurnTime;
 
         public static int Low;
         public static int Neutral;

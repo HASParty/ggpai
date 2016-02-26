@@ -59,8 +59,8 @@ namespace Boardgame.Networking {
                                  "Receiver: GAMESERVER\r\nContent-Type: text/acl\r\nContent-Length: {1}\r\n\r\n{2}", Host, formatted.Length, formatted);
         }
 
-        public static void StartGame(string game, bool first, int startTime, int playTime) {
-            string unityStart = Compose(String.Format("UNITY 1234 {1} {0} {2} {3}", game, (first ? "first" : "second"), startTime, playTime));
+        public static void StartGame(string game, string matchID, bool first, int startTime, int playTime) {
+            string unityStart = Compose(String.Format("UNITY {4} {1} {0} {2} {3}", game, (first ? "first" : "second"), startTime, playTime, matchID));
             Write(unityStart, gameConnection.GetStream());
             Write(Compose("ready"), feedConnection.GetStream());
         }
