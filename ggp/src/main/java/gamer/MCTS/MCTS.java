@@ -25,7 +25,7 @@ import java.util.List;
  * a tree made up of MCMove nodes.
  */ 
 public final class MCTS extends Thread {
-    private static final int threads = 4;
+    private static final int threads = 1;
     private ExecutorService executor;
     private ReentrantReadWriteLock lock;
     private static boolean alive;
@@ -104,6 +104,7 @@ public final class MCTS extends Thread {
                 node.goals = machine.getGoals(state); //Decreasing terminal calls
                 node.terminal = true;
             }
+            MCMove.N++;
             result = node.goals;
         } else if (node.n() == 0){
             node.expand(machine.getLegalJointMoves(state));

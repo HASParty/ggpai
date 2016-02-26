@@ -23,6 +23,7 @@ import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
+import org.ggp.base.util.statemachine.implementation.propnet.forwardDeadReckon.ForwardDeadReckonPropnetStateMachine;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.ggp.base.player.gamer.exception.MoveSelectionException;
 
@@ -58,7 +59,7 @@ public class JeffGamer extends StateMachineGamer
     // This is the default State Machine,
     @Override
     public StateMachine getInitialStateMachine() {
-        return new CachedStateMachine(new ProverStateMachine());
+        return new ForwardDeadReckonPropnetStateMachine();
     }
 
     // This is the defaul Sample Panel

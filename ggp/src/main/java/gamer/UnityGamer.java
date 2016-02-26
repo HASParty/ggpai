@@ -16,6 +16,7 @@ import org.ggp.base.util.logging.GamerLogger;
 import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.player.gamer.statemachine.unity.MCTS.MCTS;
 import org.ggp.base.util.gdl.grammar.GdlTerm;
+import org.ggp.base.util.statemachine.implementation.propnet.forwardDeadReckon.ForwardDeadReckonPropnetStateMachine;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.StateMachine;
 import org.ggp.base.util.statemachine.cache.CachedStateMachine;
@@ -66,7 +67,7 @@ public class UnityGamer extends StateMachineGamer
 
     @Override
     public StateMachine getInitialStateMachine() {
-        return new CachedStateMachine(new ProverStateMachine());
+        return new ForwardDeadReckonPropnetStateMachine();
     }
 
     // This is the defaul Sample Panel

@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.lang.Math;
 import java.util.Collections;
 import java.util.List;
+import java.text.DecimalFormat;
 import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.statemachine.Role;
 import org.ggp.base.util.statemachine.MachineState;
@@ -12,6 +13,7 @@ import org.ggp.base.util.statemachine.MachineState;
  * A basic Monte Carlo move wrapper with UCT
  */
 public class MCMove {
+    private static DecimalFormat f;
     private final static double C = 20; //Exploration constant
     final public List<Move> move; //The move that lead to this state
     public static long N = 0;
@@ -29,6 +31,8 @@ public class MCMove {
      * @param move The move itself.
      */
     public MCMove(List<Move> move){
+
+        f = new DecimalFormat("#######.##E0");
         terminal = false;
         this.move = move;
         wins = new long[] {0, 0};
@@ -64,7 +68,7 @@ public class MCMove {
         wins[0] += result.get(0);
         wins[1] += result.get(1);
         if((result.get(0) + result.get(1)) > 100){
-            n += 4;
+            n += 1;
         } else {
             n++;
         }
@@ -103,7 +107,7 @@ public class MCMove {
      * @param moves A list of the legal moves in this node
      */
     public void expand(List<List<Move>> moves){
-        MCMove.N += 4;
+        MCMove.N += 1;
         for (List<Move> move : moves){
             children.add(new MCMove(move));
             size++;
@@ -159,7 +163,7 @@ public class MCMove {
         if(n > 0){
             result += String.format("| N: %d | n:%8d | size:%8d | ", N, n, size);
             result += String.format("value:(%5.1f , %5.1f) | "  , calcValue(0), calcValue(1));
-            result += String.format("wins:[%5d , %5d ])", wins[0], wins[1]);
+            result += String.format("wins:[%10s , %10s])", f.format(wins[0]), f.format(wins[1]));
         } else {
             result += "<LEAF> ";
         }
