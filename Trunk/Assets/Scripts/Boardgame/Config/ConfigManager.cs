@@ -57,7 +57,6 @@ namespace Boardgame.Configuration {
                 Openness = Config.Openness;
             }
         }
-        
 
         void Awake() {
             SetConfig();

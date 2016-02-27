@@ -1451,6 +1451,7 @@ GameObject:
   - 92: {fileID: 9258692}
   - 81: {fileID: 8113708}
   - 114: {fileID: 11429220}
+  - 114: {fileID: 11460222}
   m_Layer: 0
   m_Name: Camera
   m_TagString: MainCamera
@@ -2577,7 +2578,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 124296}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.318763, y: 2.7571316, z: -6.396151}
+  m_LocalPosition: {x: 2.318763, y: 2.7571316, z: -5.58}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 476458}
@@ -2604,7 +2605,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 177684}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -0.155, z: 0.334}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 428772}
@@ -3491,7 +3492,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.1
-  far clip plane: 1000
+  far clip plane: 500
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -3888,10 +3889,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec2f14891cb394943a6a047a46961728, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Override: 1
+  Override: 0
   MatchID: 1234
   GameName: mylla
-  StartTime: 15
+  StartTime: 60
   TurnTime: 10
   Low: 0
   Neutral: 1
@@ -3943,6 +3944,23 @@ MonoBehaviour:
   m_FirstSelected: {fileID: 0}
   m_sendNavigationEvents: 1
   m_DragThreshold: 5
+--- !u!114 &11460222
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 177684}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4975a6e437fc3b149a8cd508ce5bdd69, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  threshold: 0.25
+  intensity: 0.48
+  blurSize: 2.07
+  blurIterations: 1
+  blurType: 0
+  fastBloomShader: {fileID: 4800000, guid: 68a00c837b82e4c6d92e7da765dc5f1d, type: 3}
 --- !u!114 &11465334
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4102,7 +4120,7 @@ SkinnedMeshRenderer:
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_UseLightProbes: 1
-  m_ReflectionProbeUsage: 1
+  m_ReflectionProbeUsage: 2
   m_ProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
   m_PreserveUVs: 0
