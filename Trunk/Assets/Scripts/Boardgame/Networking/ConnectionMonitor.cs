@@ -19,7 +19,6 @@ namespace Boardgame.Networking {
         public class GameAIEvent : UnityEvent<GameData> { };
         public GameAIEvent OnGameUpdate;
 
-        private float turnTimer;
         private string gameID;
 
         public Player other = Player.Second;
@@ -32,8 +31,6 @@ namespace Boardgame.Networking {
         void Start() {
             if(Connect()) StartGame();
             OnGameUpdate.AddListener(TurnMonitor);
-            turnTimer = Config.TurnTime;
-            gameID = Config.MatchID;
             BoardgameManager.Instance.OnMakeMove.AddListener(MoveMade);
         }
 
@@ -45,16 +42,14 @@ namespace Boardgame.Networking {
             }
         }
 
-        bool requesting = false;
         IEnumerator Request() {
-            if (!requesting) {
-                requesting = true;
-                yield return new WaitForSeconds(turnTimer);
-                Pull();
-                requesting = false;
-            } else {
-                Debug.Log("Duplicate pull request");
-            }
+            yield return new WaitForSeconds(Config.TurnTime);
+            Pull();
+        }
+
+        IEnumerator InitialRequest() {
+            yield return new WaitForSeconds(Config.StartTime);
+            Pull();
         }
 
         void TurnMonitor(GameData data) {
@@ -63,7 +58,11 @@ namespace Boardgame.Networking {
                     other = data.Control == Player.First ? Player.Second : Player.First;
                 }
                 if (!data.IsHumanPlayerTurn) {
-                    StartCoroutine(Request());
+                    if (data.IsStart) {
+                        StartCoroutine(InitialRequest());
+                    } else {
+                        StartCoroutine(Request());
+                    }                    
                 }
             } else {
                 //just in case
@@ -73,20 +72,22 @@ namespace Boardgame.Networking {
         }
 
         public void EndGame() {
-            Write("STOP " + gameID + " ( nil )");
+            Write("STOP " + Config.MatchID + " ( nil )");
         }
 
         void OnDestroy() {
-            Write("ABORT " + gameID);
-            Disconnect();
+            if (IsConnected()) {
+                Write("ABORT " + Config.MatchID);
+                Disconnect();
+            }
         }
 
         public void Pull() {
-            Write("PULL " + gameID);
+            Write("PULL " + Config.MatchID);
         }
 
         public void Push(string msg) {
-            Write("PUSH " + gameID + " " + msg);
+            Write("PUSH " + Config.MatchID + " " + msg);
         }
 
         public void UpdateSettings(string host, int gport, int fport) {
