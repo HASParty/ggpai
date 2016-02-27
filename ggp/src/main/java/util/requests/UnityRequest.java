@@ -16,8 +16,7 @@ import org.ggp.base.util.match.Match;
 import org.ggp.base.util.gdl.factory.GdlFactory;
 
 
-public final class UnityRequest extends Request
-{
+public final class UnityRequest extends Request {
     private Game game;
     private final UnityGamer gamer;
     private final String matchId;

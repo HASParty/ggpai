@@ -49,8 +49,12 @@ public class UnityGamer extends StateMachineGamer
 
     @Override
     public GdlConstant getRoleName(){
+        StateMachine temp = new ProverStateMachine();
+        temp.initialize(getMatch().getGame().getRules());
         String first = roleName.getValue();
-        Role[] roles = stateMachine.getRoles();
+
+        //TODO:   Find out why the fuck this throws a nullpointer exception with the propnet
+        Role[] roles = temp.getRoles();
         if (first.equals("first")){
             other = roles[0];
             return roles[1].getName();
@@ -185,13 +189,17 @@ public class UnityGamer extends StateMachineGamer
      * @return Legal moves for the given role
      */
     public List<Move> getLegalMoves(Role role) throws MoveDefinitionException{
+        lock1.writeLock().lock();
+        List<Move> res;
         if (role.equals(getRole())){
-            return getStateMachine().getLegalMoves(getCurrentState(), getRole());
+            res =  getStateMachine().getLegalMoves(getCurrentState(), getRole());
         } else if (role.equals(getOtherRole())) {
-            return getStateMachine().getLegalMoves(getCurrentState(), getOtherRole());
+            res = getStateMachine().getLegalMoves(getCurrentState(), getOtherRole());
         } else {
-            return null;
+            res = null;
         }
+        lock1.writeLock().unlock();
+        return res;
     }
 
     /**
