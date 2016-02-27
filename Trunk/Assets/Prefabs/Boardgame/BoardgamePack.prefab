@@ -3890,7 +3890,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Override: 1
   MatchID: 1234
-  GameName: Mylla
+  GameName: mylla
   StartTime: 15
   TurnTime: 10
   Low: 0

@@ -32,8 +32,8 @@ namespace Boardgame.Networking {
         void Start() {
             if(Connect()) StartGame();
             OnGameUpdate.AddListener(TurnMonitor);
-            turnTimer = 5f; //later read from config
-            gameID = "1234";
+            turnTimer = Config.TurnTime;
+            gameID = Config.MatchID;
             BoardgameManager.Instance.OnMakeMove.AddListener(MoveMade);
         }
 
