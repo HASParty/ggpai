@@ -5,7 +5,7 @@ namespace Fml
     public class Participant : MonoBehaviour
     {
 
-        Identikit identikit;
+        public Identikit identikit;
 
     }
 }
