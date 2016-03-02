@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Behaviour;
+using System.Collections.Generic;
 
-namespace Fml
-{
-    public abstract class FMLChunk
-    {
-        public enum TrackType
-        {
+namespace FML {
+    public abstract class FMLChunk {
+        public enum TrackType {
             Interactional,
             Performative,
             MentalState
@@ -14,10 +12,13 @@ namespace Fml
         public virtual TrackType track { get; protected set; }
         public Timing timing;
 
+        public BMLBody BMLRef;
+
+        public Participant owner;
+
         public virtual List<FMLFunction> functions { get; protected set; }
 
-        public virtual bool AddFunction(FMLFunction func)
-        {
+        public virtual bool AddFunction(FMLFunction func) {
             return false;
         }
     }

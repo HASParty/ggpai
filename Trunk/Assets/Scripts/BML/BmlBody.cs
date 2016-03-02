@@ -6,7 +6,7 @@ namespace Behaviour
 	/// <summary>
 	/// Groups BML behaviours that sync with one another / are generated from a FML chunk
 	/// </summary>
-	public class BmlBody
+	public class BMLBody
 	{
 		public Dictionary<string, BMLChunk> Chunks { get { return chunks; } }
 		Dictionary<string, BMLChunk> chunks = new Dictionary<string, BMLChunk>();
@@ -20,8 +20,8 @@ namespace Behaviour
 
 		public Speech SpeechChunk { get; private set; }
 
-		BmlBody executeAfter;
-		BmlBody executeWith;
+		BMLBody executeAfter;
+		BMLBody executeWith;
 
 		public bool IsReady() {
 			return executeAfter == null || executeAfter.isDone;
@@ -43,11 +43,11 @@ namespace Behaviour
 			}
 		}
 
-		public void ExecuteAfter(BmlBody body) {
+		public void ExecuteAfter(BMLBody body) {
 			executeAfter = body;
 		}
 
-		public void ExecuteWith (BmlBody body)
+		public void ExecuteWith (BMLBody body)
 		{
 			executeWith = body;
 		}

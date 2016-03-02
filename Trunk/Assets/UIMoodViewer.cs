@@ -8,7 +8,6 @@ namespace Boardgame.UI {
     public class UIMoodViewer : MonoBehaviour {
 
         private PersonalityModule pm;
-        public Text MoodText;
         public RectTransform ArousalBG;
         public RectTransform ArousalKnob;
         public RectTransform ValenceBG;
@@ -22,7 +21,6 @@ namespace Boardgame.UI {
 
         // Update is called once per frame
         void Update() {
-            MoodText.text = pm.GetEmotion().ToString();
             Set(ArousalBG, ArousalKnob, pm.GetArousal());
             Set(ValenceBG, ValenceKnob, pm.GetValence());
         }

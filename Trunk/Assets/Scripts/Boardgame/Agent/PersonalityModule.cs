@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 using System.Collections;
-using Fml;
+using FML;
 using Boardgame.Configuration;
 
 namespace Boardgame.Agent {
@@ -189,11 +189,6 @@ namespace Boardgame.Agent {
 
             Mathf.Clamp(mood.arousal, Low, High);
             Mathf.Clamp(mood.valence, Low, High);
-        }
-
-        public EmotionFunction.EmotionalState GetEmotion() {
-            //MAP EMOTIONS
-            return EmotionFunction.EmotionalState.NEUTRAL;
         }
 
         public void ReceiveEvent(Event e) {

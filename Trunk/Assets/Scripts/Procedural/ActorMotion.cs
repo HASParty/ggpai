@@ -13,7 +13,13 @@ public class ActorMotion : MonoBehaviour {
     public bool isLooking = false;
 
     public float headLookEffectDampTime = 2f;
-    public Transform targetObject;
+    private Transform targetObject;
+    private Vector3 targetPoint = Vector3.zero;
+
+    public GameObject Table;
+    public GameObject Player;
+
+    private bool usingObj = false;
 
     [Header("IK targets")]
     public IKTarget LeftMidThigh;
@@ -28,11 +34,28 @@ public class ActorMotion : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         headlook = GetComponent<OpenHeadLookController>();
+        SetTarget(Table.transform);
 	}
 
     private float desiredHlEffect = 0f;
     private float prevHlEffect = 0f;
     private float elapsed = 0f;
+
+    public void SetTarget(Vector3 pos) {
+        targetPoint = pos;
+        usingObj = false;
+    }
+
+    public void SetTarget(Transform transform) {
+        targetObject = transform;
+        usingObj = true;
+    }
+
+    public Vector3 GetTarget() {
+        if (usingObj) return targetObject.position;
+        return targetPoint;
+    }
+    
 
     public void SetHeadLookEffect(float val, float dampTime, float deltaTime)
     {
@@ -56,7 +79,7 @@ public class ActorMotion : MonoBehaviour {
     void Update () {
         if (isLooking)
         {
-            headlook.SetTarget(targetObject.position);
+            headlook.SetTarget(GetTarget());
             SetHeadLookEffect(1f, headLookEffectDampTime, Time.deltaTime);
         }
         else

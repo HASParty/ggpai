@@ -87,9 +87,6 @@ public class PersonalityModuleEditor : Editor {
             pm.ResetMood();
         }
         EditorGUI.indentLevel--;
-        EditorGUILayout.LabelField("Resulting data", bold);
-        EditorGUI.indentLevel++;
-        EditorGUILayout.LabelField("emotion = " + pm.GetEmotion().ToString().ToLower().Replace('_', ' ') + ", intensity = " + pm.GetArousal());
         serializedObject.ApplyModifiedProperties();
     }
 

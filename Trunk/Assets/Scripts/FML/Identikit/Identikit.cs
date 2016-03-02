@@ -1,9 +1,7 @@
-﻿namespace Fml
-{
-    using Boardgame.Configuration;
-    using System;
-    using UnityEngine;
+﻿using UnityEngine;
 
+namespace FML
+{
     public class Identikit : MonoBehaviour
     {
         public int id;  // Unique identifier

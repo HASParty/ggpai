@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
 
-namespace Fml
-{
-    public class PerformativeChunk : FMLChunk
-    {
+namespace FML {
+    public class PerformativeChunk : FMLChunk {
         public TrackType TrackType { get { return TrackType.Performative; } }
 
-        public PerformativeChunk()
-        {
+        public PerformativeChunk() {
             functions = new List<FMLFunction>();
+        }
+
+        public override bool AddFunction(FMLFunction func) {
+            functions.Add(func);
+            return true;
         }
     }
 }

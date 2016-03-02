@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace Fml
+namespace FML
 {
 	public enum Extraversion
 	{

@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Fml;
+using FML;
 
 namespace Behaviour {
 	public class Gesture : BMLChunk {
