@@ -71,7 +71,8 @@ public class UnityGamer extends StateMachineGamer
 
     @Override
     public StateMachine getInitialStateMachine() {
-        return new ForwardDeadReckonPropnetStateMachine();
+        // return new ForwardDeadReckonPropnetStateMachine();
+        return new CachedStateMachine(new ProverStateMachine());
     }
 
     // This is the defaul Sample Panel
