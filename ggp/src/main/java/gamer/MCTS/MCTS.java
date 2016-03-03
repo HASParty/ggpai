@@ -209,14 +209,17 @@ public final class MCTS extends Thread {
         if (!silent){
             System.out.println("The applied move !: " + moves.toString());
         }
-        for (int i = 0; i < root.children.size(); i++){
-            if (moves.get(0).equals(root.children.get(i).move.get(0)) &&
-                moves.get(1).equals(root.children.get(i).move.get(1))){
+        synchronized(root){
+            for (int i = 0; i < root.children.size(); i++){
+                if (moves.get(0).equals(root.children.get(i).move.get(0)) &&
+                    moves.get(1).equals(root.children.get(i).move.get(1))){
 
-                root = root.children.get(i);
-                MCMove.N = root.n();
-                return;
+                    root = root.children.get(i);
+                    MCMove.N = root.n();
+                    return;
+                }
             }
+                
         }
         throw new IllegalStateException("A move was selected that was not one of the root node moves");
     }
@@ -234,6 +237,26 @@ public final class MCTS extends Thread {
      */
     public void printTree(){
         printTree("", root);
+    }
+    
+    public float SSRatio(){
+        return root.SSRatio();
+    }
+
+    public String baseEval(){
+        String result = "";
+        synchronized(root){
+            for(MCMove child : root.children){
+                result += "("; 
+                result += "m:" + child.move.toString();
+                result += " n:" + child.n();
+                result += " v:[" + child.calcValue(0, MCMove.N) + " " + 
+                          child.calcValue(1, MCMove.N) + "]";
+                result += ") ";
+            }
+        }
+        return result;
+
     }
 
     /**

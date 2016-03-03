@@ -34,14 +34,6 @@ public final class Update extends Thread {
         return port;
     }
 
-    public void shutdown() {
-        try {
-            listener.close();
-            listener = null;
-        } catch (IOException e) {
-            ;
-        }
-    }
 
     @Override
     public void run(){
@@ -56,11 +48,20 @@ public final class Update extends Thread {
             PrintWriter pw = new PrintWriter(connection.getOutputStream(), true);
             while (listener != null) {
                 pw.println(gamer.getEvaluation());
-                sleep(2000);
+                sleep(200);
             }
             connection.close();
         } catch (Exception e) {
             System.out.println("Well something went wrong");
+        }
+    }
+
+    public void shutdown() {
+        try {
+            listener.close();
+            listener = null;
+        } catch (IOException e) {
+            ;
         }
     }
 }

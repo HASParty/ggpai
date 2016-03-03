@@ -151,7 +151,7 @@ public class JeffGamer extends StateMachineGamer
     }
 
     public String getEvaluation(){
-        return "";
+        return "[ Base:(" + mcts.baseEval() + ") SSRatio:(" + mcts.SSRatio() + ")]" ;
     }
     public Move stateMachineSelectMove(long timeout) throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException{
 

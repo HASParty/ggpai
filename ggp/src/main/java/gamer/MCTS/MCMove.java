@@ -41,6 +41,10 @@ public class MCMove {
         children = new ArrayList<MCMove>();
     }
 
+    public float SSRatio(){
+        return N / size;
+    }
+
 
     /**
      * @return the number of wins this move has
@@ -94,7 +98,7 @@ public class MCMove {
     /**
      * @return The new UCT value of the move
      */
-    private double calcValue(int win){
+    public double calcValue(int win, long N){
         if(n == 0){
             return 1000;
         }
@@ -127,8 +131,8 @@ public class MCMove {
         MCMove bestMove = null;
         MCMove bestMove2 = null;
         for (MCMove move : children){
-            double value = move.calcValue(0);
-            double value2 = move.calcValue(1);
+            double value = move.calcValue(0, n);
+            double value2 = move.calcValue(1, n);
             if (value > best){
                 best = value;
                 bestMove = move;
@@ -162,7 +166,7 @@ public class MCMove {
         result +=  "Move: " + ((move != null)? move.toString().replace("noop", "n") : null) + " ";
         if(n > 0){
             result += String.format("| N: %d | n:%8d | size:%8d | ", N, n, size);
-            result += String.format("value:(%5.1f , %5.1f) | "  , calcValue(0), calcValue(1));
+            result += String.format("value:(%5.1f , %5.1f) | "  , calcValue(0, N), calcValue(1, N));
             result += String.format("wins:[%10s , %10s])", f.format(wins[0]), f.format(wins[1]));
         } else {
             result += "<LEAF> ";
