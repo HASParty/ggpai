@@ -63,9 +63,11 @@ namespace Boardgame {
             if (data.State == Terminal.FALSE) {
                 if (data.IsStart) GameStart(data.GameState);
                 SetLegalMoves(data.LegalMoves);
-                turn = data.GameState.Control == Player.First ? Player.Second : Player.First;
+                if (data.IsHumanPlayerTurn) UIManager.Instance.SetState("Player's turn");
+                else UIManager.Instance.SetState("Opponent's turn");
             } else {
                 Debug.Log(data.State);
+                UIManager.Instance.SetState(data.State.ToString());
             }
         }
 
@@ -150,8 +152,8 @@ namespace Boardgame {
             return false;
         } 
 
-        public bool CanSelectPiece(PhysicalCell cell) {
-            string pile = turn == Player.First ? gameScriptable.FirstPile : gameScriptable.SecondPile;
+        public bool CanSelectPiece(PhysicalCell cell, Player player) {
+            string pile = player == Player.First ? gameScriptable.FirstPile : gameScriptable.SecondPile;
             if (placeableIDs.Count > 0 && cell.id == pile) return true;
             if (removeableIDs.Contains(cell.id)) return true;
             if (moveableIDS.ContainsKey(cell.id)) return true;
@@ -184,12 +186,11 @@ namespace Boardgame {
         }
 
         //player makes move
-        public bool MakeMove(string cellFromID, string cellToID) {
-            Debug.Log(cellFromID + " " + cellToID);
+        public bool MakeMove(string cellFromID, string cellToID, Player player) {
             //TODO: characters physically move pieces
             //TODO: update game state
             Move move;
-            string pile = turn == Player.First ? gameScriptable.FirstPile : gameScriptable.SecondPile;
+            string pile = player == Player.First ? gameScriptable.FirstPile : gameScriptable.SecondPile;
             if (cellFromID == pile) {
                 move = new Move(MoveType.PLACE, cellToID);
             } else if (cellToID == null) {
@@ -200,7 +201,7 @@ namespace Boardgame {
 
             List<Move> moves = new List<Move>();
             moves.Add(move);
-            MakeMove(moves, turn);
+            MakeMove(moves, player);
             return true;
         }
     }

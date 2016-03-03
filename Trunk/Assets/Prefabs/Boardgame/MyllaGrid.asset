@@ -132,12 +132,12 @@ MonoBehaviour:
     y: 0.44998518
     w: 0.1
     h: 0.1
-  - id: white heap
+  - id: black heap
     x: 0.10363847
     y: 1.0175995
     w: 0.2
     h: 0.2
-  - id: black heap
+  - id: white heap
     x: 0.7578254
     y: -0.23250449
     w: 0.2

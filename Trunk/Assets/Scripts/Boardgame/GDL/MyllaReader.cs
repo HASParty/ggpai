@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Boardgame.GDL {
     public class MyllaReader : GameReader {
         public MyllaReader() {
-            lexer = new Lexer("cell", "place", "move", "remove", "heap", "control");
+            lexer = new Lexer("pit", "place", "move", "remove", "heap", "control");
         }
 
         public override State GetBoardState(string message) {
@@ -47,10 +47,10 @@ namespace Boardgame.GDL {
                 } else if (token.Current.type == TokenType.CONTROL) {
                     Advance(ref token);
                     switch (token.Current.value) {
-                        case "white":
+                        case "black":
                             state.Control = Player.Second;
                             break;
-                        case "black":
+                        case "white":
                             state.Control = Player.First;
                             break;
                     }

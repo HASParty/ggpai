@@ -42,18 +42,15 @@ namespace Boardgame.Agent {
                 BMLBody curr = new BMLBody();
                 chunk.BMLRef = curr;                
                 foreach (var function in chunk.functions) {
-                    Debug.Log(function.Function);
                     switch(function.Function) {
                         case FMLFunction.FunctionType.BOARDGAME_CONSIDER_MOVE:
                             //glance at considered cell
                             break;
                         case FMLFunction.FunctionType.BOARDGAME_MAKE_MOVE:
                             //make move, glance at player
-                            //make proper bml later just make the fuckin move for now
-                            //too much untested code happening yey
-                            Debug.Log("Makey movey");
+                            //TODO: BMLIFY
                             BoardgameManager.Instance.MakeMove((function as MakeMoveFunction).MoveToMake, player);
-                            Gaze glance = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 0.5f, end: 1.5f);
+                            Gaze glance = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 0.25f, end: 1f);
                             curr.AddChunk(glance);
                             break;
                         case FMLFunction.FunctionType.EMOTION:

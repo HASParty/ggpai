@@ -28,6 +28,8 @@ namespace Boardgame {
         private Vector3 legalRotate;
         [SerializeField]
         private Vector3 legalOffset;
+        [SerializeField]
+        private Text stateText;
 
         private GameObject highlightObject;
         private GameObject selectObject;
@@ -54,6 +56,10 @@ namespace Boardgame {
             rt.localScale = highlightImage.gameObject.GetComponent<RectTransform>().localScale;
             rt.position = worldPosition + highlightOffset;
             rt.Rotate(highlightRotate);
+        }
+
+        public void SetState(string state) {
+            stateText.text = state;
         }
 
         public void ShowSelectEffect(Vector3 worldPosition)
