@@ -57,7 +57,7 @@
 )
 ; game also ends after 60 steps to make it terminating (in a draw)
 (<= terminal
-    (true (step 60)))
+    (true (step 80)))
 
 (<= (lost ?p)
     (true (heap ?p 0))
@@ -358,6 +358,16 @@
 (succ 67 68)
 (succ 68 69)
 (succ 69 70)
+(succ 70 71)
+(succ 71 72)
+(succ 72 73)
+(succ 73 74)
+(succ 74 75)
+(succ 75 76)
+(succ 76 77)
+(succ 77 78)
+(succ 78 79)
+(succ 79 80)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; board structure
