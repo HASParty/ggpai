@@ -42,7 +42,7 @@ namespace Boardgame {
 
         public void PieceHighlight(PhysicalCell piece) {
             if (gameOver) return;
-            if (BoardgameManager.Instance.CanSelectPiece(piece)) {
+            if (BoardgameManager.Instance.CanSelectPiece(piece, player)) {
                 if (piece == currentPiece || piece == selectedPiece)
                     return;
                 currentPiece = piece;
@@ -63,7 +63,7 @@ namespace Boardgame {
             if (gameOver) return;
             if (BoardgameManager.Instance.CanSelectCell(cell, selectedPiece)) {
                 if (selectedPiece == null || cell.HasPiece()) return;
-                if (BoardgameManager.Instance.MakeMove(selectedPiece.id, cell.id)) {
+                if (BoardgameManager.Instance.MakeMove(selectedPiece.id, cell.id, player)) {
                     UIManager.Instance.HideSelectEffect();
                     UIManager.Instance.HideHighlightEffect();
                     selectedPiece = null;
@@ -82,11 +82,11 @@ namespace Boardgame {
 
         public void PieceSelect(PhysicalCell piece) {
             if (gameOver) return;
-            if (BoardgameManager.Instance.CanSelectPiece(piece)) {
+            if (BoardgameManager.Instance.CanSelectPiece(piece, player)) {
                 if (piece == selectedPiece) return;
                 UIManager.Instance.HideHighlightEffect();
                 if (BoardgameManager.Instance.IsRemoveablePiece(piece)) {
-                    BoardgameManager.Instance.MakeMove(piece.id, null);
+                    BoardgameManager.Instance.MakeMove(piece.id, null, player);
                     waitingForUpdate = true;
                     UIManager.Instance.HideHighlightEffect();
                 } else {

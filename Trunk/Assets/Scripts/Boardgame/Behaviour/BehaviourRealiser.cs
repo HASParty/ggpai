@@ -325,7 +325,7 @@ public class BehaviourRealiser : MonoBehaviour {
         }
 
         IEnumerator Glance(GameObject target, float duration = 0.5f, bool affectHead = false) {
-            Debug.Log("GlanceAway");
+            //Debug.Log("GlanceAway");
             //CustomActor actor = target.GetComponent<CustomActor>();
             Vector3 position = target.transform.position; ;
             /*if (actor != null) {

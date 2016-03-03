@@ -124,52 +124,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 496336, guid: cf1588a9c50a18f42a027f345e39c054, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 1.803
-      objectReference: {fileID: 0}
-    - target: {fileID: 11472984, guid: cf1588a9c50a18f42a027f345e39c054, type: 2}
-      propertyPath: Table
-      value: 
-      objectReference: {fileID: 666677965}
-    - target: {fileID: 11472984, guid: cf1588a9c50a18f42a027f345e39c054, type: 2}
-      propertyPath: Player
-      value: 
-      objectReference: {fileID: 1746738630}
-    - target: {fileID: 11451504, guid: cf1588a9c50a18f42a027f345e39c054, type: 2}
-      propertyPath: Override
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11451504, guid: cf1588a9c50a18f42a027f345e39c054, type: 2}
-      propertyPath: StartTime
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 11451504, guid: cf1588a9c50a18f42a027f345e39c054, type: 2}
-      propertyPath: TurnTime
-      value: 5
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: cf1588a9c50a18f42a027f345e39c054, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &666677965 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 164192, guid: cf1588a9c50a18f42a027f345e39c054, type: 2}
-  m_PrefabInternal: {fileID: 222358593}
---- !u!1 &1114217425 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 145374, guid: cf1588a9c50a18f42a027f345e39c054, type: 2}
-  m_PrefabInternal: {fileID: 222358593}
---- !u!114 &1114217432
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1114217425}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40f1638d48e33404cac874c937d6e740, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1698470510
 Prefab:
   m_ObjectHideFlags: 0
@@ -392,7 +349,3 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 1fff78a672e8c314fbda056e76a895ee, type: 2}
   m_IsPrefabParent: 0
---- !u!1 &1746738630 stripped
-GameObject:
-  m_PrefabParentObject: {fileID: 177684, guid: cf1588a9c50a18f42a027f345e39c054, type: 2}
-  m_PrefabInternal: {fileID: 222358593}

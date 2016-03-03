@@ -49,9 +49,9 @@ namespace Boardgame.GDL {
         public Terminal GetTerminal(string data) {
             var s = Parser.BreakMessage(data).action.Trim();
             switch (s) {
-                case "loss":
+                case "lost":
                     return Terminal.LOSS;
-                case "win":
+                case "won":
                     return Terminal.WIN;
                 case "draw":
                     return Terminal.DRAW;
