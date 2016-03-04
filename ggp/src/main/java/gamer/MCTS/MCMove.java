@@ -67,11 +67,7 @@ public class MCMove {
     public void update(List<Integer> result){
         wins[0] += result.get(0);
         wins[1] += result.get(1);
-        if((result.get(0) + result.get(1)) > 100){
-            n += 1;
-        } else {
-            n++;
-        }
+        n++;
     }
 
     /**
