@@ -83,7 +83,11 @@ namespace Boardgame.Networking {
             }
         }
 
-        public void Pull() {
+        public void Pull(bool enforced = false) {
+            if (enforced) {
+                Debug.Log("FORCED PULL");
+                StopCoroutine(Request());
+            }
             Write("PULL " + Config.MatchID);
         }
 

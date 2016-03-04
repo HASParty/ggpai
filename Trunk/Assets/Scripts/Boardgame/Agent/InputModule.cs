@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine.Events;
 using Boardgame.Networking;
+using Boardgame.Configuration;
 
 namespace Boardgame.Agent {
 
@@ -9,6 +10,8 @@ namespace Boardgame.Agent {
     public class InputModule : MonoBehaviour {
         private PersonalityModule pm;
         private BrainModule bm;
+
+        private bool isMyTurn = false;
 
         void Start() {
             pm = GetComponent<PersonalityModule>();
@@ -32,10 +35,15 @@ namespace Boardgame.Agent {
                 var move = data.MovesMade;
                 bm.ExecuteMove(move);
             }
+
+            isMyTurn = !data.IsHumanPlayerTurn;
         }
 
         public void CheckStatus(FeedData data) {
             bm.ConsiderMove(data.Best);
+            if(data.MaxSimulation > Config.SimulationCutoff && isMyTurn) {
+                ConnectionMonitor.Instance.Pull(true);
+            }
         }
 
         public void OnMoveMade(List<GDL.Move> moves, Player player) {
