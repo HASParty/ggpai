@@ -5,14 +5,15 @@ using UnityEngine;
 namespace Boardgame.Networking {
     public class FeedData {
         public Move Best;
+        public int MaxSimulation;
 
         public FeedData(string parse) {
             var moves = BoardgameManager.Instance.reader.GetConsideredMoves(parse);
-            int max = -1;
+            MaxSimulation = -1;
             foreach(var cm in moves) {
-                if(cm.Simulations > max) {
+                if(cm.Simulations > MaxSimulation) {
                     Best = (cm.First != null ? cm.First : cm.Second);
-                    max = cm.Simulations;
+                    MaxSimulation = cm.Simulations;
                 }
             }
         }

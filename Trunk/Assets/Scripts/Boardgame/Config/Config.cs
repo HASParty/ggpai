@@ -21,6 +21,8 @@ namespace Boardgame.Configuration {
         public static int Conscientiousness = Neutral;
         public static int Openness = Neutral;
 
+        public static int SimulationCutoff = 3000;
+
         public static void SetValue(string which, string value) {
             value = value.Trim();
             switch (which) {

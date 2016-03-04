@@ -15,8 +15,6 @@ namespace Boardgame.Networking {
                 MovesMade = r.GetMove(data);
             }
 
-            Debug.Log(data);
-
             GameState = r.GetBoardState(data);
             LegalMoves = r.GetLegalMoves(data);
             State = r.GetTerminal(data);

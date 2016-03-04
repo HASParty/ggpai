@@ -47,14 +47,14 @@ namespace Boardgame.Agent {
                             ConsiderMoveFunction func = function as ConsiderMoveFunction;
                             if (func.MoveToConsider.Type == MoveType.MOVE) {
                                 Gaze glanceFrom = new Gaze("glanceAtFrom", chunk.owner, BoardgameManager.Instance.GetCellObject(func.MoveToConsider.From), 
-                                    Behaviour.Lexemes.Influence.EYES, start: 0f, end: 1.75f);
+                                    Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 1.75f);
                                 curr.AddChunk(glanceFrom);
                                 Gaze glanceTo = new Gaze("glanceAtTo", chunk.owner, BoardgameManager.Instance.GetCellObject(func.MoveToConsider.To), 
-                                    Behaviour.Lexemes.Influence.EYES, start: 1.8f, end: 2.75f);
+                                    Behaviour.Lexemes.Influence.HEAD, start: 1.8f, end: 2.75f);
                                 curr.AddChunk(glanceTo);
                             } else {
                                 Gaze glanceTo = new Gaze("glanceAtCell", chunk.owner, BoardgameManager.Instance.GetCellObject(func.MoveToConsider.To),
-                                   Behaviour.Lexemes.Influence.EYES, start: 0f, end: 2.75f);
+                                   Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 2.75f);
                                 curr.AddChunk(glanceTo);
                             }
                             
