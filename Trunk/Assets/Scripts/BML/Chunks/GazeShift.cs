@@ -40,7 +40,7 @@ namespace Behaviour {
 		/// <param name="ready">When the character is currently gazing.</param>
 		/// <param name="relax">When the character starts looking away.</param>
 		/// <param name="end">When the character is done looking.</param>
-		public GazeShift(Participant character, GameObject target, Lexemes.Influence influence, 
+		public GazeShift(string id, Participant character, GameObject target, Lexemes.Influence influence, 
 		                 float start = 0f, float ready = -1f, float relax = -1f, float end = 1f) 
 		{
 			Character = character;

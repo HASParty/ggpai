@@ -24,8 +24,9 @@ namespace Boardgame.Agent {
 
         public void CheckGame(GameData data) {
             if (data.IsStart && data.LegalMoves.Count == 0) {
-                bm.player = data.GameState.Control;
-                Debug.Log(bm.player);
+                bm.player = Player.First;
+            } else if(data.IsStart) {
+                bm.player = Player.Second;
             }
             if (!data.IsStart && bm.player == data.Control && data.MovesMade.Count > 0) {
                 var move = data.MovesMade;
@@ -34,7 +35,7 @@ namespace Boardgame.Agent {
         }
 
         public void CheckStatus(FeedData data) {
-
+            bm.ConsiderMove(data.Best);
         }
 
         public void OnMoveMade(List<GDL.Move> moves, Player player) {

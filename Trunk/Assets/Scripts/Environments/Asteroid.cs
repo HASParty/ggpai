@@ -13,9 +13,9 @@ public class Asteroid : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
         rb.SetDensity(1.1f);
         rb.mass = rb.mass;
-        rb.AddForce(Random.Range(-600000.5f, 600000.5f),
-                    Random.Range(-300000.2f, 300000.2f),
-                    Random.Range(-600000.5f, 600000.5f),
+        rb.AddForce(Random.Range(-30f, 30f),
+                    Random.Range(-12f, 12f),
+                    Random.Range(-30f, 30f),
                     ForceMode.Impulse);
         sc = GetComponent<SphereCollider>();
         rotation = new Vector3(Random.Range(-MaxRotation.x, MaxRotation.x),

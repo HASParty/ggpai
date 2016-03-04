@@ -6,6 +6,7 @@ namespace Behaviour
 	public enum BMLChunkType
 	{
 		Face,
+        FaceEmotion,
 		Gaze,
 		GazeShift,
 		Gesture,

@@ -15,7 +15,11 @@ namespace Boardgame.GDL {
         REMOVE,
         CONSTANT,
         HAND,
-        CONTROL
+        CONTROL,
+        CONSIDERED_MOVES,
+        SIM_COUNT,
+        UCT_VALUES,
+        SSRATIO
     }
 
     public class Token {
@@ -51,7 +55,8 @@ namespace Boardgame.GDL {
         public List<Token> Lex(string sentence) {
             List<Token> tok = new List<Token>();
             var split = sentence.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var word in split) {
+            foreach (var w in split) {
+                var word = w.Trim();
                 Token token = new Token();
                 if (word == "(") {
                     token.type = TokenType.LPAREN;
@@ -71,6 +76,12 @@ namespace Boardgame.GDL {
                     token.type = TokenType.HAND;
                 } else if (word == controlID) {
                     token.type = TokenType.CONTROL;
+                } else if (word == "m:") {
+                    token.type = TokenType.CONSIDERED_MOVES;
+                } else if (word == "n:") {
+                    token.type = TokenType.SIM_COUNT;
+                } else if (word == "v:") {
+                    token.type = TokenType.UCT_VALUES;
                 } else {
                     token.value = word;
                 }

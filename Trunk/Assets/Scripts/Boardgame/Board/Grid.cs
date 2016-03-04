@@ -64,6 +64,14 @@ namespace Boardgame {
             }
         }
 
+        public PhysicalCell GetPhysicalCell(string id) {
+            if(pcells.ContainsKey(id)) {
+                return pcells[id];
+            } else {
+                return null;
+            }
+        }
+
         private Vector3 GetLocalCellPosition(string cellID) {
             Cell cell = cells[cellID];
             MeshFilter meshfilter = gameObject.GetComponentInChildren<MeshFilter>();
