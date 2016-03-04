@@ -53,7 +53,6 @@ public class UnityGamer extends StateMachineGamer
         temp.initialize(getMatch().getGame().getRules());
         String first = roleName.getValue();
 
-        //TODO:   Find out why the fuck this throws a nullpointer exception with the propnet
         Role[] roles = temp.getRoles();
         if (first.equals("first")){
             other = roles[0];

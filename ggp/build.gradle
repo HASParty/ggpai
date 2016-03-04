@@ -33,6 +33,11 @@ dependencies {
     // 'test.useTestNG()' to your build script.
     testCompile 'junit:junit:4.12'
 }
+test {
+    testLogging {
+        events 'started', 'passed'
+    }
+}
 
 def playerJvmArgs = [
         '-Xmx1500m', //Gives players a max heap size of 1500 MB
@@ -68,21 +73,6 @@ task kiosk(type: JavaExec) {
     main = 'org.ggp.base.apps.kiosk.Kiosk'
     classpath = sourceSets.main.runtimeClasspath
     jvmArgs = playerJvmArgs
-}
-
-task server(type: JavaExec) {
-    main = 'org.ggp.base.apps.server.Server'
-    classpath = sourceSets.main.runtimeClasspath
-}
-
-task simpleGameSim(type: JavaExec) {
-    main = 'org.ggp.base.apps.utilities.SimpleGameSim'
-    classpath = sourceSets.main.runtimeClasspath
-}
-
-task tiltyardRequestFarm(type: JavaExec) {
-    main = 'org.ggp.base.apps.tiltyard.TiltyardRequestFarm'
-    classpath = sourceSets.main.runtimeClasspath
 }
 
 task player(type: JavaExec) {

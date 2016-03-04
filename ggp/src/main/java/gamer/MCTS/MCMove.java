@@ -12,26 +12,23 @@ import org.ggp.base.util.statemachine.Move;
  * A basic Monte Carlo move wrapper with UCT
  */
 public class MCMove {
-    private static DecimalFormat f;
+    private static DecimalFormat f = new DecimalFormat("#######.##E0");;
     private final static double C = 20; //Exploration constant
-    final public List<Move> move; //The move that lead to this state
-    public static long N = 0;
     private long[] wins;
     private long n; //how often this node has been selected
     private int size;
+    final public List<Move> move; //The move that lead to this state
+    public static long N = 0;
+    public ArrayList<MCMove> children; //Its children because statemachines are slow
+    public List<Integer> goals = null;
     public MachineState state; //The move that lead to this state
     public boolean terminal;
-    public List<Integer> goals = null;
-    public ArrayList<MCMove> children; //Its children because statemachines are slow
 
     /**
-     * This is basically a state node.  I might actually add the state itself to it
-     * to sacrifice memory for performance if i think its worth it.
+     * A tree node carrying the calculated value of the contained state.
      * @param move The move itself.
      */
     public MCMove(List<Move> move){
-
-        f = new DecimalFormat("#######.##E0");
         terminal = false;
         this.move = move;
         wins = new long[] {0, 0};
@@ -40,8 +37,8 @@ public class MCMove {
         children = new ArrayList<MCMove>();
     }
 
-    public float SSRatio(){
-        return N / size;
+    public String SSRatio(){
+        return new DecimalFormat("#.##f").format(N / size);
     }
 
 

@@ -238,7 +238,7 @@ public final class MCTS extends Thread {
         printTree("", root);
     }
     
-    public float SSRatio(){
+    public String SSRatio(){
         return root.SSRatio();
     }
 
