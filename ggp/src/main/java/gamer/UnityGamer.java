@@ -213,7 +213,7 @@ public class UnityGamer extends StateMachineGamer
      * @return the Evaluation of the players current state
      */
     public String getEvaluation(){
-        return "";
+        return "[ Base:(" + mcts.baseEval() + ") SSRatio:(" + mcts.SSRatio() + ")]" ;
     }
 
     /**
