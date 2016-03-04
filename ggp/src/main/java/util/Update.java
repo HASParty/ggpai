@@ -5,6 +5,8 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 import org.ggp.base.util.http.HttpReader;
 import org.ggp.base.util.http.HttpWriter;
@@ -45,14 +47,21 @@ public final class Update extends Thread {
             //     throw new IOException("Empty message received.");
             // }
             Socket connection = listener.accept();
-            String in = HttpReader.readAsServer(connection);
-            System.out.println(in);
             PrintWriter pw = new PrintWriter(connection.getOutputStream(), true);
+            BufferedReader inp = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             while (listener != null) {
-                String eval = gamer.getEvaluation();
-                pw.println(eval);
-                System.out.println(eval);
-                sleep(200);
+                String in = HttpReader.readAsServer(connection);
+                System.out.println(in);
+                while (listener != null) {
+                    String stopCheck  = inp.readLine();
+                    if(stopCheck.toLowerCase().contains("stop")){
+                        break;
+                    }
+                    String eval = gamer.getEvaluation();
+                    pw.println(eval);
+                    System.out.println(eval);
+                    sleep(200);
+                }
             }
             connection.close();
         } catch (Exception e) {
