@@ -64,7 +64,7 @@ public class MCMove {
      *
      * @param result  The value we will use to update this move.
      */
-    public void update(List<Integer> result, int expanded){
+    public void update(List<Integer> result){
         wins[0] += result.get(0);
         wins[1] += result.get(1);
         if((result.get(0) + result.get(1)) > 100){

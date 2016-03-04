@@ -116,7 +116,7 @@ public final class MCTS extends Thread {
             result = search(child, state);
             node.size(child.size(), prev);
         }
-        node.update(result, expanded);
+        node.update(result);
         return result;
     }
 
