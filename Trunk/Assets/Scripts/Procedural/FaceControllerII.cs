@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Boardgame.Configuration;
 
 public class ExpressionNode {
     public string Name;
@@ -248,6 +249,24 @@ public class FaceControllerII : MonoBehaviour {
         return offset;
     }
 
+    public static ExpressionNode GenerateEmotionalExpression(float arousal, float valence, float transitionTime = 1f, float revertTime = 1f, float holdTime = 0f, float easeIn = 0f, float easeOut = 0f)
+    {
+        var offset = new ExpressionNode();
+        offset.Name = string.Format("{0} {1}", arousal, valence);
+        offset.TransitionTime = transitionTime;
+        offset.RevertTime = revertTime;
+        offset.HoldTime = holdTime;
+        offset.EaseIn = easeIn;
+        offset.EaseOut = easeOut;
+        offset.Weight = 1f;
+
+        string valenceExpr = (valence < Config.Neutral ? "unhappy" : "happy");
+        string arousalExpr = (arousal < Config.Neutral ? "calm" : "excited");
+        float valenceWeight = Mathf.Abs(valence - Config.Neutral);
+        float arousalWeight = Mathf.Abs(arousal - Config.Neutral);
+        //TODO: mix together
+        return offset;
+    }
     void LerpFace() {
 #if UNITY_EDITOR
         CurrentExpressions = new string[currentExpressions.Count];
