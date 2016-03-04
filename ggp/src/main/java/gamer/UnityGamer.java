@@ -1,4 +1,4 @@
-package org.ggp.base.player.gamer.statemachine.unity;
+package gamer;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -14,7 +14,6 @@ import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
 import org.ggp.base.util.game.Game;
 import org.ggp.base.util.logging.GamerLogger;
 import org.ggp.base.util.statemachine.Move;
-import org.ggp.base.player.gamer.statemachine.unity.MCTS.MCTS;
 import org.ggp.base.util.gdl.grammar.GdlTerm;
 import org.ggp.base.util.statemachine.implementation.propnet.forwardDeadReckon.ForwardDeadReckonPropnetStateMachine;
 import org.ggp.base.util.statemachine.MachineState;
@@ -27,6 +26,7 @@ import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.ggp.base.player.gamer.exception.MoveSelectionException;
 
+import gamer.MCTS.MCTS;
 /**
  * UnityGamer is a special snowflake that does not work with a normal GGP server or the kiosk 
  */

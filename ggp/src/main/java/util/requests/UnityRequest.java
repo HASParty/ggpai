@@ -1,11 +1,9 @@
-
-package org.ggp.base.player.request.grammar;
+package util.requests;
 
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.player.event.PlayerTimeEvent;
 import org.ggp.base.util.game.LocalGameRepository;
 import org.ggp.base.player.gamer.Gamer;
-import org.ggp.base.player.gamer.statemachine.unity.UnityGamer;
 import org.ggp.base.player.gamer.event.GamerNewMatchEvent;
 import org.ggp.base.player.gamer.event.GamerUnrecognizedMatchEvent;
 import org.ggp.base.player.gamer.exception.MetaGamingException;
@@ -14,7 +12,9 @@ import org.ggp.base.util.gdl.grammar.GdlConstant;
 import org.ggp.base.util.logging.GamerLogger;
 import org.ggp.base.util.match.Match;
 import org.ggp.base.util.gdl.factory.GdlFactory;
+import org.ggp.base.player.request.grammar.Request;
 
+import gamer.UnityGamer;
 
 public final class UnityRequest extends Request {
     private Game game;

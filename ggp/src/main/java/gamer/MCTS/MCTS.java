@@ -1,4 +1,4 @@
-package org.ggp.base.player.gamer.statemachine.unity.MCTS;
+package gamer.MCTS;
 
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;

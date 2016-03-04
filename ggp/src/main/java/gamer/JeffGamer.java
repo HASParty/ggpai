@@ -1,4 +1,4 @@
-package org.ggp.base.player.gamer.statemachine.sample;
+package gamer;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -14,7 +14,6 @@ import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
 import org.ggp.base.util.game.Game;
 import org.ggp.base.util.logging.GamerLogger;
 import org.ggp.base.util.statemachine.Move;
-import org.ggp.base.player.gamer.statemachine.unity.MCTS.MCTS;
 import org.ggp.base.util.gdl.grammar.GdlTerm;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.StateMachine;
@@ -26,6 +25,8 @@ import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 import org.ggp.base.util.statemachine.implementation.propnet.forwardDeadReckon.ForwardDeadReckonPropnetStateMachine;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.ggp.base.player.gamer.exception.MoveSelectionException;
+
+import gamer.MCTS.MCTS;
 
 /**
  * JeffGamer implements a simple MCTS search with UCT

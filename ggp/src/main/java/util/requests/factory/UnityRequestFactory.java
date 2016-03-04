@@ -1,4 +1,4 @@
-package org.ggp.base.player.request.factory;
+package util.requests.factory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +14,11 @@ import org.ggp.base.util.symbol.grammar.Symbol;
 import org.ggp.base.util.symbol.grammar.SymbolAtom;
 import org.ggp.base.util.symbol.grammar.SymbolList;
 import org.ggp.base.util.game.Game;
-import org.ggp.base.player.request.grammar.PushRequest;
-import org.ggp.base.player.request.grammar.PullRequest;
-import org.ggp.base.player.request.grammar.UnityRequest;
+import util.requests.PushRequest;
+import util.requests.PullRequest;
+import util.requests.UnityRequest;
+import org.ggp.base.player.request.factory.RequestFactory;
+
 import org.ggp.base.player.request.grammar.AbortRequest;
 import org.ggp.base.player.request.grammar.InfoRequest;
 import org.ggp.base.player.request.grammar.PlayRequest;

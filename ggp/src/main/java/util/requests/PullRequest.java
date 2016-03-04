@@ -1,8 +1,7 @@
-package org.ggp.base.player.request.grammar;
+package util.requests;
 
 import java.util.List;
 
-import org.ggp.base.player.gamer.statemachine.unity.UnityGamer;
 import org.ggp.base.player.event.PlayerTimeEvent;
 import org.ggp.base.player.gamer.Gamer;
 import org.ggp.base.player.gamer.event.GamerUnrecognizedMatchEvent;
@@ -11,7 +10,9 @@ import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.gdl.grammar.GdlTerm;
 import org.ggp.base.util.logging.GamerLogger;
+import org.ggp.base.player.request.grammar.Request;
 
+import gamer.UnityGamer;
 
 public final class PullRequest extends Request {
     private final UnityGamer gamer;

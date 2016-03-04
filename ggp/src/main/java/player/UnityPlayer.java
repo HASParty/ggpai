@@ -14,13 +14,9 @@ import org.ggp.base.player.event.PlayerReceivedMessageEvent;
 import org.ggp.base.util.match.Match;
 import org.ggp.base.player.event.PlayerSentMessageEvent;
 import org.ggp.base.player.gamer.Gamer;
-import org.ggp.base.player.gamer.statemachine.unity.UnityGamer;
 import org.ggp.base.player.gamer.statemachine.random.RandomGamer;
-import org.ggp.base.player.request.factory.UnityRequestFactory;
-import org.ggp.base.player.request.grammar.UnityRequest;
 import org.ggp.base.player.request.grammar.Request;
 import org.ggp.base.util.http.HttpReader;
-import org.ggp.base.util.unityupdate.Update;
 import org.ggp.base.util.http.HttpWriter;
 import org.ggp.base.util.logging.GamerLogger;
 import org.ggp.base.util.observer.Event;
@@ -31,6 +27,11 @@ import org.ggp.base.util.symbol.factory.SymbolFactory;
 import org.ggp.base.util.symbol.grammar.Symbol;
 import org.ggp.base.util.symbol.grammar.SymbolAtom;
 import org.ggp.base.util.symbol.grammar.SymbolList;
+
+import gamer.UnityGamer;
+import util.requests.factory.UnityRequestFactory;
+import util.requests.UnityRequest;
+import util.Update;
 
 
 public class UnityPlayer extends GamePlayer {

@@ -1,11 +1,11 @@
-package org.ggp.base.util.unityupdate;
+package util;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.ggp.base.player.gamer.statemachine.unity.UnityGamer;
+import gamer.UnityGamer;
 import org.ggp.base.util.http.HttpReader;
 import org.ggp.base.util.http.HttpWriter;
 
@@ -47,7 +47,9 @@ public final class Update extends Thread {
             System.out.println(in);
             PrintWriter pw = new PrintWriter(connection.getOutputStream(), true);
             while (listener != null) {
-                pw.println(gamer.getEvaluation());
+                String eval = gamer.getEvaluation();
+                pw.println(eval);
+                System.out.println(eval);
                 sleep(200);
             }
             connection.close();

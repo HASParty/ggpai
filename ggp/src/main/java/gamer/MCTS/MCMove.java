@@ -1,4 +1,4 @@
-package org.ggp.base.player.gamer.statemachine.unity.MCTS;
+package gamer.MCTS;
 import java.util.ArrayList;
 import java.lang.Math;
 import java.util.Collections;
