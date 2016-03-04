@@ -3,22 +3,16 @@ package util.requests.factory;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ggp.base.player.gamer.Gamer;
-import org.ggp.base.util.gdl.factory.GdlFactory;
-import org.ggp.base.util.gdl.factory.exceptions.GdlFormatException;
-import org.ggp.base.player.request.factory.exceptions.RequestFormatException;
+import org.ggp.base.util.game.Game;
 import org.ggp.base.util.gdl.grammar.GdlConstant;
 import org.ggp.base.util.gdl.grammar.GdlTerm;
+import org.ggp.base.util.gdl.factory.GdlFactory;
+import org.ggp.base.util.gdl.factory.exceptions.GdlFormatException;
 import org.ggp.base.util.symbol.factory.SymbolFactory;
 import org.ggp.base.util.symbol.grammar.Symbol;
 import org.ggp.base.util.symbol.grammar.SymbolAtom;
 import org.ggp.base.util.symbol.grammar.SymbolList;
-import org.ggp.base.util.game.Game;
-import util.requests.PushRequest;
-import util.requests.PullRequest;
-import util.requests.UnityRequest;
-import org.ggp.base.player.request.factory.RequestFactory;
-
+import org.ggp.base.player.gamer.Gamer;
 import org.ggp.base.player.request.grammar.AbortRequest;
 import org.ggp.base.player.request.grammar.InfoRequest;
 import org.ggp.base.player.request.grammar.PlayRequest;
@@ -26,6 +20,12 @@ import org.ggp.base.player.request.grammar.PreviewRequest;
 import org.ggp.base.player.request.grammar.Request;
 import org.ggp.base.player.request.grammar.StartRequest;
 import org.ggp.base.player.request.grammar.StopRequest;
+import org.ggp.base.player.request.factory.RequestFactory;
+import org.ggp.base.player.request.factory.exceptions.RequestFormatException;
+
+import util.requests.PushRequest;
+import util.requests.PullRequest;
+import util.requests.UnityRequest;
 
 public class UnityRequestFactory extends RequestFactory {
     @Override

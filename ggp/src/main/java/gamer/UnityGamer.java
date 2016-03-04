@@ -3,19 +3,20 @@ package gamer;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.ggp.base.player.gamer.exception.MetaGamingException;
-import org.ggp.base.util.gdl.grammar.GdlConstant;
-import org.ggp.base.util.statemachine.Role;
 import org.ggp.base.apps.player.detail.DetailPanel;
 import org.ggp.base.apps.player.detail.SimpleDetailPanel;
 import org.ggp.base.player.gamer.exception.GamePreviewException;
+import org.ggp.base.player.gamer.exception.MetaGamingException;
+import org.ggp.base.player.gamer.exception.MoveSelectionException;
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
 import org.ggp.base.util.game.Game;
 import org.ggp.base.util.logging.GamerLogger;
-import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.gdl.grammar.GdlTerm;
-import org.ggp.base.util.statemachine.implementation.propnet.forwardDeadReckon.ForwardDeadReckonPropnetStateMachine;
+import org.ggp.base.util.gdl.grammar.GdlConstant;
+import org.ggp.base.util.statemachine.Role;
+import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.StateMachine;
 import org.ggp.base.util.statemachine.cache.CachedStateMachine;
@@ -23,8 +24,7 @@ import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import org.ggp.base.player.gamer.exception.MoveSelectionException;
+import org.ggp.base.util.statemachine.implementation.propnet.forwardDeadReckon.ForwardDeadReckonPropnetStateMachine;
 
 import gamer.MCTS.MCTS;
 /**

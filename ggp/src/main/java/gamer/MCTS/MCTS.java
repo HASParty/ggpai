@@ -1,23 +1,24 @@
 package gamer.MCTS;
 
-import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
-import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
-import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
-import org.ggp.base.util.statemachine.Move;
-import org.ggp.base.util.statemachine.StateMachine;
-import org.ggp.base.util.statemachine.MachineState;
-import org.ggp.base.util.statemachine.Role;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
+import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
+import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
+import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
+import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
+import org.ggp.base.util.statemachine.StateMachine;
+import org.ggp.base.util.statemachine.MachineState;
+import org.ggp.base.util.statemachine.Move;
+import org.ggp.base.util.statemachine.Role;
 
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.List;
+
 
 
 /*

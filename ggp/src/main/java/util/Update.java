@@ -5,9 +5,10 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import gamer.UnityGamer;
 import org.ggp.base.util.http.HttpReader;
 import org.ggp.base.util.http.HttpWriter;
+
+import gamer.UnityGamer;
 
 public final class Update extends Thread {
     private final int port;
