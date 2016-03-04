@@ -1,14 +1,11 @@
 package gamer.MCTS;
 
-import java.util.ArrayList;
-import java.lang.Math;
-import java.util.Collections;
-import java.util.List;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.ggp.base.util.statemachine.Move;
-import org.ggp.base.util.statemachine.Role;
 import org.ggp.base.util.statemachine.MachineState;
+import org.ggp.base.util.statemachine.Move;
 
 
 /**

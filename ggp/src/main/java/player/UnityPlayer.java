@@ -7,20 +7,20 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ggp.base.player.request.factory.exceptions.RequestFormatException;
 import org.ggp.base.player.event.PlayerDroppedPacketEvent;
-import org.ggp.base.util.gdl.factory.GdlFactory;
 import org.ggp.base.player.event.PlayerReceivedMessageEvent;
-import org.ggp.base.util.match.Match;
 import org.ggp.base.player.event.PlayerSentMessageEvent;
 import org.ggp.base.player.gamer.Gamer;
 import org.ggp.base.player.gamer.statemachine.random.RandomGamer;
+import org.ggp.base.player.request.factory.exceptions.RequestFormatException;
 import org.ggp.base.player.request.grammar.Request;
+import org.ggp.base.util.gdl.factory.GdlFactory;
+import org.ggp.base.util.gdl.grammar.GdlConstant;
 import org.ggp.base.util.http.HttpReader;
 import org.ggp.base.util.http.HttpWriter;
 import org.ggp.base.util.logging.GamerLogger;
+import org.ggp.base.util.match.Match;
 import org.ggp.base.util.observer.Event;
-import org.ggp.base.util.gdl.grammar.GdlConstant;
 import org.ggp.base.util.observer.Observer;
 import org.ggp.base.util.observer.Subject;
 import org.ggp.base.util.symbol.factory.SymbolFactory;
@@ -29,9 +29,9 @@ import org.ggp.base.util.symbol.grammar.SymbolAtom;
 import org.ggp.base.util.symbol.grammar.SymbolList;
 
 import gamer.UnityGamer;
-import util.requests.factory.UnityRequestFactory;
-import util.requests.UnityRequest;
 import util.Update;
+import util.requests.UnityRequest;
+import util.requests.factory.UnityRequestFactory;
 
 
 public class UnityPlayer extends GamePlayer {

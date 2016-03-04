@@ -1,7 +1,6 @@
 package gamer.MCTS;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -16,7 +15,6 @@ import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.StateMachine;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
-import org.ggp.base.util.statemachine.Role;
 
 
 

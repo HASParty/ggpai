@@ -8,10 +8,10 @@ import org.ggp.base.player.gamer.exception.MetaGamingException;
 import org.ggp.base.player.request.grammar.Request;
 import org.ggp.base.util.game.Game;
 import org.ggp.base.util.game.LocalGameRepository;
-import org.ggp.base.util.match.Match;
-import org.ggp.base.util.logging.GamerLogger;
 import org.ggp.base.util.gdl.factory.GdlFactory;
 import org.ggp.base.util.gdl.grammar.GdlConstant;
+import org.ggp.base.util.logging.GamerLogger;
+import org.ggp.base.util.match.Match;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 
 import gamer.UnityGamer;
