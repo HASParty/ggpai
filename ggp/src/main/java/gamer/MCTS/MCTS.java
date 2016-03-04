@@ -1,21 +1,21 @@
 package gamer.MCTS;
 
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
-import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
-import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
-import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
-import org.ggp.base.util.statemachine.StateMachine;
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
-
+import org.ggp.base.util.statemachine.StateMachine;
+import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
+import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
+import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
 
 
@@ -245,12 +245,13 @@ public final class MCTS extends Thread {
     public String baseEval(){
         String result = "";
         synchronized(root){
+            DecimalFormat f = new DecimalFormat("#.##f");
             for(MCMove child : root.children){
                 result += "("; 
                 result += "m:" + child.move.toString();
                 result += " n:" + child.n();
-                result += " v:[" + child.calcValue(0, MCMove.N) + " " + 
-                          child.calcValue(1, MCMove.N) + "]";
+                result += " v:[" + f.format(child.calcValue(0, MCMove.N)) + " " + 
+                          f.format(child.calcValue(1, MCMove.N)) + "]";
                 result += ") ";
             }
         }
