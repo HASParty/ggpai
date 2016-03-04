@@ -1,9 +1,14 @@
-﻿namespace Boardgame.Networking {
+﻿using Boardgame.GDL;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Boardgame.Networking {
     public class FeedData {
         public int evaluation = 1;
 
         public FeedData(string parse) {
-            //parse and fill variables
+            var moves = BoardgameManager.Instance.reader.GetConsideredMoves(parse);
+            Debug.Log(Tools.Stringify<ConsideredMove>.List(moves, ", "));
         }
     }
 }

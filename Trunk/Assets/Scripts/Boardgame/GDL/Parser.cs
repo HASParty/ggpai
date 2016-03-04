@@ -19,5 +19,10 @@ namespace Boardgame.GDL {
             m.state = split[2].Substring(1, split[2].Length - 2).Replace(",", "");
             return m;
         }
+
+        public static string CleanMessage(string message) {
+            return message.Replace(",", " ").Replace("[", " ").Replace("]", " ")
+                .Replace("("," ( ").Replace(")", " ) ").Replace(":",": ");
+        }
     }
 }

@@ -31,6 +31,7 @@ public class FaceControllerII : MonoBehaviour {
     private Dictionary<string, Vector3> boneFinal;
     private Dictionary<string, List<Vector3>> boneBlender;
     private List<ExpressionNode> currentExpressions;
+    private ExpressionNode currentEmotionExpression;
     private float timeElapsed;
 
     //blinking
@@ -249,22 +250,21 @@ public class FaceControllerII : MonoBehaviour {
         return offset;
     }
 
-    public static ExpressionNode GenerateEmotionalExpression(float arousal, float valence, float transitionTime = 1f, float revertTime = 1f, float holdTime = 0f, float easeIn = 0f, float easeOut = 0f)
-    {
+    public static ExpressionNode GenerateEmotionalExpression(float arousal, float valence, float transitionTime = 1f) {
         var offset = new ExpressionNode();
         offset.Name = string.Format("{0} {1}", arousal, valence);
         offset.TransitionTime = transitionTime;
-        offset.RevertTime = revertTime;
-        offset.HoldTime = holdTime;
-        offset.EaseIn = easeIn;
-        offset.EaseOut = easeOut;
+        offset.RevertTime = -1f;
+        offset.HoldTime = 0f;
+        offset.EaseIn = 0;
+        offset.EaseOut = 0;
         offset.Weight = 1f;
 
         string valenceExpr = (valence < Config.Neutral ? "unhappy" : "happy");
-        string arousalExpr = (arousal < Config.Neutral ? "calm" : "excited");
+        string arousalExpr = (arousal < Config.Neutral ? "calm" : "surprised");
         float valenceWeight = Mathf.Abs(valence - Config.Neutral);
         float arousalWeight = Mathf.Abs(arousal - Config.Neutral);
-        //TODO: mix together
+        Debug.Log(valenceWeight + " " + arousalWeight);
         return offset;
     }
     void LerpFace() {
@@ -291,6 +291,12 @@ public class FaceControllerII : MonoBehaviour {
                         boneBlender[b.Key].Add(boneOrigin[b.Key] + (b.Value * ex.Weight));
                     } else if (ex.TimeElapsed < ex.TransitionTime) {
                         boneBlender[b.Key].Add(Vector3.Lerp(ex.StartPos[b.Key], boneOrigin[b.Key] + b.Value * ex.Weight, ex.TimeElapsed / ex.TransitionTime));
+                    } else if (ex.RevertTime == -1f) {
+                        if (currentEmotionExpression.Equals(ex)) {
+                            boneBlender[b.Key].Add(boneOrigin[b.Key] + (b.Value * ex.Weight));
+                        } else {
+                            flaggedForDeletion.Add(ex);
+                        }
                     } else {
                         flaggedForDeletion.Add(ex);
                     }
@@ -335,6 +341,7 @@ public class FaceControllerII : MonoBehaviour {
             queue = new SortedList<float, ExpressionNode>();
         }
         while (queue.Count > 0 && queue.Keys[0] <= timeElapsed) {
+            if (queue.Values[0].RevertTime == -1f) currentEmotionExpression = queue[0];
             currentExpressions.Add(queue.Values[0]);
             queue.RemoveAt(0);
         }
