@@ -24,10 +24,13 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
  * a tree made up of MCMove nodes.
  */ 
 public final class MCTS extends Thread {
+    private static final int limit = 0;
     private static final int threads = 1;
+    private static Runtime runtime = Runtime.getRuntime();
     private ExecutorService executor;
     private ReentrantReadWriteLock lock;
     private static boolean alive;
+    private static boolean expanding;
     protected StateMachineGamer gamer;
     protected StateMachine machine;
     protected MCMove root;
@@ -46,6 +49,7 @@ public final class MCTS extends Thread {
     public MCTS(StateMachineGamer gamer, ReentrantReadWriteLock lock, boolean silent){
         this.silent = silent;
         this.gamer = gamer;
+        expanding = true;
         machine = gamer.getStateMachine();
         root = new MCMove(null);
         newRoot = null;
@@ -59,6 +63,11 @@ public final class MCTS extends Thread {
         //While we are alive we keep on searching
         while(alive){
             try {
+                if(limit > 0){
+                    while(root.n() > limit && newRoot == null){
+                        Thread.sleep(5);
+                    }
+                }
                 lock.writeLock().lock(); //Making sure the statemachine and tree are in sync
                 if (newRoot != null){
                     applyMove(newRoot); //Move to our new root
@@ -67,6 +76,7 @@ public final class MCTS extends Thread {
                         printTree(); //Print our new tree
                     }
                 }
+                checkHeap();
                 search(root, gamer.getCurrentState());
                 lock.writeLock().unlock();
             } catch (Exception e){
@@ -76,6 +86,14 @@ public final class MCTS extends Thread {
             }
         }
         MCMove.reset(); //Reset N
+    }
+
+    private void checkHeap(){
+             if(((runtime.totalMemory() - runtime.freeMemory())/((float)runtime.maxMemory())) >= 0.85f){
+                 expanding = false;
+             } else {
+                 expanding = true;
+             }
     }
 
     /**
@@ -89,7 +107,6 @@ public final class MCTS extends Thread {
      */
     private List<Integer> search(MCMove node, MachineState state) throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException{
         List<Integer> result;
-        int expanded = 0; //We use this to increment size only when a node is added
         if(!node.equals(root)){ //If we aren't at the root we change states
             if(node.n() == 0){ //We only ever use the SM once for each state
                 state = machine.getNextState(state, node.move); 
@@ -105,9 +122,10 @@ public final class MCTS extends Thread {
             }
             MCMove.N++;
             result = node.goals;
-        } else if (node.n() == 0){
-            node.expand(machine.getLegalJointMoves(state));
-            expanded = node.children.size(); //We have added nodes to the tree
+        } else if (node.leaf()){
+            if(expanding){
+                node.expand(machine.getLegalJointMoves(state));
+            }
             result = playOut(state); //We do one playout
         } else {
             MCMove child = node.select();
@@ -209,6 +227,20 @@ public final class MCTS extends Thread {
             System.out.println("The applied move !: " + moves.toString());
         }
         synchronized(root){
+            int mb = 1024*1024;
+
+            //Getting the runtime reference from system
+            System.out.println("##### Heap utilization statistics [MB] #####");
+            //Print used memory
+            System.out.println("Used Memory:"
+                    + (runtime.totalMemory() - runtime.freeMemory()) / mb);
+            //Print free memory
+            System.out.println("Free Memory:"
+                    + runtime.freeMemory() / mb);
+            //Print total available memory
+            System.out.println("Total Memory:" + runtime.totalMemory() / mb);
+            //Print Maximum available memory
+            System.out.println("Max Memory:" + runtime.maxMemory() / mb);
             for (int i = 0; i < root.children.size(); i++){
                 if (moves.get(0).equals(root.children.get(i).move.get(0)) &&
                     moves.get(1).equals(root.children.get(i).move.get(1))){

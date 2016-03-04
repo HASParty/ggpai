@@ -13,10 +13,11 @@ import org.ggp.base.util.statemachine.Move;
  */
 public class MCMove {
     private static DecimalFormat f = new DecimalFormat("#######.##E0");;
-    private final static double C = 20; //Exploration constant
+    private final static double C = 30; //Exploration constant
     private long[] wins;
     private long n; //how often this node has been selected
     private int size;
+    private boolean leaf;
     final public List<Move> move; //The move that lead to this state
     public static long N = 0;
     public ArrayList<MCMove> children; //Its children because statemachines are slow
@@ -34,11 +35,16 @@ public class MCMove {
         wins = new long[] {0, 0};
         n = 0;
         size = 1;
+        leaf = true;
         children = new ArrayList<MCMove>();
     }
 
     public String SSRatio(){
         return new DecimalFormat("#.##f").format(N / size);
+    }
+
+    public boolean leaf(){
+        return leaf;
     }
 
 
@@ -104,6 +110,7 @@ public class MCMove {
      */
     public void expand(List<List<Move>> moves){
         MCMove.N += 1;
+        leaf = false;
         for (List<Move> move : moves){
             children.add(new MCMove(move));
             size++;
