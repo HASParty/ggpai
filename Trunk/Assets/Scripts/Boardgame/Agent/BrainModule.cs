@@ -44,13 +44,26 @@ namespace Boardgame.Agent {
                 foreach (var function in chunk.functions) {
                     switch(function.Function) {
                         case FMLFunction.FunctionType.BOARDGAME_CONSIDER_MOVE:
-                            //glance at considered cell
+                            ConsiderMoveFunction func = function as ConsiderMoveFunction;
+                            if (func.MoveToConsider.Type == MoveType.MOVE) {
+                                Gaze glanceFrom = new Gaze("glanceAtFrom", chunk.owner, BoardgameManager.Instance.GetCellObject(func.MoveToConsider.From), 
+                                    Behaviour.Lexemes.Influence.EYES, start: 0f, end: 1.75f);
+                                curr.AddChunk(glanceFrom);
+                                Gaze glanceTo = new Gaze("glanceAtTo", chunk.owner, BoardgameManager.Instance.GetCellObject(func.MoveToConsider.To), 
+                                    Behaviour.Lexemes.Influence.EYES, start: 1.8f, end: 2.75f);
+                                curr.AddChunk(glanceTo);
+                            } else {
+                                Gaze glanceTo = new Gaze("glanceAtCell", chunk.owner, BoardgameManager.Instance.GetCellObject(func.MoveToConsider.To),
+                                   Behaviour.Lexemes.Influence.EYES, start: 0f, end: 2.75f);
+                                curr.AddChunk(glanceTo);
+                            }
+                            
                             break;
                         case FMLFunction.FunctionType.BOARDGAME_MAKE_MOVE:
                             //make move, glance at player
                             //TODO: BMLIFY
                             BoardgameManager.Instance.MakeMove((function as MakeMoveFunction).MoveToMake, player);
-                            Gaze glance = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 0.25f, end: 1f);
+                            Gaze glance = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 0.25f, end: 0.5f);
                             curr.AddChunk(glance);
                             break;
                         case FMLFunction.FunctionType.EMOTION:
@@ -76,6 +89,23 @@ namespace Boardgame.Agent {
             //let's refactor this later so that we don't have to do 3N
             foreach(var chunk in body.chunks) {
                 behave.ScheduleBehaviour(chunk.BMLRef);
+            }
+        }
+
+        float lastTime = -1f;
+        public void ConsiderMove(Move move) {
+            if (lastTime == -1) lastTime = Time.time;
+            if(Time.time >= lastTime  + 4f) {
+                FMLBody body = new FMLBody();
+                MentalChunk mc = new MentalChunk();
+
+                mc.AddFunction(new ConsiderMoveFunction(move));
+                mc.owner = me;
+                body.AddChunk(mc);
+                body.AddChunk(getEmotion());
+
+                interpret(body);
+                lastTime = Time.time;
             }
         }
 

@@ -35,6 +35,7 @@ namespace Boardgame.Agent {
         }
 
         public void CheckStatus(FeedData data) {
+            bm.ConsiderMove(data.Best);
         }
 
         public void OnMoveMade(List<GDL.Move> moves, Player player) {

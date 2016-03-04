@@ -8,6 +8,9 @@ namespace Boardgame.GDL {
             lexer = new Lexer("pit", "place", "move", "remove", "heap", "control");
         }
 
+
+        //TODO: refactor into parent class, make parsesinglemove something to be overridden
+        //by children
         public override List<ConsideredMove> GetConsideredMoves(string message) {
             var cons = new List<ConsideredMove>();
             var token = lexer.Lex(Parser.CleanMessage(message)).GetEnumerator();

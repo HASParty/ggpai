@@ -4,11 +4,17 @@ using UnityEngine;
 
 namespace Boardgame.Networking {
     public class FeedData {
-        public int evaluation = 1;
+        public Move Best;
 
         public FeedData(string parse) {
             var moves = BoardgameManager.Instance.reader.GetConsideredMoves(parse);
-            Debug.Log(Tools.Stringify<ConsideredMove>.List(moves, ", "));
+            int max = -1;
+            foreach(var cm in moves) {
+                if(cm.Simulations > max) {
+                    Best = (cm.First != null ? cm.First : cm.Second);
+                    max = cm.Simulations;
+                }
+            }
         }
     }
 }

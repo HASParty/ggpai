@@ -7,7 +7,7 @@ using System.Text;
 namespace FML.Boardgame {
     public class ConsiderMoveFunction : FMLFunction {
 
-        public FunctionType Function { get { return FunctionType.BOARDGAME_CONSIDER_MOVE; } }
+        public override FunctionType Function { get { return FunctionType.BOARDGAME_CONSIDER_MOVE; } }
 
         public Move MoveToConsider;
 

@@ -3,7 +3,7 @@
 namespace FML {
     public class EmotionFunction : FMLFunction {
 
-        public FunctionType Function { get { return FunctionType.EMOTION; } }
+        public override FunctionType Function { get { return FunctionType.EMOTION; } }
 
         public float Arousal;
         public float Valence;

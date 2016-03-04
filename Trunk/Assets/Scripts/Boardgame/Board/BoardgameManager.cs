@@ -59,6 +59,10 @@ namespace Boardgame {
             }
         }
 
+        public GameObject GetCellObject(string id) {
+            return grid.GetPhysicalCell(id).gameObject;
+        }
+
         public void CheckGame(GameData data) {
             if (data.State == Terminal.FALSE) {
                 if (data.IsStart) GameStart(data.GameState);

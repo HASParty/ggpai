@@ -8,7 +8,7 @@ namespace FML {
             REMEMBERING
         }
 
-        public FunctionType Function { get { return FunctionType.COGNITIVE_PROCESS; } }
+        public override FunctionType Function { get { return FunctionType.COGNITIVE_PROCESS; } }
         public MentalState Type;
 
         public CognitiveFunction(MentalState type) {
