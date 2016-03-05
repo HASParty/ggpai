@@ -13,9 +13,13 @@ public class MouseCast : MonoBehaviour {
 	// Update is called once per frame
 	void LateUpdate () {
 		transform.position = Camera.main.ViewportToWorldPoint (new Vector3 (0.5f, 0.5f, 0.3f));
-		if(cell != null && Input.GetKeyUp(KeyCode.JoystickButton0)) {
+		if(cell != null && (Input.GetKeyUp(KeyCode.JoystickButton0) || Input.GetKeyUp(KeyCode.Space))) {
 			cell.OnSelect();
 		}
+
+        if(Input.GetKeyUp(KeyCode.C)) {
+            UnityEngine.VR.InputTracking.Recenter();
+        }
 	}
 
 	void FixedUpdate() {
