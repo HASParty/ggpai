@@ -4,6 +4,8 @@ using Boardgame.GDL;
 using FML;
 using FML.Boardgame;
 using Behaviour;
+using System.Collections;
+using Boardgame.Configuration;
 
 namespace Boardgame.Agent {
     [RequireComponent(typeof(PersonalityModule), typeof(InputModule), typeof(BehaviourRealiser))]
@@ -23,10 +25,8 @@ namespace Boardgame.Agent {
             me = new Participant();
             me.identikit = GetComponent<Identikit>();
             motion = transform.parent.GetComponentInChildren<ActorMotion>();
-        }
 
-        void Update() {
-            //add in hacky idle glance at player?
+            StartCoroutine(FakeEmotion());
         }
 
         private MentalChunk getEmotion() {
@@ -34,6 +34,20 @@ namespace Boardgame.Agent {
             chunk.AddFunction(new EmotionFunction(pm.GetArousal(), pm.GetValence()));
             chunk.owner = me;
             return chunk;
+        }
+
+        IEnumerator FakeEmotion()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(2f);
+                FMLBody body = new FMLBody();
+                MentalChunk chunk = new MentalChunk();
+                chunk.AddFunction(new EmotionFunction(Random.Range((float)Config.Low, (float)Config.High), Random.Range((float)Config.Low, (float)Config.High)));
+                chunk.owner = me;
+                body.AddChunk(chunk);
+                interpret(body);
+            }
         }
 
         private void interpret(FMLBody body) {
@@ -60,7 +74,6 @@ namespace Boardgame.Agent {
                             
                             break;
                         case FMLFunction.FunctionType.BOARDGAME_MAKE_MOVE:
-                            //make move, glance at player
                             //TODO: BMLIFY
                             BoardgameManager.Instance.MakeMove((function as MakeMoveFunction).MoveToMake, player);
                             Gaze glance = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 0.25f, end: 0.5f);
@@ -68,6 +81,9 @@ namespace Boardgame.Agent {
                             break;
                         case FMLFunction.FunctionType.EMOTION:
                             //transform expression
+                            EmotionFunction f = function as EmotionFunction;
+                            FaceEmotion fe = new FaceEmotion("emote " + f.Arousal + " " + f.Valence, chunk.owner, 0f, f.Arousal, f.Valence);
+                            curr.AddChunk(fe);
                             break;
                     }
                 }
