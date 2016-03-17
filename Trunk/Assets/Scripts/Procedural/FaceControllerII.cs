@@ -264,7 +264,6 @@ public class FaceControllerII : MonoBehaviour {
         string arousalExpr = (arousal < Config.Neutral ? "calm" : "surprised");
         float valenceWeight = Mathf.Abs(valence - Config.Neutral);
         float arousalWeight = Mathf.Abs(arousal - Config.Neutral);
-        Vector2 normWeight = new Vector2(valenceWeight, arousalWeight).normalized;
         offset.GoalPos = new Dictionary<string, Vector3>();
 
         if (ExpressionLibrary.Contains(valenceExpr)) {
@@ -272,13 +271,13 @@ public class FaceControllerII : MonoBehaviour {
             var aroGoal = new Dictionary<string, Vector3>(ExpressionLibrary.Get(arousalExpr));
             foreach(var key in valGoal.Keys)
             {
-                var vec = Vector3.Scale(valGoal[key], new Vector3(normWeight.x, normWeight.x, normWeight.x));
+                var vec = Vector3.Scale(valGoal[key], new Vector3(valenceWeight, valenceWeight, valenceWeight));
                 if (offset.GoalPos.ContainsKey(key)) offset.GoalPos[key] = vec;
                 else offset.GoalPos.Add(key, vec);
             }
             foreach (var key in aroGoal.Keys)
             {
-                var vec = Vector3.Scale(aroGoal[key], new Vector3(normWeight.y, normWeight.y, normWeight.y));
+                var vec = Vector3.Scale(aroGoal[key], new Vector3(arousalWeight, arousalWeight, arousalWeight));
                 if (offset.GoalPos.ContainsKey(key)) offset.GoalPos[key] += vec;
                 else offset.GoalPos.Add(key, vec);
             }
