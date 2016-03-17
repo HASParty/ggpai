@@ -3,7 +3,9 @@ package gamer.MCTS;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.HashSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -24,7 +26,8 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
  * A simple MCTS Thread that defines a Monte carlo search algorithm for
  * a tree made up of MCMove nodes.
  */ 
-public final class MCTS extends Thread {
+public final class MCTSDAG extends Thread {
+    private static HashMap<MachineState, MCMove> dag;
     private static final int limit = 0;
     private static final int threads = 1;
     private static Runtime runtime = Runtime.getRuntime();
@@ -47,9 +50,10 @@ public final class MCTS extends Thread {
  * @param lock A lock just to be safe
  * @param silent Set to false to make it silent
  */
-    public MCTS(StateMachineGamer gamer, ReentrantReadWriteLock lock, boolean silent){
+    public MCTSDAG(StateMachineGamer gamer, ReentrantReadWriteLock lock, boolean silent){
         this.silent = silent;
         this.gamer = gamer;
+        dag = new HashMap<>(100000);
         expanding = true;
         machine = gamer.getStateMachine();
         root = new MCMove(null);
@@ -62,7 +66,7 @@ public final class MCTS extends Thread {
     @Override
     public void run(){
         //While we are alive we keep on searching
-        System.out.println("Using MCTS");
+        System.out.println("Using MCTSDAG");
         while(alive){
             try {
                 if(limit > 0){
@@ -129,6 +133,12 @@ public final class MCTS extends Thread {
             MCMove child = node.children.get(ci);
             if(child.n() == 0){ //We only ever use the SM once for each state
                 child.state = machine.getNextState(state, ci); 
+                if(dag.containsKey(child.state)){
+                    node.children.replace(ci, dag.get(child.state));
+                    child = node.children.get(ci);
+                } else {
+                    dag.put(child.state, child);
+                }
             }
             /* This is ugly but its more efficient than checking them all each time */
             int prev = child.size();
@@ -245,6 +255,13 @@ public final class MCTS extends Thread {
                     moves.get(1).equals(entry.getKey().get(1))){
                     root = entry.getValue();
                     MCMove.N = root.n();
+                    if(dag.size() > 10000){
+                        HashSet<MachineState> marked =  new HashSet<>();
+                        System.out.println("Size of dag before sweep: " + dag.size());
+                        mark(root, marked);
+                        sweep(marked);
+                        System.out.println("Size of dag after sweep: " + dag.size());
+                    }
                     return;
                 }
             }
@@ -254,6 +271,29 @@ public final class MCTS extends Thread {
         }
         throw new IllegalStateException("A move was selected that was not one of the root node moves");
     }
+    private void sweep(HashSet<MachineState> marked){
+        ArrayList<MachineState> remove = new ArrayList<>();
+        for(MachineState state : dag.keySet()){
+            if(!marked.contains(state)){
+                remove.add(state);
+            }
+        }
+        for(MachineState state : remove){
+            dag.remove(state);
+        }
+    }
+
+    private void mark(MCMove node, HashSet<MachineState> marked){
+        if(node.leaf()){
+            return;
+        }
+        if(dag.containsKey(node.state)){
+            marked.add(node.state);
+        }
+        for (MCMove child : node.children.values()){
+            mark(child, marked);
+        }
+    }
 
 
     // private void printTree(String indent, MCMove node){
@@ -262,10 +302,10 @@ public final class MCTS extends Thread {
     //         printTree(indent + "    ", move);
     //     }
     // }
-
-    /**
-     * Pretty prints the tree
-     */
+    //
+    // #<{(|*
+    //  * Pretty prints the tree
+    //  |)}>#
     // public void printTree(){
     //     printTree("", root);
     // }
@@ -290,6 +330,7 @@ public final class MCTS extends Thread {
         return result;
 
     }
+
     /**
      * @return the size of the tree
      */

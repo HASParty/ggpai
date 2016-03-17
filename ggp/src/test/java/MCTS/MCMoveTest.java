@@ -29,13 +29,16 @@ public class MCMoveTest extends TestCase {
     public void testExpand(){
         ArrayList<List<Move>> moves = genMoves(0, 0);
         node.expand(moves);
+        System.out.println(MCMove.N);
+        System.out.println(node.size());
+        System.out.println(node);
         assertEquals(MCMove.N, 1);
         assertEquals(node.size(), 11);
         boolean there;
         for(List<Move> m: moves){
             there = false;
-            for(MCMove child: node.children){
-                if (child.move.equals(m)){
+            for(List<Move> move: node.children.keySet()){
+                if (move.equals(m)){
                     there = true;
                     break;
                 }

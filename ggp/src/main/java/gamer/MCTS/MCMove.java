@@ -3,6 +3,8 @@ package gamer.MCTS;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
@@ -13,14 +15,14 @@ import org.ggp.base.util.statemachine.Move;
  */
 public class MCMove {
     private static DecimalFormat f = new DecimalFormat("#######.##E0");;
-    private final static double C = 30; //Exploration constant
+    private final static double C = 40; //Exploration constant
     private long[] wins;
     private long n; //how often this node has been selected
     private int size;
     private boolean leaf;
-    final public List<Move> move; //The move that lead to this state
+    // final public List<Move> move; //The move that lead to this state
     public static long N = 0;
-    public ArrayList<MCMove> children; //Its children because statemachines are slow
+    public HashMap<List<Move>, MCMove> children; //Its children because statemachines are slow
     public List<Integer> goals = null;
     public MachineState state; //The move that lead to this state
     public boolean terminal;
@@ -31,12 +33,13 @@ public class MCMove {
      */
     public MCMove(List<Move> move){
         terminal = false;
-        this.move = move;
+        // this.move = move;
         wins = new long[] {0, 0};
         n = 0;
         size = 1;
         leaf = true;
-        children = new ArrayList<MCMove>();
+        // children = new ArrayList<MCMove>();
+        children = new HashMap<List<Move>, MCMove>();
     }
 
     public String SSRatio(){
@@ -96,11 +99,11 @@ public class MCMove {
     /**
      * @return The new UCT value of the move
      */
-    public double calcValue(int win, long N){
-        if(n == 0){
-            return 1000;
+    public double calcValue(int win, MCMove node){
+        if(node.n == 0){
+            return 10000;
         }
-         return (wins[win] / n) + (C * Math.sqrt(Math.log(N)/n));
+         return (node.wins[win] / node.n) + (C * Math.sqrt(Math.log(n)/node.n));
     }
 
     /**
@@ -112,7 +115,7 @@ public class MCMove {
         MCMove.N += 1;
         leaf = false;
         for (List<Move> move : moves){
-            children.add(new MCMove(move));
+            children.put(move, new MCMove(move));
             size++;
         }
     }
@@ -124,31 +127,37 @@ public class MCMove {
      *
      * @return the child node with the highest UCT value
      */
-    public MCMove select(){
+    public List<Move> select(){
         double best = 0;
         double best2 = 0;
-        MCMove bestMove = null;
-        MCMove bestMove2 = null;
-        for (MCMove move : children){
-            double value = move.calcValue(0, n);
-            double value2 = move.calcValue(1, n);
+        Map.Entry<List<Move>, MCMove> bestMove = null;
+        Map.Entry<List<Move>, MCMove> bestMove2 = null;
+        for (Map.Entry<List<Move>, MCMove> entry : children.entrySet()){
+            double value = calcValue(0, entry.getValue());
+            double value2 = calcValue(1, entry.getValue());
             if (value > best){
                 best = value;
-                bestMove = move;
+                bestMove = entry;
             }
             if (value2 > best2){
                 best2 = value2;
-                bestMove2 = move;
+                bestMove2 = entry;
             }
         }
+        // if(bestMove.getKey().equals(bestMove2.getKey())){
+        //     return bestMove.getKey();
+        // }
         //Sorry...   I will rewrite this i promise
-        for (MCMove move : children){
-            if(bestMove.move.get(0).equals(move.move.get(0)) && bestMove2.move.get(1).equals(move.move.get(1))){
-                bestMove = move;
+        int i = 0;
+        for (List<Move> move : children.keySet()){
+            if(bestMove.getKey().get(0).equals(move.get(0)) && bestMove2.getKey().get(1).equals(move.get(1))){
+                return move;
             }
         }
-        return bestMove;
+        return null; 
     }
+
+
 
 
 
@@ -162,10 +171,10 @@ public class MCMove {
     @Override
     public String toString(){
         String result = "(";
-        result +=  "Move: " + ((move != null)? move.toString().replace("noop", "n") : null) + " ";
+        // result +=  "Move: " + ((move != null)? move.toString().replace("noop", "n") : null) + " ";
         if(n > 0){
             result += String.format("| N: %d | n:%8d | size:%8d | ", N, n, size);
-            result += String.format("value:(%5.1f , %5.1f) | "  , calcValue(0, N), calcValue(1, N));
+            result += String.format("value:(%5.1f , %5.1f) | "  , calcValue(0, this), calcValue(1, this));
             result += String.format("wins:[%10s , %10s])", f.format(wins[0]), f.format(wins[1]));
         } else {
             result += "<LEAF> ";
