@@ -146,52 +146,54 @@ public final class MCTS extends Thread {
      *
      * @return The results of the depth charge for each player
      */
-    private List<Integer> playOut(MachineState state) {
-        List<Future<List<Integer>>> list = new ArrayList<Future<List<Integer>>>();
-        for (int i = 0; i < threads; i++){
-            Callable<List<Integer>> worker = new Play(state, machine);
-            Future<List<Integer>> future = executor.submit(worker);
-            list.add(future);
-        }
-        int sum[] = new int[] {0,0};
-        try {
-            for (Future<List<Integer>> f : list){
-                sum[0] += f.get().get(0);
-                sum[1] += f.get().get(1);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        List<Integer> res =  new ArrayList<Integer>();
-        res.add(sum[0]);
-        res.add(sum[1]);
-        return res;
+    private List<Integer> playOut(MachineState state) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
+        state = machine.performDepthCharge(state, new int[1]);
+        return machine.getGoals(state);
+        // List<Future<List<Integer>>> list = new ArrayList<Future<List<Integer>>>();
+        // for (int i = 0; i < threads; i++){
+        //     Callable<List<Integer>> worker = new Play(state, machine);
+        //     Future<List<Integer>> future = executor.submit(worker);
+        //     list.add(future);
+        // }
+        // int sum[] = new int[] {0,0};
+        // try {
+        //     for (Future<List<Integer>> f : list){
+        //         sum[0] += f.get().get(0);
+        //         sum[1] += f.get().get(1);
+        //     }
+        // } catch (Exception e) {
+        //     e.printStackTrace();
+        //     return null;
+        // }
+        // List<Integer> res =  new ArrayList<Integer>();
+        // res.add(sum[0]);
+        // res.add(sum[1]);
+        // return res;
     }
 
-    public static class Play implements Callable<List<Integer>>{
-        private MachineState state;
-        private final StateMachine machine;
-        public List<Integer> goals;
-
-        Play(MachineState state, StateMachine machine){
-            this.state = state;
-            this.machine = machine;
-        }
-
-        @Override
-        public List<Integer> call(){
-            try {
-                state = machine.performDepthCharge(state, new int[1]);
-                return machine.getGoals(state);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-        
-    }
+    // public static class Play implements Callable<List<Integer>>{
+    //     private MachineState state;
+    //     private final StateMachine machine;
+    //     public List<Integer> goals;
+    //
+    //     Play(MachineState state, StateMachine machine){
+    //         this.state = state;
+    //         this.machine = machine;
+    //     }
+    //
+    //     @Override
+    //     public List<Integer> call(){
+    //         try {
+    //             state = machine.performDepthCharge(state, new int[1]);
+    //             return machine.getGoals(state);
+    //
+    //         } catch (Exception e) {
+    //             e.printStackTrace();
+    //         }
+    //         return null;
+    //     }
+    //     
+    // }
 
 
     /**

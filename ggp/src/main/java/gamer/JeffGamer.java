@@ -32,8 +32,7 @@ import gamer.MCTS.MCTSDAG;
  * JeffGamer implements a simple MCTS search with UCT
  */
 
-public class JeffGamer extends StateMachineGamer
-{
+public class JeffGamer extends StateMachineGamer {
     private MCTSDAG mcts;
     private Role other;
     private Map<Role, Integer> roleMap;
@@ -158,7 +157,7 @@ public class JeffGamer extends StateMachineGamer
 
         StateMachine theMachine = getStateMachine();
         long start = System.currentTimeMillis();
-        long finishBy = timeout - 1000;
+        long finishBy = timeout - 1500;
         int me = roleMap.get(getRole());
         lock1.writeLock().unlock();
         while (System.currentTimeMillis() < finishBy){

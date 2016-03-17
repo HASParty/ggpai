@@ -27,6 +27,8 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
  * a tree made up of MCMove nodes.
  */ 
 public final class MCTSDAG extends Thread {
+    private int counter = 0;
+    private int heapCheck = 0;
     private static HashMap<MachineState, MCMove> dag;
     private static final int limit = 0;
     private static final int threads = 1;
@@ -53,6 +55,7 @@ public final class MCTSDAG extends Thread {
     public MCTSDAG(StateMachineGamer gamer, ReentrantReadWriteLock lock, boolean silent){
         this.silent = silent;
         this.gamer = gamer;
+
         dag = new HashMap<>(100000);
         expanding = true;
         machine = gamer.getStateMachine();
@@ -82,7 +85,10 @@ public final class MCTSDAG extends Thread {
                         // printTree(); //Print our new tree
                     }
                 }
-                checkHeap();
+                if(heapCheck % 1000 == 0){
+                    checkHeap();
+                }
+                heapCheck++;
                 search(root, gamer.getCurrentState());
                 lock.writeLock().unlock();
             } catch (Exception e){
@@ -134,6 +140,7 @@ public final class MCTSDAG extends Thread {
             if(child.n() == 0){ //We only ever use the SM once for each state
                 child.state = machine.getNextState(state, ci); 
                 if(dag.containsKey(child.state)){
+                    counter++;
                     node.children.replace(ci, dag.get(child.state));
                     child = node.children.get(ci);
                 } else {
@@ -156,58 +163,17 @@ public final class MCTSDAG extends Thread {
      *
      * @return The results of the depth charge for each player
      */
-    private List<Integer> playOut(MachineState state) {
-        List<Future<List<Integer>>> list = new ArrayList<Future<List<Integer>>>();
-        for (int i = 0; i < threads; i++){
-            Callable<List<Integer>> worker = new Play(state, machine);
-            Future<List<Integer>> future = executor.submit(worker);
-            list.add(future);
-        }
-        int sum[] = new int[] {0,0};
-        try {
-            for (Future<List<Integer>> f : list){
-                sum[0] += f.get().get(0);
-                sum[1] += f.get().get(1);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        List<Integer> res =  new ArrayList<Integer>();
-        res.add(sum[0]);
-        res.add(sum[1]);
-        return res;
+    private List<Integer> playOut(MachineState state) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
+        state = machine.performDepthCharge(state, new int[1]);
+        return machine.getGoals(state);
     }
-
-    public static class Play implements Callable<List<Integer>>{
-        private MachineState state;
-        private final StateMachine machine;
-        public List<Integer> goals;
-
-        Play(MachineState state, StateMachine machine){
-            this.state = state;
-            this.machine = machine;
-        }
-
-        @Override
-        public List<Integer> call(){
-            try {
-                state = machine.performDepthCharge(state, new int[1]);
-                return machine.getGoals(state);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-        
-    }
-
 
     /**
      * @return The best move at this point
      */
     public List<Move> selectMove() throws MoveDefinitionException {
+        System.out.println("dag used this turn: " + counter);
+        counter = 0;
         Map.Entry<List<Move>, MCMove> bestMove = null;
         if (!silent){
             System.out.println("================================Available moves================================");
@@ -255,7 +221,7 @@ public final class MCTSDAG extends Thread {
                     moves.get(1).equals(entry.getKey().get(1))){
                     root = entry.getValue();
                     MCMove.N = root.n();
-                    if(dag.size() > 10000){
+                    if(dag.size() > 50000){
                         HashSet<MachineState> marked =  new HashSet<>();
                         System.out.println("Size of dag before sweep: " + dag.size());
                         mark(root, marked);
