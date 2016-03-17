@@ -52,7 +52,7 @@ public final class Update extends Thread {
             while (listener != null) {
                 String in = HttpReader.readAsServer(connection);
                 while (listener != null) {
-                    if(inp.ready()){
+                    if(connection.getInputStream().available() < 2){
                         String input  = inp.readLine();
                         if(input.toLowerCase().contains("stop")){
                             break;
