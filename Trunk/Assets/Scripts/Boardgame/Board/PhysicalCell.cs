@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace Boardgame {
             return piece.Count == 0;
         }
 
-        public void OnMouseEnter() {
+        public void OnLookAt() {
             if (HasPiece()) {
                 PlayerInteractionManager.Instance.PieceHighlight(this);
             } else {
@@ -27,13 +27,13 @@ namespace Boardgame {
             }
         }
 
-        public void OnMouseExit() {
+        public void OnLookAway() {
             if (HasPiece()) {
                 PlayerInteractionManager.Instance.PieceLeave(this);
             }
         }
 
-        public void OnMouseUp() {
+        public void OnSelect() {
             if (HasPiece()) {
                 PlayerInteractionManager.Instance.PieceSelect(this);
             } else {

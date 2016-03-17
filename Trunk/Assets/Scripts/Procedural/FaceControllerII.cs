@@ -42,7 +42,7 @@ public class FaceControllerII : MonoBehaviour {
     Transform UpperLidR;
     Transform LowerLidL;
     Transform LowerLidR;
-    Transform Eye; //for getting local vertical axis rotation of the eye IF IT WOULD FREAKING UPDATE WHAT HT EFUCK
+    Transform Eye;
 
     Vector3 UpperLidLOrigin;
     Vector3 UpperLidROrigin;
@@ -264,7 +264,29 @@ public class FaceControllerII : MonoBehaviour {
         string arousalExpr = (arousal < Config.Neutral ? "calm" : "surprised");
         float valenceWeight = Mathf.Abs(valence - Config.Neutral);
         float arousalWeight = Mathf.Abs(arousal - Config.Neutral);
-        Debug.Log(valenceWeight + " " + arousalWeight);
+        Vector2 normWeight = new Vector2(valenceWeight, arousalWeight).normalized;
+        offset.GoalPos = new Dictionary<string, Vector3>();
+
+        if (ExpressionLibrary.Contains(valenceExpr)) {
+            var valGoal = new Dictionary<string, Vector3>(ExpressionLibrary.Get(valenceExpr));
+            var aroGoal = new Dictionary<string, Vector3>(ExpressionLibrary.Get(arousalExpr));
+            foreach(var key in valGoal.Keys)
+            {
+                var vec = Vector3.Scale(valGoal[key], new Vector3(normWeight.x, normWeight.x, normWeight.x));
+                if (offset.GoalPos.ContainsKey(key)) offset.GoalPos[key] = vec;
+                else offset.GoalPos.Add(key, vec);
+            }
+            foreach (var key in aroGoal.Keys)
+            {
+                var vec = Vector3.Scale(aroGoal[key], new Vector3(normWeight.y, normWeight.y, normWeight.y));
+                if (offset.GoalPos.ContainsKey(key)) offset.GoalPos[key] += vec;
+                else offset.GoalPos.Add(key, vec);
+            }
+            
+        } else {
+            throw new UnityException("what the fuck");
+        }
+
         return offset;
     }
     void LerpFace() {
@@ -341,7 +363,7 @@ public class FaceControllerII : MonoBehaviour {
             queue = new SortedList<float, ExpressionNode>();
         }
         while (queue.Count > 0 && queue.Keys[0] <= timeElapsed) {
-            if (queue.Values[0].RevertTime == -1f) currentEmotionExpression = queue[0];
+            if (queue.Values[0].RevertTime == -1f) currentEmotionExpression = queue.Values[0];
             currentExpressions.Add(queue.Values[0]);
             queue.RemoveAt(0);
         }

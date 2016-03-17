@@ -42,9 +42,18 @@ namespace Boardgame.Networking {
             }
         }
 
+		public void ModifyRequestTime (float modifier)
+		{
+			requestLeft *= modifier;
+		}
+
+		private float requestLeft;
         IEnumerator Request() {
-            yield return new WaitForSeconds(Config.TurnTime);
-            Pull();
+			while(requestLeft > 0f) {
+            	yield return new WaitForSeconds(0.1f);
+				requestLeft -= 0.1f;
+			}
+			Pull();
         }
 
         IEnumerator InitialRequest() {
@@ -62,6 +71,7 @@ namespace Boardgame.Networking {
                     if (data.IsStart) {
                         StartCoroutine(InitialRequest());
                     } else {
+						requestLeft = Config.TurnTime;
                         StartCoroutine(Request());
                     }                    
                 }
@@ -74,20 +84,18 @@ namespace Boardgame.Networking {
 
         public void EndGame() {
             Write("STOP " + Config.MatchID + " ( nil )");
+			Connection.Write("stop", Connection.feedConnection.GetStream());
         }
 
         void OnDestroy() {
             if (IsConnected()) {
                 Write("ABORT " + Config.MatchID);
+				Connection.Write("stop", Connection.feedConnection.GetStream());
                 Disconnect();
             }
         }
 
-        public void Pull(bool enforced = false) {
-            if (enforced) {
-                Debug.Log("FORCED PULL");
-                StopCoroutine(Request());
-            }
+        public void Pull() {
             Write("PULL " + Config.MatchID);
         }
 

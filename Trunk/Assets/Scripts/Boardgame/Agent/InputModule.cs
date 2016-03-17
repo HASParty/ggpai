@@ -42,7 +42,7 @@ namespace Boardgame.Agent {
         public void CheckStatus(FeedData data) {
             bm.ConsiderMove(data.Best);
             if(data.MaxSimulation > Config.SimulationCutoff && isMyTurn) {
-                ConnectionMonitor.Instance.Pull(true);
+				ConnectionMonitor.Instance.ModifyRequestTime(0.33f);
             }
         }
 

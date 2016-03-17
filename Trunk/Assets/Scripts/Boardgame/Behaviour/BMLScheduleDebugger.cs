@@ -45,6 +45,11 @@ namespace Behaviour {
                     text += fchunk.ToString();
                     color = Face;
                     break;
+                case BMLChunkType.FaceEmotion:
+                    var fechunk = chunk as FaceEmotion;
+                    text += fechunk.ToString();
+                    color = Face;
+                    break;
                 case BMLChunkType.Gaze:
                     color = Gaze;
                     var gchunk = chunk as Gaze;

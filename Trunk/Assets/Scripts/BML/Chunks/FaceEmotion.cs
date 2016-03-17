@@ -14,9 +14,8 @@ namespace Behaviour {
         /// Initializes a new instance of the <see cref="VirtualReykjavik.Behaviour.Face"/> class.
         /// </summary>
         /// <param name="character">Character to execute the behaviour.</param>
-        /// <param name="lexeme">Which expression to execute.</param>
         /// <param name="start">Start of animation from the given moment.</param>
-        public FaceEmotion(string id, Participant character, Lexemes.Face lexeme,
+        public FaceEmotion(string id, Participant character,
                     float start, float arousal, float valence) {
             ID = id;
             Character = character;
