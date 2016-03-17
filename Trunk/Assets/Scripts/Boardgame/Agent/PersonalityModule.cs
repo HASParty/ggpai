@@ -187,13 +187,12 @@ namespace Boardgame.Agent {
             mood.arousal += arousalMod * dt * arousalDecayRate;
             mood.valence += valenceMod * dt * valenceDecayRate;
 
-            Mathf.Clamp(mood.arousal, Low, High);
-            Mathf.Clamp(mood.valence, Low, High);
+            mood.arousal = Mathf.Clamp(mood.arousal, Low, High);
+            mood.valence = Mathf.Clamp(mood.valence, Low, High);
         }
 
-        public void ReceiveEvent(Event e) {
-            //TODO: define custom event system
-            //TODO: receive events and modify mood accordingly
+        public void Evaluate(float positivity, float suddenness) {
+            mood.valence += positivity / 100;
         }
 
 

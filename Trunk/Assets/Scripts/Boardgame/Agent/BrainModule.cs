@@ -6,6 +6,7 @@ using FML.Boardgame;
 using Behaviour;
 using System.Collections;
 using Boardgame.Configuration;
+using System;
 
 namespace Boardgame.Agent {
     [RequireComponent(typeof(PersonalityModule), typeof(InputModule), typeof(BehaviourRealiser))]
@@ -26,7 +27,7 @@ namespace Boardgame.Agent {
             me.identikit = GetComponent<Identikit>();
             motion = transform.parent.GetComponentInChildren<ActorMotion>();
 
-            StartCoroutine(FakeEmotion());
+            //StartCoroutine(FakeEmotion());
         }
 
         private MentalChunk getEmotion() {
@@ -43,11 +44,27 @@ namespace Boardgame.Agent {
                 yield return new WaitForSeconds(2f);
                 FMLBody body = new FMLBody();
                 MentalChunk chunk = new MentalChunk();
-                chunk.AddFunction(new EmotionFunction(Random.Range((float)Config.Low, (float)Config.High), Random.Range((float)Config.Low, (float)Config.High)));
+                chunk.AddFunction(new EmotionFunction(UnityEngine.Random.Range((float)Config.Low, (float)Config.High), UnityEngine.Random.Range((float)Config.Low, (float)Config.High)));
                 chunk.owner = me;
                 body.AddChunk(chunk);
                 interpret(body);
             }
+        }
+
+        //add standard deviation for simulations, running average for UCT, etc
+        public void EvaluateConfidence(float firstUCT, float secondUCT) {
+            float myUCT, foeUCT;
+            if(player == Player.First) {
+                myUCT = firstUCT;
+                foeUCT = secondUCT;
+            } else {
+                myUCT = secondUCT;
+                foeUCT = firstUCT;
+            }
+
+            if (myUCT > foeUCT) pm.Evaluate(0.5f, 0);
+            else pm.Evaluate(-0.5f, 0);
+
         }
 
         private void interpret(FMLBody body) {
