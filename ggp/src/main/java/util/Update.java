@@ -48,20 +48,23 @@ public final class Update extends Thread {
             // }
             Socket connection = listener.accept();
             PrintWriter pw = new PrintWriter(connection.getOutputStream(), true);
-            // BufferedReader inp = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            // while (listener != null) {
-            //     String in = HttpReader.readAsServer(connection);
+            BufferedReader inp = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            while (listener != null) {
+                String in = HttpReader.readAsServer(connection);
                 while (listener != null) {
-                    // String stopCheck  = inp.readLine();
-                    // if(stopCheck.toLowerCase().contains("stop")){
-                    //     break;
-                    // }
+                    if(inp.ready()){
+                        String input  = inp.readLine();
+                        if(input.toLowerCase().contains("stop")){
+                            break;
+                        }
+                    }
+
                     String eval = gamer.getEvaluation();
                     pw.println(eval);
                     System.out.println(eval);
                     sleep(200);
                 }
-            // }
+            }
             connection.close();
         } catch (Exception e) {
             System.out.println("Well something went wrong");
