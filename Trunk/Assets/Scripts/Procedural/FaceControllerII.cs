@@ -262,24 +262,30 @@ public class FaceControllerII : MonoBehaviour {
 
         string valenceExpr = (valence < Config.Neutral ? "unhappy" : "happy");
         string arousalExpr = (arousal < Config.Neutral ? "calm" : "surprised");
-        float valenceWeight = Mathf.Abs(valence - Config.Neutral);
-        float arousalWeight = Mathf.Abs(arousal - Config.Neutral);
+        float v = Mathf.Abs(valence - Config.Neutral);
+        float a = Mathf.Abs(arousal - Config.Neutral);
+        Vector3 valenceWeight = new Vector3(v, v, v);
+        Vector3 arousalWeight = new Vector3(a, a, a);
         offset.GoalPos = new Dictionary<string, Vector3>();
 
         if (ExpressionLibrary.Contains(valenceExpr)) {
             var valGoal = new Dictionary<string, Vector3>(ExpressionLibrary.Get(valenceExpr));
             var aroGoal = new Dictionary<string, Vector3>(ExpressionLibrary.Get(arousalExpr));
+            float u = 0.5f;
+            float l = -0.01f;
             foreach(var key in valGoal.Keys)
             {
-                var vec = Vector3.Scale(valGoal[key], new Vector3(valenceWeight, valenceWeight, valenceWeight));
-                if (offset.GoalPos.ContainsKey(key)) offset.GoalPos[key] = vec;
-                else offset.GoalPos.Add(key, vec);
+                Vector3 tinyError = new Vector3(Random.Range(l, u), Random.Range(l, u), Random.Range(l, u));
+                var vec = Vector3.Scale(valGoal[key], valenceWeight);
+                if (offset.GoalPos.ContainsKey(key)) offset.GoalPos[key] = vec + Vector3.Scale(vec, tinyError);
+                else offset.GoalPos.Add(key, vec + Vector3.Scale(valGoal[key], tinyError));
             }
             foreach (var key in aroGoal.Keys)
             {
-                var vec = Vector3.Scale(aroGoal[key], new Vector3(arousalWeight, arousalWeight, arousalWeight));
-                if (offset.GoalPos.ContainsKey(key)) offset.GoalPos[key] += vec;
-                else offset.GoalPos.Add(key, vec);
+                Vector3 tinyError = new Vector3(Random.Range(l, u), Random.Range(l, u), Random.Range(l, u));
+                var vec = Vector3.Scale(aroGoal[key], arousalWeight);
+                if (offset.GoalPos.ContainsKey(key)) offset.GoalPos[key] += vec + Vector3.Scale(vec, tinyError);
+                else offset.GoalPos.Add(key, vec + Vector3.Scale(aroGoal[key], tinyError));
             }
             
         } else {

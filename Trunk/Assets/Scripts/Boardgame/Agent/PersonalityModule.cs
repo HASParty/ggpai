@@ -193,6 +193,7 @@ namespace Boardgame.Agent {
 
         public void Evaluate(float positivity, float suddenness) {
             mood.valence += positivity / 100;
+            mood.arousal += suddenness / 100;
         }
 
 

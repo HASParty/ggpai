@@ -84,13 +84,13 @@ namespace Boardgame.Networking {
 
         public void EndGame() {
             Write("STOP " + Config.MatchID + " ( nil )");
-			Connection.Write("stop", Connection.feedConnection.GetStream());
+			Connection.Write("stop\n", Connection.feedConnection.GetStream());
         }
 
         void OnDestroy() {
             if (IsConnected()) {
                 Write("ABORT " + Config.MatchID);
-				Connection.Write("stop", Connection.feedConnection.GetStream());
+				Connection.Write("stop\n", Connection.feedConnection.GetStream());
                 Disconnect();
             }
         }
@@ -129,6 +129,7 @@ namespace Boardgame.Networking {
             string data;
             if(Connection.ReadLine(Connection.feedConnection, out data)) {
                 OnFeedUpdate.Invoke(new FeedData(data));
+                Connection.Write("ack\n", Connection.feedConnection.GetStream());
             }
             if(Connection.gameConnection.Available > 0) {
                 data = Connection.HttpRead(Connection.gameConnection);

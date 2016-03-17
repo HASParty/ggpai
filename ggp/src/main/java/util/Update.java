@@ -52,15 +52,17 @@ public final class Update extends Thread {
             while (listener != null) {
                 String in = HttpReader.readAsServer(connection);
                 while (listener != null) {
+                    String eval = gamer.getEvaluation();
+                    pw.println(eval);
+
                     String input  = inp.readLine();
+
                     if(input.toLowerCase().contains("stop")){
                         break;
                     } else {
                         //Do shit with what we get
                     }
 
-                    String eval = gamer.getEvaluation();
-                    pw.println(eval);
                     sleep(200);
                 }
             }

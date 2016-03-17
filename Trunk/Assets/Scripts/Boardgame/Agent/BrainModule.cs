@@ -51,9 +51,12 @@ namespace Boardgame.Agent {
             }
         }
 
+        //running averages
+        private float myUCTavg;
+        private float foeUCTavg;
         //add standard deviation for simulations, running average for UCT, etc
-        public void EvaluateConfidence(float firstUCT, float secondUCT) {
-            float myUCT, foeUCT;
+        public void EvaluateConfidence(float firstUCT, float secondUCT, int StdDeviations) {
+            float myUCT, foeUCT, uctDiff, positivity;
             if(player == Player.First) {
                 myUCT = firstUCT;
                 foeUCT = secondUCT;
@@ -62,8 +65,13 @@ namespace Boardgame.Agent {
                 foeUCT = firstUCT;
             }
 
-            if (myUCT > foeUCT) pm.Evaluate(0.5f, 0);
-            else pm.Evaluate(-0.5f, 0);
+            uctDiff = myUCT - foeUCT;
+
+            //game unique weights here affecting the factors?
+            //differences in how much confidence bounds vary between games
+            positivity = uctDiff * 0.05f;
+        
+            pm.Evaluate(positivity, 0);
 
         }
 

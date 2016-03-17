@@ -69,7 +69,7 @@ namespace Boardgame.Networking {
 
             if (ns.CanWrite) {
                 try {
-                    Debug.Log("Sending message: " + message);
+                    //Debug.Log("Sending message: " + message);
                     sw.Write(message);
                     sw.Flush();
                 } catch (Exception e) {
