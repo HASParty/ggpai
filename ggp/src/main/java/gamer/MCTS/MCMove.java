@@ -16,14 +16,14 @@ import org.ggp.base.util.statemachine.Move;
 public class MCMove {
     private static DecimalFormat f = new DecimalFormat("#######.##E0");;
     private final static double C = 40; //Exploration constant
-    private long[] wins;
+    private double[] wins;
     private long n; //how often this node has been selected
     private int size;
     private boolean leaf;
     // final public List<Move> move; //The move that lead to this state
     public static long N = 0;
     public HashMap<List<Move>, MCMove> children; //Its children because statemachines are slow
-    public List<Integer> goals = null;
+    public List<Double> goals = null;
     public MachineState state; //The move that lead to this state
     public boolean terminal;
 
@@ -34,7 +34,7 @@ public class MCMove {
     public MCMove(List<Move> move){
         terminal = false;
         // this.move = move;
-        wins = new long[] {0, 0};
+        wins = new double[] {0, 0};
         n = 0;
         size = 1;
         leaf = true;
@@ -54,7 +54,7 @@ public class MCMove {
     /**
      * @return the number of wins this move has
      */
-    public long w(int who){
+    public double w(int who){
         return wins[who];
     }
 
@@ -73,7 +73,7 @@ public class MCMove {
      *
      * @param result  The value we will use to update this move.
      */
-    public void update(List<Integer> result){
+    public void update(List<Double> result){
         wins[0] += result.get(0);
         wins[1] += result.get(1);
         n++;

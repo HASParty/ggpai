@@ -2,10 +2,13 @@ package gamer.MCTS;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.HashSet;
+import java.util.Random;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,49 +28,66 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 /*
  * A simple MCTS Thread that defines a Monte carlo search algorithm for
  * a tree made up of MCMove nodes.
- */ 
+ */
 public final class MCTSDAG extends Thread {
-    private int counter = 0;
-    private int heapCheck = 0;
-    private static HashMap<MachineState, MCMove> dag;
-    private static final int limit = 0;
-    private static final int threads = 1;
-    private static Runtime runtime = Runtime.getRuntime();
-    private ExecutorService executor;
+    //MCTS Enhancement variables {
+    //MCTS DAG
+    private HashMap<MachineState, MCMove> dag;
+    //MAST
+    private HashMap<Move, List<Double>> mast;
+    private double epsilon = 0.97f;
+    //}
+    //General MCTS variables{
+    private Random rand = new Random();
     private ReentrantReadWriteLock lock;
     private static boolean alive;
-    private static boolean expanding;
-    protected StateMachineGamer gamer;
-    protected StateMachine machine;
     protected MCMove root;
-    public boolean silent;
+    protected StateMachine machine;
+    protected StateMachineGamer gamer;
     public List<Move> newRoot;
-    boolean debug = false;
+    //}
+    //Extra info/control variables {
+    private int DagCounter = 0;
+    private static Runtime runtime = Runtime.getRuntime();
+    private static boolean expanding;
+    private static final int limit = 0;
+    private int lastPlayOutDepth;
+    private int playOutCount;
+    private float avgPlayOutDepth;
+    private double discount;
 
-/**
- * Simple constructor
- *
- *
- * @param gamer The gamer using this search
- * @param lock A lock just to be safe
- * @param silent Set to false to make it silent
- */
+    public boolean silent;
+    //}
+
+    /**
+     * Simple constructor
+     *
+     *
+     * @param gamer The gamer using this search
+     * @param lock A lock just to be safe
+     * @param silent Set to false to make it silent
+     */
     public MCTSDAG(StateMachineGamer gamer, ReentrantReadWriteLock lock, boolean silent){
         this.silent = silent;
         this.gamer = gamer;
+        lastPlayOutDepth = 0;
+        playOutCount = 0;
+        avgPlayOutDepth = 0;
+        discount = 0.997f;
 
-        dag = new HashMap<>(100000);
+        dag = new HashMap<>(20000);
+        mast = new HashMap<>();
         expanding = true;
         machine = gamer.getStateMachine();
         root = new MCMove(null);
         newRoot = null;
         alive = true;
         this.lock = lock;
-        executor  = Executors.newFixedThreadPool(threads);
     }
-
+    //MCTS selection phase {
     @Override
     public void run(){
+        int heapCheck = 0;
         //While we are alive we keep on searching
         System.out.println("Using MCTSDAG");
         while(alive){
@@ -81,9 +101,8 @@ public final class MCTSDAG extends Thread {
                 if (newRoot != null){
                     applyMove(newRoot); //Move to our new root
                     newRoot = null;
-                    if (debug){
-                        // printTree(); //Print our new tree
-                    }
+                    playOutCount = 0;
+                    avgPlayOutDepth = 0;
                 }
                 if(heapCheck % 1000 == 0){
                     checkHeap();
@@ -100,31 +119,26 @@ public final class MCTSDAG extends Thread {
         MCMove.reset(); //Reset N
     }
 
-    private void checkHeap(){
-             if(((runtime.totalMemory() - runtime.freeMemory())/((float)runtime.maxMemory())) >= 0.85f){
-                 expanding = false;
-             } else {
-                 expanding = true;
-             }
-    }
 
+    //search(MCMove, MachineState){
     /**
      * A recursive MCTS search function that searches through MCM nodes.
      * It only expands one node each run when it hits a new leaf.
-     * 
+     *
      * @param node The node we are searching
      * @param state The current state entering this node
      *
      * @return The simulated value of this node for each player from one simulation.
      */
-    private List<Integer> search(MCMove node, MachineState state) throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException{
-        List<Integer> result;
+    private List<Double> search(MCMove node, MachineState state) throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException{
+        List<Double> result;
         if(!node.equals(root)){ //If we aren't at the root we change states
             state = node.state;
         }
         if(node.terminal || machine.isTerminal(state)){
             if(node.goals == null){
-                node.goals = machine.getGoals(state); //Decreasing terminal calls
+
+                node.goals = getGoalsAsDouble(state); //Decreasing terminal calls
                 node.terminal = true;
             }
             MCMove.N++;
@@ -138,9 +152,9 @@ public final class MCTSDAG extends Thread {
             List<Move> ci = node.select();
             MCMove child = node.children.get(ci);
             if(child.n() == 0){ //We only ever use the SM once for each state
-                child.state = machine.getNextState(state, ci); 
+                child.state = machine.getNextState(state, ci);
                 if(dag.containsKey(child.state)){
-                    counter++;
+                    DagCounter++;
                     node.children.replace(ci, dag.get(child.state));
                     child = node.children.get(ci);
                 } else {
@@ -151,29 +165,103 @@ public final class MCTSDAG extends Thread {
             int prev = child.size();
             result = search(child, state);
             node.size(child.size(), prev);
+            updateMAST(ci, result);
         }
         node.update(result);
+        applyDiscount(result);
         return result;
     }
-
-    /**
-     * Performs one depthcharge down to a terminal state
-     *
-     * @param state The state we start our charge from
-     *
-     * @return The results of the depth charge for each player
-     */
-    private List<Integer> playOut(MachineState state) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
-        state = machine.performDepthCharge(state, new int[1]);
-        return machine.getGoals(state);
+    //}
+    //}
+    //MCTS playout phase {
+    
+    private List<Double> playOut(MachineState state) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
+        lastPlayOutDepth = 0;
+        return depthCharge(state);
     }
+
+    private List<Double> depthCharge(MachineState state) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
+        lastPlayOutDepth++;
+        List<Double> result;
+        if(machine.isTerminal(state)){
+            avgPlayOutDepth = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth) / (float)(playOutCount + 1);
+            playOutCount++;
+            return getGoalsAsDouble(state);
+        }
+        List<List<Move>> moves = machine.getLegalJointMoves(state);
+        List<Move> chosen;
+        if(rand.nextFloat() >= epsilon){
+            chosen = moves.get(rand.nextInt(moves.size()));
+        } else {
+            chosen = pickMASTmove(moves);
+        }
+        state = machine.getNextState(state, chosen);
+        result = depthCharge(state);
+        updateMAST(chosen, result);
+        applyDiscount(result);
+        return result;
+    }
+    //}
+    //MCTS enhancements {
+    private List<Move> pickMASTmove(List<List<Move>> list){
+        Move[] bestMoves = new Move[list.get(0).size()];
+        double[] bestValue = new double[list.get(0).size()];
+        for (List<Move> moves : list){
+                for (int i = 0; i < moves.size(); ++i){
+                double mastValue;
+                if (mast.containsKey(moves.get(i))){
+                    mastValue = mast.get(moves.get(i)).get(0);
+                } else {
+                    mastValue = rand.nextInt(5);  //Arbitrary random value
+                }
+                if((bestMoves[i] == null) || (bestValue[i] > mastValue)){
+                    bestMoves[i] = moves.get(i);
+                    bestValue[i] = mastValue;
+                }
+            }
+        }
+        for(List<Move> moves : list){
+            boolean best = true;
+            for (int i = 0; i < moves.size(); ++i){
+                if(!moves.get(i).equals(bestMoves[i])){
+                    best = false;
+                }
+            }
+            if(best){
+                return moves;
+            }
+        }
+        return null; //Something got fucked up
+    }
+
+    private void updateMAST(List<Move> moves, List<Double> newValue){
+        for(int i = 0; i < newValue.size(); i++){
+            Move move = moves.get(i);
+            List<Double> newList;
+            if(mast.containsKey(move)){
+                newList = mast.get(move);
+                int oldCount = (int)Math.round(newList.get(1));
+                int newCount = oldCount + 1;
+                newList.set(0, ((newList.get(0) * oldCount) + newValue.get(i))/newCount);
+                newList.set(1, (double)newCount);
+            } else {
+                newList = new ArrayList<>();
+                newList.add(newValue.get(i));
+                newList.add(1.0d);
+                mast.put(move, newList);
+            }
+        }
+    }
+
+    //}
+    //Move managment{
 
     /**
      * @return The best move at this point
      */
     public List<Move> selectMove() throws MoveDefinitionException {
-        System.out.println("dag used this turn: " + counter);
-        counter = 0;
+        System.out.println("dag used this turn: " + DagCounter);
+        DagCounter = 0;
         Map.Entry<List<Move>, MCMove> bestMove = null;
         if (!silent){
             System.out.println("================================Available moves================================");
@@ -187,7 +275,10 @@ public final class MCTSDAG extends Thread {
             }
         }
         if (!silent){
+            System.out.println("------------------");
             System.out.println("Selecting: " + bestMove + " With " + bestMove.getValue().n() + " simulations");
+            System.out.println("------------------");
+            System.out.println("Mast table size: " + mast.size());
         }
         return bestMove.getKey();
     }
@@ -200,6 +291,7 @@ public final class MCTSDAG extends Thread {
     public void applyMove(List<Move> moves)  {
         if (!silent){
             System.out.println("The applied move !: " + moves.toString());
+            System.out.println("Average playout depth: " + avgPlayOutDepth);
         }
         synchronized(root){
             int mb = 1024*1024;
@@ -218,10 +310,11 @@ public final class MCTSDAG extends Thread {
             System.out.println("Max Memory:" + runtime.maxMemory() / mb);
             for (Map.Entry<List<Move>, MCMove> entry: root.children.entrySet()){
                 if (moves.get(0).equals(entry.getKey().get(0)) &&
-                    moves.get(1).equals(entry.getKey().get(1))){
+                        moves.get(1).equals(entry.getKey().get(1))){
+
                     root = entry.getValue();
                     MCMove.N = root.n();
-                    if(dag.size() > 50000){
+                    if(dag.size() > 20000){
                         HashSet<MachineState> marked =  new HashSet<>();
                         System.out.println("Size of dag before sweep: " + dag.size());
                         mark(root, marked);
@@ -229,23 +322,24 @@ public final class MCTSDAG extends Thread {
                         System.out.println("Size of dag after sweep: " + dag.size());
                     }
                     return;
-                }
+                        }
             }
-
-
-                
         }
         throw new IllegalStateException("A move was selected that was not one of the root node moves");
     }
+
+    //}
+    //Clean up for dag{
     private void sweep(HashSet<MachineState> marked){
-        ArrayList<MachineState> remove = new ArrayList<>();
-        for(MachineState state : dag.keySet()){
-            if(!marked.contains(state)){
-                remove.add(state);
+        Iterator<Map.Entry<MachineState, MCMove>> it = dag.entrySet().iterator();
+        long time = System.currentTimeMillis();
+        while(it.hasNext()){
+            if(!marked.contains(it.next().getKey())){
+                it.remove();
+                if((System.currentTimeMillis() - time) > 100){
+                    break;
+                }
             }
-        }
-        for(MachineState state : remove){
-            dag.remove(state);
         }
     }
 
@@ -253,14 +347,13 @@ public final class MCTSDAG extends Thread {
         if(node.leaf()){
             return;
         }
-        if(dag.containsKey(node.state)){
-            marked.add(node.state);
-        }
+        marked.add(node.state);
         for (MCMove child : node.children.values()){
             mark(child, marked);
         }
     }
-
+    //}
+    //Helper functions {
 
     // private void printTree(String indent, MCMove node){
     //     System.out.println(indent + node);
@@ -275,9 +368,31 @@ public final class MCTSDAG extends Thread {
     // public void printTree(){
     //     printTree("", root);
     // }
-    
+    //
+    private void checkHeap(){
+        if(((runtime.totalMemory() - runtime.freeMemory())/((float)runtime.maxMemory())) >= 0.85f){
+            expanding = false;
+        } else {
+            expanding = true;
+        }
+    }
+
     public String SSRatio(){
         return root.SSRatio();
+    }
+    
+    private List<Double> getGoalsAsDouble(MachineState state)throws GoalDefinitionException{
+            List<Double> result = new ArrayList<>();
+            for(Integer inte : machine.getGoals(state)){
+                result.add((double)inte);
+            }
+            return result;
+    }
+
+    private void applyDiscount(List<Double> lis){
+        for(int i = 0; i < lis.size(); ++i){
+            lis.set(i, lis.get(i) * discount);
+        }
     }
 
     public String baseEval(){
@@ -285,17 +400,17 @@ public final class MCTSDAG extends Thread {
         synchronized(root){
             DecimalFormat f = new DecimalFormat("#.##f");
             for(Map.Entry<List<Move>, MCMove> entry : root.children.entrySet()){
-                result += "("; 
+                result += "(";
                 result += "m:" + entry.getKey();
                 result += " n:" + entry.getValue().n();
-                result += " v:[" + f.format(root.calcValue(0, entry.getValue())) + " " + 
-                          f.format(root.calcValue(1, entry.getValue())) + "]";
+                result += " v:[" + f.format(root.calcValue(0, entry.getValue())) + " " +
+                    f.format(root.calcValue(1, entry.getValue())) + "]";
                 result += ") ";
             }
         }
         return result;
-
     }
+
 
     /**
      * @return the size of the tree
@@ -309,7 +424,9 @@ public final class MCTSDAG extends Thread {
      * Breaks the searcher out of his loop
      */
     public void shutdown(){
+        dag = new HashMap<>(100000);
+        mast = new HashMap<>();
         alive = false;
     }
-
+    //}
 }

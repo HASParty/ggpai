@@ -18,6 +18,7 @@ import gamer.MCTS.MCMove;
 
 public class MCMoveTest extends TestCase {
     protected MCMove node;
+    private static final double DELTA = 1e-15;
 
     protected void setUp(){
         ArrayList<Move> moves = new ArrayList<>();
@@ -48,13 +49,13 @@ public class MCMoveTest extends TestCase {
     }
 
     public void testUpdate(){
-        node.update(Arrays.asList(new Integer[] {100, 0}));
-        node.update(Arrays.asList(new Integer[] {100, 0}));
-        node.update(Arrays.asList(new Integer[] {50, 50}));
-        node.update(Arrays.asList(new Integer[] {50, 50}));
-        node.update(Arrays.asList(new Integer[] {0, 100}));
-        assertEquals(300, node.w(0));
-        assertEquals(200, node.w(1));
+        node.update(Arrays.asList(new Double[] {100.0d, 0.0d}));
+        node.update(Arrays.asList(new Double[] {100.0d, 0.0d}));
+        node.update(Arrays.asList(new Double[] {50.0d, 50.0d}));
+        node.update(Arrays.asList(new Double[] {50.0d, 50.0d}));
+        node.update(Arrays.asList(new Double[] {0.0d, 100.0d}));
+        assertEquals(300, node.w(0), DELTA);
+        assertEquals(200, node.w(1), DELTA);
         assertEquals(5, node.n());
     }
 

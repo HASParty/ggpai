@@ -35,6 +35,8 @@ public final class MCTS extends Thread {
     protected StateMachineGamer gamer;
     protected StateMachine machine;
     protected MCMove root;
+    private long accum;
+    private long count;
     public boolean silent;
     public List<Move> newRoot;
     boolean debug = false;
@@ -77,6 +79,8 @@ public final class MCTS extends Thread {
                     if (debug){
                         // printTree(); //Print our new tree
                     }
+                    accum = 0;
+                    count = 0;
                 }
                 checkHeap();
                 search(root, gamer.getCurrentState());
@@ -107,14 +111,14 @@ public final class MCTS extends Thread {
      *
      * @return The simulated value of this node for each player from one simulation.
      */
-    private List<Integer> search(MCMove node, MachineState state) throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException{
-        List<Integer> result;
+    private List<Double> search(MCMove node, MachineState state) throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException{
+        List<Double> result;
         if(!node.equals(root)){ //If we aren't at the root we change states
             state = node.state;
         }
         if(node.terminal || machine.isTerminal(state)){
             if(node.goals == null){
-                node.goals = machine.getGoals(state); //Decreasing terminal calls
+                node.goals = getGoalsAsDouble(state);
                 node.terminal = true;
             }
             MCMove.N++;
@@ -146,9 +150,12 @@ public final class MCTS extends Thread {
      *
      * @return The results of the depth charge for each player
      */
-    private List<Integer> playOut(MachineState state) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
-        state = machine.performDepthCharge(state, new int[1]);
-        return machine.getGoals(state);
+    private List<Double> playOut(MachineState state) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
+        int[] depth = new int[1];
+        state = machine.performDepthCharge(state, depth);
+        accum += depth[0];
+        count++;
+        return getGoalsAsDouble(state);
         // List<Future<List<Integer>>> list = new ArrayList<Future<List<Integer>>>();
         // for (int i = 0; i < threads; i++){
         //     Callable<List<Integer>> worker = new Play(state, machine);
@@ -226,6 +233,7 @@ public final class MCTS extends Thread {
     public void applyMove(List<Move> moves)  {
         if (!silent){
             System.out.println("The applied move !: " + moves.toString());
+            System.out.println("Average playout depth: " + (accum / (float)count));
         }
         synchronized(root){
             int mb = 1024*1024;
@@ -297,6 +305,14 @@ public final class MCTS extends Thread {
      */
     public long size(){
         return root.size();
+    }
+
+    private List<Double> getGoalsAsDouble(MachineState state)throws GoalDefinitionException{
+            List<Double> result = new ArrayList<>();
+            for(Integer inte : machine.getGoals(state)){
+                result.add((double)inte);
+            }
+            return result;
     }
 
 

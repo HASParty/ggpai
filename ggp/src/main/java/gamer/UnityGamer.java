@@ -31,8 +31,7 @@ import gamer.MCTS.MCTS;
  * UnityGamer is a special snowflake that does not work with a normal GGP server or the kiosk 
  */
 
-public class UnityGamer extends StateMachineGamer
-{
+public class UnityGamer extends StateMachineGamer {
     protected MCTS mcts;
     private Role other;
     public boolean silent = false;
