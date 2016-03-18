@@ -276,6 +276,7 @@ public class FaceControllerII : MonoBehaviour {
             foreach(var key in valGoal.Keys)
             {
                 Vector3 tinyError = new Vector3(Random.Range(l, u), Random.Range(l, u), Random.Range(l, u));
+                tinyError.Scale(valenceWeight);
                 var vec = Vector3.Scale(valGoal[key], valenceWeight);
                 if (offset.GoalPos.ContainsKey(key)) offset.GoalPos[key] = vec + Vector3.Scale(vec, tinyError);
                 else offset.GoalPos.Add(key, vec + Vector3.Scale(valGoal[key], tinyError));
@@ -283,6 +284,7 @@ public class FaceControllerII : MonoBehaviour {
             foreach (var key in aroGoal.Keys)
             {
                 Vector3 tinyError = new Vector3(Random.Range(l, u), Random.Range(l, u), Random.Range(l, u));
+                tinyError.Scale(arousalWeight);
                 var vec = Vector3.Scale(aroGoal[key], arousalWeight);
                 if (offset.GoalPos.ContainsKey(key)) offset.GoalPos[key] += vec + Vector3.Scale(vec, tinyError);
                 else offset.GoalPos.Add(key, vec + Vector3.Scale(aroGoal[key], tinyError));

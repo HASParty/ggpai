@@ -55,23 +55,67 @@ namespace Boardgame.Agent {
         private float myUCTavg;
         private float foeUCTavg;
         //add standard deviation for simulations, running average for UCT, etc
-        public void EvaluateConfidence(float firstUCT, float secondUCT, int StdDeviations) {
-            float myUCT, foeUCT, uctDiff, positivity;
+        public void EvaluateConfidence(Networking.FeedData d, bool isMyTurn) {
+            float myUCT, foeUCT, uctDiff, valence, arousal;
+            valence = 0;
+            arousal = 0;
             if(player == Player.First) {
-                myUCT = firstUCT;
-                foeUCT = secondUCT;
+                myUCT = d.FirstUCT;
+                foeUCT = d.SecondUCT;
             } else {
-                myUCT = secondUCT;
-                foeUCT = firstUCT;
+                myUCT = d.SecondUCT;
+                foeUCT = d.FirstUCT;
             }
 
             uctDiff = myUCT - foeUCT;
 
+            
+            if(isMyTurn) {
+                //this is a promising move for me which I'm disproportionately simulating
+                if (d.SimulationStdDev >= 2.5) {
+                    if (myUCT > foeUCT) {
+                        Debug.Log("likes");
+                        if (pm.GetArousal() < Config.Neutral) arousal += 15;
+                        valence += 0.2f;
+                        arousal += 0.25f;
+                    } else { //my best move isn't even in my favour
+                        Debug.Log("no no no");
+                        if (pm.GetArousal() < Config.Neutral) arousal += 15;
+                        valence -= 0.2f;
+                        arousal += 0.25f;
+                    }
+                } else if (d.SimulationStdDev < 2.5f) {
+                    if (myUCT > foeUCT) {
+                        Debug.Log("thinks is pretty decent");
+                        valence += 0.1f;
+                        arousal += 0.1f;
+                    } else { //my best move isn't even in my favour
+                        Debug.Log("ehhhh");
+                        valence -= 0.1f;
+                        arousal += 0.12f;
+                    }
+                } else if (d.SimulationStdDev < 2f) { 
+                    //moves are pretty even for me, in my favour, so I'm feeling calm
+                    if (myUCT > foeUCT) {
+                        Debug.Log("chillax");
+                        if (pm.GetArousal() > Config.Neutral) arousal -= 15;
+                        arousal -= 0.3f;
+                        valence += 0.1f;
+                    } else {
+                        //pretty uniformly bad for me eh
+                        Debug.Log("sadness...");
+                        if (pm.GetArousal() > Config.Neutral) arousal -= 15;
+                        arousal -= 0.3f;
+                        valence -= 0.1f;
+                    }
+                }
+            }
+
             //game unique weights here affecting the factors?
             //differences in how much confidence bounds vary between games
-            positivity = uctDiff * 0.05f;
+            valence += uctDiff * 0.05f;
         
-            pm.Evaluate(positivity, 0);
+            pm.Evaluate(valence, arousal);
 
         }
 
