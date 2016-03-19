@@ -30,6 +30,7 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
  * a tree made up of MCMove nodes.
  */
 public final class MCTSDAG extends Thread {
+    //Variables{
     //MCTS Enhancement variables {
     //MCTS DAG
     private HashMap<MachineState, MCMove> dag;
@@ -58,7 +59,8 @@ public final class MCTSDAG extends Thread {
 
     public boolean silent;
     //}
-
+    //}
+    //MCTSDAG(StateMachineGamer, ReadWriteLock, boolean){
     /**
      * Simple constructor
      *
@@ -73,7 +75,7 @@ public final class MCTSDAG extends Thread {
         lastPlayOutDepth = 0;
         playOutCount = 0;
         avgPlayOutDepth = 0;
-        discount = 0.997f;
+        discount = 0.999f;
 
         dag = new HashMap<>(20000);
         mast = new HashMap<>();
@@ -84,13 +86,14 @@ public final class MCTSDAG extends Thread {
         alive = true;
         this.lock = lock;
     }
+    //}
     //MCTS selection phase {
     @Override
     public void run(){
         int heapCheck = 0;
         //While we are alive we keep on searching
         System.out.println("Using MCTSDAG");
-        while(alive){
+        while(!Thread.currentThread().isInterrupted()){
             try {
                 if(limit > 0){
                     while(root.n() > limit && newRoot == null){
@@ -110,10 +113,13 @@ public final class MCTSDAG extends Thread {
                 heapCheck++;
                 search(root, gamer.getCurrentState());
                 lock.writeLock().unlock();
+            } catch (InterruptedException e) {
+
+                
             } catch (Exception e){
                 System.out.println("EXCEPTION: " + e.toString());
                 e.printStackTrace();
-                alive = false;
+                Thread.currentThread().interrupt();
             }
         }
         MCMove.reset(); //Reset N
@@ -142,7 +148,7 @@ public final class MCTSDAG extends Thread {
                 node.terminal = true;
             }
             MCMove.N++;
-            result = node.goals;
+            result = new ArrayList<>(node.goals);
         } else if (node.leaf()){
             if(expanding){
                 node.expand(machine.getLegalJointMoves(state));
@@ -260,7 +266,7 @@ public final class MCTSDAG extends Thread {
      * @return The best move at this point
      */
     public List<Move> selectMove() throws MoveDefinitionException {
-        System.out.println("dag used this turn: " + DagCounter);
+        System.out.println("Dag connections made this turn: " + DagCounter);
         DagCounter = 0;
         Map.Entry<List<Move>, MCMove> bestMove = null;
         if (!silent){
@@ -274,6 +280,7 @@ public final class MCTSDAG extends Thread {
                 bestMove = entry;
             }
         }
+            System.out.println("===============================================================================");
         if (!silent){
             System.out.println("------------------");
             System.out.println("Selecting: " + bestMove + " With " + bestMove.getValue().n() + " simulations");
@@ -424,9 +431,9 @@ public final class MCTSDAG extends Thread {
      * Breaks the searcher out of his loop
      */
     public void shutdown(){
+        alive = false;
         dag = new HashMap<>(100000);
         mast = new HashMap<>();
-        alive = false;
     }
     //}
 }

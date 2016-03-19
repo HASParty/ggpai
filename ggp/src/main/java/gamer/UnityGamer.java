@@ -80,10 +80,7 @@ public class UnityGamer extends StateMachineGamer {
 
     @Override
     public void stateMachineStop() {
-        mcts.shutdown();
-        if(!silent){
-            System.out.println("Shutting down vie Stop");
-        }
+        mcts.interrupt();
         try{
             mcts.join();
         } catch (Exception e){}
@@ -93,14 +90,12 @@ public class UnityGamer extends StateMachineGamer {
 
     @Override
     public void stateMachineAbort() {
-        mcts.shutdown();
-        if(!silent){
-            System.out.println("Shutting down vie Abort");
-        }
+        mcts.interrupt();
         try{
             mcts.join();
         } catch (Exception e){}
         mcts = null;
+        // Sample gamers do no special cleanup when the match ends normally.
         // Sample gamers do no special cleanup when the match ends abruptly.
     }
 

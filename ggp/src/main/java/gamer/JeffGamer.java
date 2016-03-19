@@ -70,7 +70,7 @@ public class JeffGamer extends StateMachineGamer {
 
     @Override
     public void stateMachineStop() {
-        mcts.shutdown();
+        mcts.interrupt();
         try{
             mcts.join();
         } catch (Exception e){}
@@ -80,6 +80,12 @@ public class JeffGamer extends StateMachineGamer {
 
     @Override
     public void stateMachineAbort() {
+        mcts.interrupt();
+        try{
+            mcts.join();
+        } catch (Exception e){}
+        mcts = null;
+        // Sample gamers do no special cleanup when the match ends normally.
         // Sample gamers do no special cleanup when the match ends abruptly.
     }
 
