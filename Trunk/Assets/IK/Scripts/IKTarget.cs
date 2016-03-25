@@ -1,17 +1,15 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace IK {
+    public enum IKHandShape {
+        ThreePointContact, //GO shape
+        SimpleFingerGrab,
+        HandWrap
+    }
+
     public class IKTarget : MonoBehaviour {
-
-        // Use this for initialization
-        void Start() {
-
-        }
-
-        // Update is called once per frame
-        void Update() {
-
-        }
+        public IKHandShape HandShape;
+        public List<IKContactPoint> ContactPoints;
     }
 }

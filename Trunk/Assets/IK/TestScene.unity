@@ -274,6 +274,147 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a3c94dfac0118524e850500aa65c920f, type: 3}
   m_IsPrefabParent: 0
+--- !u!1 &1218978391 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100000, guid: a3c94dfac0118524e850500aa65c920f, type: 3}
+  m_PrefabInternal: {fileID: 1218978390}
+--- !u!1 &1218978392 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100142, guid: a3c94dfac0118524e850500aa65c920f, type: 3}
+  m_PrefabInternal: {fileID: 1218978390}
+--- !u!1 &1218978393 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100140, guid: a3c94dfac0118524e850500aa65c920f, type: 3}
+  m_PrefabInternal: {fileID: 1218978390}
+--- !u!1 &1218978394 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100132, guid: a3c94dfac0118524e850500aa65c920f, type: 3}
+  m_PrefabInternal: {fileID: 1218978390}
+--- !u!1 &1218978395 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100034, guid: a3c94dfac0118524e850500aa65c920f, type: 3}
+  m_PrefabInternal: {fileID: 1218978390}
+--- !u!1 &1218978396 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100032, guid: a3c94dfac0118524e850500aa65c920f, type: 3}
+  m_PrefabInternal: {fileID: 1218978390}
+--- !u!1 &1218978397 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 100024, guid: a3c94dfac0118524e850500aa65c920f, type: 3}
+  m_PrefabInternal: {fileID: 1218978390}
+--- !u!114 &1218978398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1218978391}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd5efa668e893ba4ea67d248a5eab99f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Pairs:
+  - ID: LeftArm
+    Upper: {fileID: 1218978404}
+    Lower: {fileID: 1218978403}
+    Damping: 0
+    Type: 1
+    Target: {fileID: 0}
+    TargetOrientationUpper: {x: 0, y: 0, z: 0, w: 0}
+    TargetOrientationLower: {x: 0, y: 0, z: 0, w: 0}
+  - ID: RightArm
+    Upper: {fileID: 1218978401}
+    Lower: {fileID: 1218978400}
+    Damping: 0
+    Type: 1
+    Target: {fileID: 0}
+    TargetOrientationUpper: {x: 0, y: 0, z: 0, w: 0}
+    TargetOrientationLower: {x: 0, y: 0, z: 0, w: 0}
+  OverrideHeadLook: 0
+--- !u!114 &1218978399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1218978392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc9dcfddf82472542bd6f865e42968ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: RHand
+  RotationConstraintsUpper: {x: 0, y: 0, z: 0}
+  RotationConstraintsLower: {x: 0, y: 0, z: 0}
+--- !u!114 &1218978400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1218978393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc9dcfddf82472542bd6f865e42968ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: RLowerArm
+  RotationConstraintsUpper: {x: 0, y: 0, z: 0}
+  RotationConstraintsLower: {x: 0, y: 0, z: 0}
+--- !u!114 &1218978401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1218978394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc9dcfddf82472542bd6f865e42968ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: RUpperArm
+  RotationConstraintsUpper: {x: 0, y: 0, z: 0}
+  RotationConstraintsLower: {x: 0, y: 0, z: 0}
+--- !u!114 &1218978402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1218978395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc9dcfddf82472542bd6f865e42968ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: LHand
+  RotationConstraintsUpper: {x: 0, y: 0, z: 0}
+  RotationConstraintsLower: {x: 0, y: 0, z: 0}
+--- !u!114 &1218978403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1218978396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc9dcfddf82472542bd6f865e42968ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: LLowerArm
+  RotationConstraintsUpper: {x: 0, y: 0, z: 0}
+  RotationConstraintsLower: {x: 0, y: 0, z: 0}
+--- !u!114 &1218978404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1218978397}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc9dcfddf82472542bd6f865e42968ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ID: LUpperArm
+  RotationConstraintsUpper: {x: 0, y: 0, z: 0}
+  RotationConstraintsLower: {x: 0, y: 0, z: 0}
 --- !u!1 &1416171269
 GameObject:
   m_ObjectHideFlags: 0
