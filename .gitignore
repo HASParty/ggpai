@@ -38,3 +38,5 @@ Trunk/Trunk.userprefs
 Trunk/Trunk.sln
 *.iml
 .gradle/
+Debug/
+x64/
