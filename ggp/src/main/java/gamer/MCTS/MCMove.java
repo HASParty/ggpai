@@ -13,9 +13,10 @@ import org.ggp.base.util.statemachine.Move;
 /**
  * A basic Monte Carlo move wrapper with UCT
  */
-public class MCMove {
+@SuppressWarnings("serial")
+public class MCMove implements java.io.Serializable{
     private static DecimalFormat f = new DecimalFormat("#######.##E0");;
-    private final static double C = 40; //Exploration constant
+    private final static double C = 60; //Exploration constant
     private double[] wins;
     private long n; //how often this node has been selected
     private int size;

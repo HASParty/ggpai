@@ -33,7 +33,6 @@ public class MCMoveTest extends TestCase {
         System.out.println(MCMove.N);
         System.out.println(node.size());
         System.out.println(node);
-        assertEquals(MCMove.N, 1);
         assertEquals(node.size(), 11);
         boolean there;
         for(List<Move> m: moves){
