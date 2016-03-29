@@ -32,6 +32,8 @@ namespace IK {
     public class IKConfig : MonoBehaviour {
         public List<IKSegmentPair> Pairs;
         private Dictionary<string, IKSegmentPair> pairLookup;
+
+        public IKTarget Goal;
          
         [Header("General Config")]
         public bool OverrideHeadLook;
@@ -41,6 +43,8 @@ namespace IK {
             foreach(var pair in Pairs) {
                 pairLookup.Add(pair.ID, pair);
             }
+
+            Debug.Log(IKCCD.TwoLinkCCD(Pairs[0].Upper, Pairs[0].Lower, Goal));
         }
 
         public void ScheduleContact(bool rightHand, IKTarget IKGoal, float duration) {
