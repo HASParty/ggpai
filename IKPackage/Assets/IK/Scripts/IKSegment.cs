@@ -2,7 +2,6 @@
 using System.Collections;
 namespace IK {
     public class IKSegment : MonoBehaviour {
-        public string ID;
         [SerializeField]
         private Vector3 RotationConstraints;
 

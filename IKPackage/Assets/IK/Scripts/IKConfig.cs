@@ -5,7 +5,8 @@ namespace IK {
     public class IKConfig : MonoBehaviour {
         [System.Serializable]
         public struct Arm {
-            public IKSegment UpperArm,
+            public IKSegment Shoulder, 
+                             UpperArm,
                              LowerArm,
                              Hand,
                              IndexFinger,

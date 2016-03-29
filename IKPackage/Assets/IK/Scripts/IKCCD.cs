@@ -6,24 +6,41 @@ using UnityEngine;
 
 namespace IK {
     public class IKLink {
-        public IKLink(Vector3 rotation, Vector3 position) {
-            this.rotation = rotation;
-            this.position = position;
+        public IKLink(Transform copy, Quaternion constraints) {
+            GameObject go = new GameObject();
+            transform = go.transform;
+            //not sure if it copies or is a reference
+            transform.rotation = copy.rotation;
+            transform.position = copy.position;
+            //I hope this works
+            transform.localScale = copy.localScale;
+            this.constraints = constraints;   
         }
 
-        public Vector3 rotation;
-        public Vector3 position;
+        public Transform transform;
+        public Quaternion constraints;
     }
 
     public class IKCCD {
         
+        private IKLink[] createLinks(IKSegment[] segments) {
+            IKLink[] links = new IKLink[segments.Length];
+            IKLink previous = null;
+            foreach(IKSegment s in segments) {
+                IKLink link = new IKLink(s.transform, s.GetConstraints());
+                if(previous != null) {
+                    link.transform.SetParent(previous.transform);
+                }
+            }
 
-        public static bool TwoLinkCCD(IKSegment baseLink, IKSegment endLink, IKTarget target) {
-            int loops = 10;
-            IKLink[] links = new IKLink[2];
-            links[0] = new IKLink(endLink.transform.eulerAngles, endLink.transform.position);
-            links[1] = new IKLink(baseLink.transform.eulerAngles, baseLink.transform.position);
+            return links;
+        }
 
+        private void destroyLinks(IKLink[] links) {
+            if(links.Length > 0) GameObject.Destroy(links[0].transform.gameObject);
+        }
+
+        public static bool CCD(IKSegment[] segments, IKTarget target) {
             return true;
         }
 
