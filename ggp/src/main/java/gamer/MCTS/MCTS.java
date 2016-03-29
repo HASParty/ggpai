@@ -65,7 +65,7 @@ public final class MCTS extends Thread {
     public void run(){
         //While we are alive we keep on searching
         System.out.println("Using MCTS");
-        while(alive){
+        while(!Thread.currentThread().isInterrupted()){
             try {
                 if(limit > 0){
                     while(root.n() > limit && newRoot == null){
@@ -85,13 +85,15 @@ public final class MCTS extends Thread {
                 checkHeap();
                 search(root, gamer.getCurrentState());
                 lock.writeLock().unlock();
+            } catch (InterruptedException e) {
+                System.out.println("this never seems to happen?");
             } catch (Exception e){
                 System.out.println("EXCEPTION: " + e.toString());
                 e.printStackTrace();
-                alive = false;
+                Thread.currentThread().interrupt();
             }
         }
-        MCMove.reset(); //Reset N
+        System.out.println("this never seems to happen?");
     }
 
     private void checkHeap(){
