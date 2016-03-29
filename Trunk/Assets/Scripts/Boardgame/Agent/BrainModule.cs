@@ -51,12 +51,14 @@ namespace Boardgame.Agent {
             }
         }
 
-        //running averages
-        private float myUCTavg;
-        private float foeUCTavg;
+        //running 'averages'
+        private float myUCTavg = 0;
+        private int its = 0;
+        private float foeUCTavg = 0;
         //add standard deviation for simulations, running average for UCT, etc
         public void EvaluateConfidence(Networking.FeedData d, bool isMyTurn) {
             float myUCT, foeUCT, uctDiff, valence, arousal;
+            float mySwing, foeSwing;
             valence = 0;
             arousal = 0;
             if(player == Player.First) {
@@ -68,7 +70,11 @@ namespace Boardgame.Agent {
             }
 
             uctDiff = myUCT - foeUCT;
-
+            var last = myUCTavg;
+            //need to observe how these change
+            myUCTavg = (myUCTavg * its * Config.UCTDecay + myUCT) / (its + 1);
+            Debug.LogFormat("{0} vs {1}", last, myUCTavg);
+            foeUCTavg = (foeUCTavg * its * Config.UCTDecay + myUCT) / (its + 1);
             
             if(isMyTurn) {
                 //this is a promising move for me which I'm disproportionately simulating
@@ -116,6 +122,8 @@ namespace Boardgame.Agent {
             valence += uctDiff * 0.05f;
         
             pm.Evaluate(valence, arousal);
+
+            its++;
 
         }
 
