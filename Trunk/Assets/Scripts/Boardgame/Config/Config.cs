@@ -15,6 +15,8 @@ namespace Boardgame.Configuration {
         public static int Neutral = 1;
         public static int High = 2;
 
+        public static float UCTDecay = 0.9f;
+
         public static int Extraversion = Neutral;
         public static int Agreeableness = Neutral;
         public static int Neuroticism = Neutral;
@@ -73,5 +75,7 @@ namespace Boardgame.Configuration {
                     break;
             }
         }
+
+
     }
 }
