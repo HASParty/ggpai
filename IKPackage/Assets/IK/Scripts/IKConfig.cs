@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 namespace IK {
 
     public class IKConfig : MonoBehaviour {
@@ -28,30 +29,34 @@ namespace IK {
         //if using headlookcontroller tries to override, just uncheck
         //or make sure headlookcontroller executes after
         public bool AffectHead;
-        List<IKSegment> segs = new List<IKSegment>();
-        void Awake() {            
-            segs.Add(Left.Shoulder);
-            segs.Add(Left.UpperArm);
-            segs.Add(Left.LowerArm);
-            segs.Add(Left.Hand);
-        }
+        List<IKSegment> LeftArm = new List<IKSegment>();
+        void Awake() {
+            LeftArm.Add(Left.Shoulder);
+            LeftArm.Add(Left.UpperArm);
+            LeftArm.Add(Left.LowerArm);
+            LeftArm.Add(Left.Hand);
 
-        Vector3 lastPos = Vector3.zero;
-        void Update() {
-            if(lastPos != Goal.transform.position) {
-                IKCCD.CCD(segs.ToArray(), Goal);
-                lastPos = Goal.transform.position;
-            }
-            
+            ScheduleContact(false, Goal, 5f);
         }
 
         public void ScheduleContact(bool rightHand, IKTarget IKGoal, float duration) {
-            //TODO: resolve for all relevant segments that are available
+            if(IKCCD.CCD(LeftArm.ToArray(), IKGoal)) {
+                float fun = 0f;
+                foreach (IKSegment segment in LeftArm) {
+                    StartCoroutine(ScheduleIK(segment, fun, duration));
+                    fun += 0.5f;
+                }
+            }
         }
 
-        void ScheduleIK(string segmentID, Quaternion rotationGoal, float delay = 0f, float duration = 1f) {
-            //helper routine
+        IEnumerator ScheduleIK(IKSegment segment, float delay = 0f, float duration = 1f) {
+            yield return new WaitForSeconds(delay);
+            float elapsed = 0f;
+            while(elapsed <= duration) {
+                segment.RotateStep(elapsed / duration);
+                yield return new WaitForEndOfFrame();
+                elapsed += Time.deltaTime;
+            }
         }
-
     }
 }

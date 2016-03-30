@@ -13,30 +13,21 @@ namespace IK {
         private Quaternion targetRotation;
 
         void Awake() {
-            originalRotation = transform.localRotation;
+            originalRotation = transform.rotation;
         }
 
-        float elapsed = 0f;
-        float duration = 0f; 
-        void Update() {
-            elapsed += Time.deltaTime;
-            if(elapsed <= duration) RotateStep(elapsed / duration);
-        }
-
-        public Vector3 GetBaseEuler() {
-            return originalRotation.eulerAngles;
+        public Quaternion GetBaseRotation() {
+            return originalRotation;
         }
 
         public void SetTargetRotation(Quaternion newTarget) {
             targetRotation = newTarget;
-            lastRotation = transform.rotation;
-            elapsed = 0f;
-            duration = 1f;
+            lastRotation = transform.localRotation;
             //Debug.LogFormat("wanna rot {0} from {1}", targetRotation.eulerAngles, lastRotation.eulerAngles);
         }
 
         public void RotateStep(float t) {
-            transform.rotation = Quaternion.Lerp(lastRotation, targetRotation, t);
+            transform.localRotation = Quaternion.Lerp(lastRotation, targetRotation, t);
         }
     }
 }

@@ -23,7 +23,7 @@ namespace IK {
     }
 
     public class IKCCD {
-        
+
         private static IKLink[] createLinks(IKSegment[] segments) {
             IKLink[] links = new IKLink[segments.Length];
             IKLink previous = null;
@@ -44,14 +44,15 @@ namespace IK {
             if(links.Length > 0) GameObject.Destroy(links[0].transform.gameObject);
         }
 
-        private static void constrainLink(IKLink link, Quaternion previous) {
+        private static void constrainLink(IKLink link) {
             if (!link.segRef.Constrain) return;
-            Vector3 expected = link.transform.localEulerAngles;
-            Vector3 baseRot = link.segRef.GetBaseEuler();
+            Vector3 expected = link.transform.rotation.eulerAngles;
+            Vector3 baseRot = link.segRef.GetBaseRotation().eulerAngles;
             Vector3 min = baseRot + link.segRef.RotationConstraintsMin;
             Vector3 max = baseRot + link.segRef.RotationConstraintsMax;
-            //fix
-            //Debug.LogFormat("{3} {0} {1} {2}", euler, link.constrainMax, link.constrainMin, link.transform.name);
+            expected.x = Mathf.Clamp(expected.x, min.x, max.x);
+            expected.y = Mathf.Clamp(expected.y, min.y, max.y);
+            expected.z = Mathf.Clamp(expected.z, min.z, max.z);
             link.transform.localRotation = Quaternion.Euler(expected.x, expected.y, expected.z);
         }
 
@@ -76,11 +77,8 @@ namespace IK {
                         float turn = Mathf.Min(Mathf.Rad2Deg * Mathf.Acos(cosAngle), root.segRef.DampDegrees);
                        
                         Quaternion result = Quaternion.AngleAxis(turn, cross);
-                        Quaternion old = root.transform.rotation;
                         root.transform.rotation = result*root.transform.rotation;
-                        //Debug.Log(root.localEulerAngles);
-                        constrainLink(links[link], old);
-                        //Debug.Log(root.localEulerAngles);
+                        //constrainLink(links[link]);
                     }
 
                     link--;
@@ -93,7 +91,7 @@ namespace IK {
 
            if (success) {
                 for (int i = 0; i < links.Length; i++) {
-                    segments[i].SetTargetRotation(links[i].transform.rotation);
+                    segments[i].SetTargetRotation(links[i].transform.localRotation);
                 }
            }
 
