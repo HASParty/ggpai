@@ -6,19 +6,20 @@ using UnityEngine;
 
 namespace IK {
     public class IKLink {
-        public IKLink(Transform copy, Quaternion constraints) {
+        public IKLink(IKSegment copy) {
             GameObject go = new GameObject();
             transform = go.transform;
+            go.name = "Spoof"+copy.name;
             //not sure if it copies or is a reference
-            transform.rotation = copy.rotation;
-            transform.position = copy.position;
+            transform.rotation = copy.transform.rotation;
+            transform.position = copy.transform.position;
             //I hope this works
-            transform.localScale = copy.localScale;
-            this.constraints = constraints;   
+            transform.localScale = copy.transform.localScale;
+            segRef = copy;
         }
 
         public Transform transform;
-        public Quaternion constraints;
+        public IKSegment segRef;
     }
 
     public class IKCCD {
@@ -27,10 +28,13 @@ namespace IK {
             IKLink[] links = new IKLink[segments.Length];
             IKLink previous = null;
             for(int i = 0; i < links.Length; i++) {
-                links[i] = new IKLink(segments[i].transform, segments[i].GetConstraints());
+                links[i] = new IKLink(segments[i]);
                 if(previous != null) {
                     links[i].transform.SetParent(previous.transform);
+                } else {
+                    links[i].transform.SetParent(segments[0].transform.parent);
                 }
+                previous = links[i];
             }
 
             return links;
@@ -38,6 +42,17 @@ namespace IK {
 
         private static void destroyLinks(IKLink[] links) {
             if(links.Length > 0) GameObject.Destroy(links[0].transform.gameObject);
+        }
+
+        private static void constrainLink(IKLink link, Quaternion previous) {
+            if (!link.segRef.Constrain) return;
+            Vector3 expected = link.transform.localEulerAngles;
+            Vector3 baseRot = link.segRef.GetBaseEuler();
+            Vector3 min = baseRot + link.segRef.RotationConstraintsMin;
+            Vector3 max = baseRot + link.segRef.RotationConstraintsMax;
+            //fix
+            //Debug.LogFormat("{3} {0} {1} {2}", euler, link.constrainMax, link.constrainMin, link.transform.name);
+            link.transform.localRotation = Quaternion.Euler(expected.x, expected.y, expected.z);
         }
 
         public static bool CCD(IKSegment[] segments, IKTarget target) {
@@ -48,25 +63,24 @@ namespace IK {
             int link = links.Length - 1;
             bool success = false;
 
-            for(int i = 0; i < links.Length; i++) { 
-                Vector3 root = links[link].transform.position;
-
+            for(int i = 0; i < links.Length*30; i++) { 
+                IKLink root = links[link];
                 if (Vector3.Distance(end.transform.position, target.transform.position) > 0.05f) {
-                    Vector3 currentVector = end.transform.position - root;
-                    Vector3 targetVector = target.transform.position - root;
-
-                    currentVector.Normalize();
-                    targetVector.Normalize();
+                    Vector3 currentVector = (end.transform.position - root.transform.position).normalized;
+                    Vector3 targetVector = (target.transform.position - root.transform.position).normalized;
 
                     float cosAngle = Vector3.Dot(targetVector, currentVector);
 
-                    if (cosAngle < 1f) {
+                    if (cosAngle < 0.9999f) {
                         Vector3 cross = Vector3.Cross(currentVector, targetVector).normalized;
-                        float turn = Mathf.Acos(cosAngle);
-                        //TODO: damp turn if damping
+                        float turn = Mathf.Min(Mathf.Rad2Deg * Mathf.Acos(cosAngle), root.segRef.DampDegrees);
+                       
                         Quaternion result = Quaternion.AngleAxis(turn, cross);
-                        links[link].transform.rotation = links[link].transform.rotation * result;
-                        //TODO: DOF restrictions
+                        Quaternion old = root.transform.rotation;
+                        root.transform.rotation = result*root.transform.rotation;
+                        //Debug.Log(root.localEulerAngles);
+                        constrainLink(links[link], old);
+                        //Debug.Log(root.localEulerAngles);
                     }
 
                     link--;
@@ -77,14 +91,13 @@ namespace IK {
                 }
             }
 
-            //if (success) {
-            //    Debug.Log("YAY");
+           if (success) {
                 for (int i = 0; i < links.Length; i++) {
                     segments[i].SetTargetRotation(links[i].transform.rotation);
                 }
-            //}
+           }
 
-            Debug.Log("Donezo");
+            destroyLinks(links);
 
             return success;
         }

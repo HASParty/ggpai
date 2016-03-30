@@ -2,26 +2,37 @@
 using System.Collections;
 namespace IK {
     public class IKSegment : MonoBehaviour {
-        [SerializeField]
-        private Vector3 RotationConstraints;
+        public Vector3 RotationConstraintsMax;
+        public Vector3 RotationConstraintsMin;
+        public float DampDegrees;
+
+        public bool Constrain = true;
 
         private Quaternion originalRotation;
         private Quaternion lastRotation;
         private Quaternion targetRotation;
 
         void Awake() {
-            originalRotation = transform.rotation;
+            originalRotation = transform.localRotation;
         }
 
-        public Quaternion GetConstraints() {
-            return Quaternion.Euler(RotationConstraints);
+        float elapsed = 0f;
+        float duration = 0f; 
+        void Update() {
+            elapsed += Time.deltaTime;
+            if(elapsed <= duration) RotateStep(elapsed / duration);
+        }
+
+        public Vector3 GetBaseEuler() {
+            return originalRotation.eulerAngles;
         }
 
         public void SetTargetRotation(Quaternion newTarget) {
             targetRotation = newTarget;
             lastRotation = transform.rotation;
-            Debug.LogFormat("wanna rot {0} from {1}", targetRotation.eulerAngles, lastRotation.eulerAngles);
-            transform.rotation = targetRotation;
+            elapsed = 0f;
+            duration = 1f;
+            //Debug.LogFormat("wanna rot {0} from {1}", targetRotation.eulerAngles, lastRotation.eulerAngles);
         }
 
         public void RotateStep(float t) {

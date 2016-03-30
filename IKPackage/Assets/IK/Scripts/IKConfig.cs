@@ -28,14 +28,21 @@ namespace IK {
         //if using headlookcontroller tries to override, just uncheck
         //or make sure headlookcontroller executes after
         public bool AffectHead;
-
-        void Awake() {
-            List<IKSegment> segs = new List<IKSegment>();
+        List<IKSegment> segs = new List<IKSegment>();
+        void Awake() {            
             segs.Add(Left.Shoulder);
             segs.Add(Left.UpperArm);
             segs.Add(Left.LowerArm);
             segs.Add(Left.Hand);
-            IKCCD.CCD(segs.ToArray(), Goal);
+        }
+
+        Vector3 lastPos = Vector3.zero;
+        void Update() {
+            if(lastPos != Goal.transform.position) {
+                IKCCD.CCD(segs.ToArray(), Goal);
+                lastPos = Goal.transform.position;
+            }
+            
         }
 
         public void ScheduleContact(bool rightHand, IKTarget IKGoal, float duration) {
