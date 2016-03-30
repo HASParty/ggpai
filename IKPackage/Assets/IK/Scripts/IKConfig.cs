@@ -30,7 +30,12 @@ namespace IK {
         public bool AffectHead;
 
         void Awake() {
-            
+            List<IKSegment> segs = new List<IKSegment>();
+            segs.Add(Left.Shoulder);
+            segs.Add(Left.UpperArm);
+            segs.Add(Left.LowerArm);
+            segs.Add(Left.Hand);
+            IKCCD.CCD(segs.ToArray(), Goal);
         }
 
         public void ScheduleContact(bool rightHand, IKTarget IKGoal, float duration) {

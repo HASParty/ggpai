@@ -23,25 +23,70 @@ namespace IK {
 
     public class IKCCD {
         
-        private IKLink[] createLinks(IKSegment[] segments) {
+        private static IKLink[] createLinks(IKSegment[] segments) {
             IKLink[] links = new IKLink[segments.Length];
             IKLink previous = null;
-            foreach(IKSegment s in segments) {
-                IKLink link = new IKLink(s.transform, s.GetConstraints());
+            for(int i = 0; i < links.Length; i++) {
+                links[i] = new IKLink(segments[i].transform, segments[i].GetConstraints());
                 if(previous != null) {
-                    link.transform.SetParent(previous.transform);
+                    links[i].transform.SetParent(previous.transform);
                 }
             }
 
             return links;
         }
 
-        private void destroyLinks(IKLink[] links) {
+        private static void destroyLinks(IKLink[] links) {
             if(links.Length > 0) GameObject.Destroy(links[0].transform.gameObject);
         }
 
         public static bool CCD(IKSegment[] segments, IKTarget target) {
-            return true;
+            var links = createLinks(segments);
+            if (links.Length < 2) return false;
+            IKLink end = links[links.Length - 1];
+
+            int link = links.Length - 1;
+            bool success = false;
+
+            for(int i = 0; i < links.Length; i++) { 
+                Vector3 root = links[link].transform.position;
+
+                if (Vector3.Distance(end.transform.position, target.transform.position) > 0.05f) {
+                    Vector3 currentVector = end.transform.position - root;
+                    Vector3 targetVector = target.transform.position - root;
+
+                    currentVector.Normalize();
+                    targetVector.Normalize();
+
+                    float cosAngle = Vector3.Dot(targetVector, currentVector);
+
+                    if (cosAngle < 1f) {
+                        Vector3 cross = Vector3.Cross(currentVector, targetVector).normalized;
+                        float turn = Mathf.Acos(cosAngle);
+                        //TODO: damp turn if damping
+                        Quaternion result = Quaternion.AngleAxis(turn, cross);
+                        links[link].transform.rotation = links[link].transform.rotation * result;
+                        //TODO: DOF restrictions
+                    }
+
+                    link--;
+
+                    if (link < 0) link = links.Length - 1;
+                } else {
+                    success = true;
+                }
+            }
+
+            //if (success) {
+            //    Debug.Log("YAY");
+                for (int i = 0; i < links.Length; i++) {
+                    segments[i].SetTargetRotation(links[i].transform.rotation);
+                }
+            //}
+
+            Debug.Log("Donezo");
+
+            return success;
         }
 
         private IKLink point(IKLink link, IKTarget target) {

@@ -20,6 +20,8 @@ namespace IK {
         public void SetTargetRotation(Quaternion newTarget) {
             targetRotation = newTarget;
             lastRotation = transform.rotation;
+            Debug.LogFormat("wanna rot {0} from {1}", targetRotation.eulerAngles, lastRotation.eulerAngles);
+            transform.rotation = targetRotation;
         }
 
         public void RotateStep(float t) {
