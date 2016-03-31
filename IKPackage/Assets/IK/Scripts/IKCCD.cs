@@ -6,16 +6,14 @@ using UnityEngine;
 
 namespace IK {
     public class IKLink {
-        public IKLink(IKSegment copy) {
+        public IKLink(IKSegment reference) {
             GameObject go = new GameObject();
             transform = go.transform;
-            go.name = "Spoof"+copy.name;
-            //not sure if it copies or is a reference
-            transform.rotation = copy.transform.rotation;
-            transform.position = copy.transform.position;
-            //I hope this works
-            transform.localScale = copy.transform.localScale;
-            segRef = copy;
+            go.name = "Spoof"+ reference.name;
+            go.transform.localScale = reference.transform.localScale;
+            go.transform.rotation = reference.transform.rotation;
+            go.transform.position = reference.transform.position;
+            segRef = reference;
         }
 
         public Transform transform;
@@ -24,13 +22,31 @@ namespace IK {
 
     public class IKCCD {
 
+        private static void connectTransform(Transform from, Transform to, Transform connectParent, Transform connectChild) {
+            Transform prev = connectChild;
+            Transform curr = to.parent;
+            while (from != curr) {
+               // Debug.Log(curr.name);
+                GameObject go = new GameObject();
+                go.name = "Spoof" + curr.name;
+                go.transform.SetParent(prev);
+                go.transform.localScale = curr.transform.localScale;
+                go.transform.rotation = curr.transform.rotation;
+                go.transform.position = curr.transform.position;
+                prev = go.transform;
+                curr = curr.parent;
+            }
+            connectParent.SetParent(prev);
+        }
+
         private static IKLink[] createLinks(IKSegment[] segments) {
             IKLink[] links = new IKLink[segments.Length];
             IKLink previous = null;
             for(int i = 0; i < links.Length; i++) {
                 links[i] = new IKLink(segments[i]);
                 if(previous != null) {
-                    links[i].transform.SetParent(previous.transform);
+                    //Debug.LogFormat("from {0} to {1}", previous.transform.name, links[i].transform.name);
+                    connectTransform(previous.segRef.transform, links[i].segRef.transform, links[i].transform, previous.transform);
                 } else {
                     links[i].transform.SetParent(segments[0].transform.parent);
                 }

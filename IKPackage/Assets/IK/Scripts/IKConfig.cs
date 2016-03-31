@@ -18,45 +18,95 @@ namespace IK {
 
         public Arm Left;
         public Arm Right;
-        public IKSegment Head,
-                         Neck,
-                         UpperBack,
+        public IKSegment UpperBack,
                          MiddleBack;
 
-        public IKTarget Goal;
-         
-        [Header("General Config")]
-        //if using headlookcontroller tries to override, just uncheck
-        //or make sure headlookcontroller executes after
-        public bool AffectHead;
-        List<IKSegment> LeftArm = new List<IKSegment>();
-        void Awake() {
-            LeftArm.Add(Left.Shoulder);
-            LeftArm.Add(Left.UpperArm);
-            LeftArm.Add(Left.LowerArm);
-            LeftArm.Add(Left.Hand);
+#if UNITY_EDITOR
+        [System.Serializable]
+        public struct TimingTest {
+            public IKTarget goal;
+            public float delay;
+            public float duration;
+        }
 
-            ScheduleContact(false, Goal, 5f);
+        public TimingTest[] goals;
+#endif
+
+        private IKSegment[] left, right;
+        void Awake() {
+            List<IKSegment> LeftArm = new List<IKSegment>();
+            List<IKSegment> RightArm = new List<IKSegment>();
+            addToChain(ref LeftArm, MiddleBack);
+            addToChain(ref LeftArm, UpperBack);
+            addToChain(ref LeftArm, Left.Shoulder);
+            addToChain(ref LeftArm, Left.UpperArm);
+            addToChain(ref LeftArm, Left.LowerArm);
+            addToChain(ref LeftArm, Left.Hand);
+            addToChain(ref RightArm, MiddleBack);
+            addToChain(ref RightArm, UpperBack);
+            addToChain(ref RightArm, Right.Shoulder);
+            addToChain(ref RightArm, Right.UpperArm);
+            addToChain(ref RightArm, Right.LowerArm);
+            addToChain(ref RightArm, Right.Hand);
+            left = LeftArm.ToArray();
+            right = RightArm.ToArray();
+#if UNITY_EDITOR
+            Testing();
+#endif
+        }
+
+#if UNITY_EDITOR
+        void Testing() {
+            foreach(TimingTest t in goals) {
+                StartCoroutine(ScheduleDelayed(t));
+            }
+        }
+
+        IEnumerator ScheduleDelayed(TimingTest item) {
+            yield return new WaitForSeconds(item.delay);
+            ScheduleContact(false, item.goal, item.duration);
+        }
+#endif
+
+        private void addToChain(ref List<IKSegment> chain, IKSegment segment) {
+            if (segment != null) chain.Add(segment);
         }
 
         public void ScheduleContact(bool rightHand, IKTarget IKGoal, float duration) {
-            if(IKCCD.CCD(LeftArm.ToArray(), IKGoal)) {
-                float fun = 0f;
-                foreach (IKSegment segment in LeftArm) {
-                    StartCoroutine(ScheduleIK(segment, fun, duration));
-                    fun += 0.5f;
+            IKSegment[] chain = (rightHand ? right : left);
+            if(IKCCD.CCD(chain, IKGoal)) {
+                foreach (IKSegment segment in chain) {
+                    StartCoroutine(ScheduleIK(segment, 1f, 0.5f, 0.5f));
                 }
             }
         }
 
-        IEnumerator ScheduleIK(IKSegment segment, float delay = 0f, float duration = 1f) {
-            yield return new WaitForSeconds(delay);
+        IEnumerator ScheduleIK(IKSegment segment, float reachDuration = 1f, float holdDuration = 1f, float revertDuration = 1f) {
+            int process = segment.StartIK();
             float elapsed = 0f;
-            while(elapsed <= duration) {
-                segment.RotateStep(elapsed / duration);
+            float easeIn = (segment.EaseIn != 0 ? segment.EaseIn : 1f);
+            float easeOut = segment.EaseOut;
+            while (process == segment.CurrentIK() && elapsed <= reachDuration) {
+                float t = IKMath.Catmull(elapsed / reachDuration, easeIn, 0, 1, easeOut);
+                segment.RotateStep(t);
                 yield return new WaitForEndOfFrame();
                 elapsed += Time.deltaTime;
             }
+            elapsed = 0f;
+            while(process == segment.CurrentIK() && elapsed <= holdDuration) {
+                segment.RotateStep(1f);
+                yield return new WaitForEndOfFrame();
+                elapsed += Time.deltaTime;
+            }
+            //yield return new WaitForSeconds(segment.LagFactor * revertDuration);
+            elapsed = 0f;
+            while (process == segment.CurrentIK() && elapsed <= revertDuration) {                
+                float t = IKMath.Catmull(elapsed / revertDuration, easeIn, 0, 1, easeOut);
+                segment.RotateStep(1-t, reverting: true);
+                yield return new WaitForEndOfFrame();
+                elapsed += Time.deltaTime;
+            }
+
         }
     }
 }
