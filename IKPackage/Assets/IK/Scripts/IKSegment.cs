@@ -37,6 +37,11 @@ namespace IK {
             return IKInProcess;
         }
 
+        public void Grab(IKTarget target) {
+            //TODO: properly
+            target.transform.SetParent(transform);
+        }
+
         public void SetTargetRotation(Quaternion newTarget) {
             targetRotation = newTarget;
             lastRotation = transform.localRotation;
@@ -46,10 +51,11 @@ namespace IK {
             Quaternion from = lastRotation;
             Quaternion to = targetRotation;
             if (reverting) {
+                //if reverting interpolate back into animation pose
                 from = originalRotation;
             }
             transform.localRotation = Quaternion.Lerp(from, to, t);
-            //if reverting interpolate back into animation pose
+            
         }
     }
 }

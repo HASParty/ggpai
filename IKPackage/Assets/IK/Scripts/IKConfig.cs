@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
+using System.Linq;
 namespace IK {
 
     public class IKConfig : MonoBehaviour {
@@ -21,17 +22,6 @@ namespace IK {
         public IKSegment UpperBack,
                          MiddleBack;
 
-#if UNITY_EDITOR
-        [System.Serializable]
-        public struct TimingTest {
-            public IKTarget goal;
-            public float delay;
-            public float duration;
-        }
-
-        public TimingTest[] goals;
-#endif
-
         private IKSegment[] left, right;
         void Awake() {
             List<IKSegment> LeftArm = new List<IKSegment>();
@@ -50,38 +40,65 @@ namespace IK {
             addToChain(ref RightArm, Right.Hand);
             left = LeftArm.ToArray();
             right = RightArm.ToArray();
-#if UNITY_EDITOR
-            Testing();
-#endif
+            ScheduleContact(false, test, 5f);
         }
-
-#if UNITY_EDITOR
-        void Testing() {
-            foreach(TimingTest t in goals) {
-                StartCoroutine(ScheduleDelayed(t));
-            }
-        }
-
-        IEnumerator ScheduleDelayed(TimingTest item) {
-            yield return new WaitForSeconds(item.delay);
-            ScheduleContact(false, item.goal, item.duration);
-        }
-#endif
 
         private void addToChain(ref List<IKSegment> chain, IKSegment segment) {
             if (segment != null) chain.Add(segment);
         }
 
-        public void ScheduleContact(bool rightHand, IKTarget IKGoal, float duration) {
+        public IKTiming[] test;
+
+        //TODO: make generating the timings somewhat automated
+        public void ScheduleContact(bool rightHand, IKTiming[] timings, float duration) {
             IKSegment[] chain = (rightHand ? right : left);
-            if(IKCCD.CCD(chain, IKGoal)) {
-                foreach (IKSegment segment in chain) {
-                    StartCoroutine(ScheduleIK(segment, 1f, 0.5f, 0.5f));
+            //just to be sure things are in the right order
+            timings = timings.OrderBy(x => x.Timing).ToArray();
+
+            List<Quaternion[]> goals = new List<Quaternion[]>();
+            //calculate orientations
+            for(int i = 0; i < timings.Length; i++) {
+                Quaternion[] result;
+                if (IKCCD.CCD(chain, timings[i].Target, out result)) {
+                    goals.Add(result);
+                } else {
+                    Debug.LogWarning("Unreachable goal");
+                    return;
+                }
+            }
+
+            UnityEngine.Assertions.Assert.IsTrue(goals.Count == timings.Length);
+
+            //schedule
+            StartCoroutine(ScheduleIK(chain, timings, goals, duration));
+
+        }
+
+        IEnumerator ScheduleIK(IKSegment[] chain, IKTiming[] timings, List<Quaternion[]> rotations, float duration) {
+            float lastTiming = 0;
+            for(int i = 0; i < timings.Length; i++) {
+                float revert = 0f;
+                float reach = (timings[i].Timing - lastTiming) * duration;
+
+                if (i == timings.Length - 1) {
+                    revert = (1 - timings[i].Timing) * duration;
+                }
+
+                for (int seg = 0; seg < chain.Length; seg++) {                    
+                    chain[seg].SetTargetRotation(rotations[i][seg]);
+                    StartCoroutine(ScheduleIK(chain[seg], reach, 0, revert, 0));
+                }
+
+                lastTiming = timings[i].Timing;
+                yield return new WaitForSeconds(reach);
+                if(timings[i].GrabTarget) {
+                    chain[chain.Length - 1].Grab(timings[i].Target);
                 }
             }
         }
 
-        IEnumerator ScheduleIK(IKSegment segment, float reachDuration = 1f, float holdDuration = 1f, float revertDuration = 1f) {
+        IEnumerator ScheduleIK(IKSegment segment, float reachDuration = 1f, float holdDuration = 1f, float revertDuration = 1f, float delay = 0f) {
+            yield return new WaitForSeconds(delay);
             int process = segment.StartIK();
             float elapsed = 0f;
             float easeIn = (segment.EaseIn != 0 ? segment.EaseIn : 1f);
@@ -100,11 +117,13 @@ namespace IK {
             }
             //yield return new WaitForSeconds(segment.LagFactor * revertDuration);
             elapsed = 0f;
-            while (process == segment.CurrentIK() && elapsed <= revertDuration) {                
-                float t = IKMath.Catmull(elapsed / revertDuration, easeIn, 0, 1, easeOut);
-                segment.RotateStep(1-t, reverting: true);
-                yield return new WaitForEndOfFrame();
-                elapsed += Time.deltaTime;
+            if (revertDuration > 0) {
+                while (process == segment.CurrentIK() && elapsed <= revertDuration) {
+                    float t = IKMath.Catmull(elapsed / revertDuration, easeIn, 0, 1, easeOut);
+                    segment.RotateStep(1 - t, reverting: true);
+                    yield return new WaitForEndOfFrame();
+                    elapsed += Time.deltaTime;
+                }
             }
 
         }

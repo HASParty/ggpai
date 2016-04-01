@@ -72,15 +72,15 @@ namespace IK {
             link.transform.localRotation = Quaternion.Euler(expected.x, expected.y, expected.z);
         }
 
-        public static bool CCD(IKSegment[] segments, IKTarget target) {
+        public static bool CCD(IKSegment[] segments, IKTarget target, out Quaternion[] goals) {
+            goals = new Quaternion[segments.Length];
             var links = createLinks(segments);
             if (links.Length < 2) return false;
             IKLink end = links[links.Length - 1];
 
             int link = links.Length - 1;
             bool success = false;
-
-            for(int i = 0; i < links.Length*30; i++) { 
+            for(int i = 0; i < links.Length*30; i++) {
                 IKLink root = links[link];
                 if (Vector3.Distance(end.transform.position, target.transform.position) > 0.05f) {
                     Vector3 currentVector = (end.transform.position - root.transform.position).normalized;
@@ -103,13 +103,12 @@ namespace IK {
                 } else {
                     success = true;
                 }
-            }
-
-           if (success) {
-                for (int i = 0; i < links.Length; i++) {
-                    segments[i].SetTargetRotation(links[i].transform.localRotation);
-                }
            }
+            if (success) {
+                for (int i = 0; i < links.Length; i++) {
+                    goals[i] = links[i].transform.localRotation;
+                }
+            }
 
             destroyLinks(links);
 

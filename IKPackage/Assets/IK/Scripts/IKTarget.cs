@@ -5,7 +5,8 @@ namespace IK {
     public enum IKHandShape {
         ThreePointContact, //GO shape
         SimpleFingerGrab,
-        HandWrap
+        HandWrap,
+        Relaxed
     }
 
     public class IKTarget : MonoBehaviour {
