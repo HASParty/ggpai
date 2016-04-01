@@ -60,16 +60,42 @@ namespace IK {
             if(links.Length > 0) GameObject.Destroy(links[0].transform.gameObject);
         }
 
-        private static void constrainLink(IKLink link) {
-            if (!link.segRef.Constrain) return;
-            Vector3 expected = link.transform.rotation.eulerAngles;
-            Vector3 baseRot = link.segRef.GetBaseRotation().eulerAngles;
-            Vector3 min = baseRot + link.segRef.RotationConstraintsMin;
-            Vector3 max = baseRot + link.segRef.RotationConstraintsMax;
-            expected.x = Mathf.Clamp(expected.x, min.x, max.x);
-            expected.y = Mathf.Clamp(expected.y, min.y, max.y);
-            expected.z = Mathf.Clamp(expected.z, min.z, max.z);
-            link.transform.localRotation = Quaternion.Euler(expected.x, expected.y, expected.z);
+        private static Quaternion constrainLink(Quaternion quat, IKLink link) {
+            Debug.Log(link.transform.name);
+            if (!link.segRef.Constrain) return quat;
+            Vector3 min = link.segRef.RotationConstraintsMin;
+            Vector3 max = link.segRef.RotationConstraintsMax;
+            Quaternion baseQuat = link.segRef.GetBaseRotation();
+            float error = 360;
+            int brbr = 0;
+            while (error > 5f && brbr < 5) {
+                brbr++;
+                Vector3 center = baseQuat * Vector3.up;
+                Vector3 expected = quat * Vector3.up;
+                float y = Vector3.Angle(center, expected);
+                expected = quat * Vector3.right;
+                center = baseQuat * Vector3.right;
+                float x = Vector3.Angle(center, expected);
+                expected = quat * Vector3.forward;
+                center = baseQuat * Vector3.forward;
+                float z = Vector3.Angle(center, expected);
+                if (y > max.y || y < min.y || x > max.x || x < min.x || z > max.z || z < min.z) {
+                    Debug.Log("ER OR PR");
+                    if (y > max.y) error = Mathf.Abs(max.y - y);
+                    else error = Mathf.Abs(y - min.y);
+                    if (x > max.x) error = Mathf.Max(error, Mathf.Abs(max.x - x));
+                    else error = Mathf.Max(error, Mathf.Abs(x - min.x));
+                    if (z > max.z) error = Mathf.Max(error, Mathf.Abs(max.z - z));
+                    else error = Mathf.Max(error, Math.Abs(z - min.z));
+                    quat = Quaternion.Slerp(baseQuat, quat, 0.75f);
+                    Debug.LogFormat("{0} {1}", center, expected);
+                    Debug.LogFormat("{0} {1} {2} {3} {4} {5}", max.x-x, min.x-x, max.y-y, min.y-y, max.z-z, min.z-z);
+                } else {
+                    Debug.Log("wagtagag");
+                    break;
+                }
+            }
+            return quat;
         }
 
         public static bool CCD(IKSegment[] segments, IKTarget target, out Quaternion[] goals) {
@@ -77,12 +103,12 @@ namespace IK {
             var links = createLinks(segments);
             if (links.Length < 2) return false;
             IKLink end = links[links.Length - 1];
-
-            int link = links.Length - 1;
+            end.transform.localRotation = target.transform.localRotation;
+            int link = links.Length - 2;
             bool success = false;
             for(int i = 0; i < links.Length*30; i++) {
                 IKLink root = links[link];
-                if (Vector3.Distance(end.transform.position, target.transform.position) > 0.05f) {
+                if (Vector3.Distance(end.transform.position, target.transform.position) > target.Radius) {
                     Vector3 currentVector = (end.transform.position - root.transform.position).normalized;
                     Vector3 targetVector = (target.transform.position - root.transform.position).normalized;
 
@@ -91,10 +117,9 @@ namespace IK {
                     if (cosAngle < 0.9999f) {
                         Vector3 cross = Vector3.Cross(currentVector, targetVector).normalized;
                         float turn = Mathf.Min(Mathf.Rad2Deg * Mathf.Acos(cosAngle), root.segRef.DampDegrees);
-                       
                         Quaternion result = Quaternion.AngleAxis(turn, cross);
+                        result = constrainLink(result, links[link]);
                         root.transform.rotation = result*root.transform.rotation;
-                        //constrainLink(links[link]);
                     }
 
                     link--;

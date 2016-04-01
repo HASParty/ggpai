@@ -7,14 +7,21 @@ namespace IK {
     public class IKConfig : MonoBehaviour {
         [System.Serializable]
         public struct Arm {
-            public IKSegment Shoulder, 
+            public IKSegment Shoulder,
                              UpperArm,
                              LowerArm,
-                             Hand,
-                             IndexFinger,
+                             Hand;
+            public Finger    IndexFinger,
                              MiddleFinger,
                              RingFinger,
+                             PinkyFinger,
                              Thumb;
+        }
+        [System.Serializable]
+        public struct Finger {
+            public IKSegment Base,
+                             Mid,
+                             End;
         }
 
         public Arm Left;
@@ -23,24 +30,44 @@ namespace IK {
                          MiddleBack;
 
         private IKSegment[] left, right;
+        private Dictionary<IKContactPoint.Fingers, IKSegment[]> leftHand;
+        private Dictionary<IKContactPoint.Fingers, IKSegment[]> rightHand;
         void Awake() {
-            List<IKSegment> LeftArm = new List<IKSegment>();
-            List<IKSegment> RightArm = new List<IKSegment>();
-            addToChain(ref LeftArm, MiddleBack);
-            addToChain(ref LeftArm, UpperBack);
-            addToChain(ref LeftArm, Left.Shoulder);
-            addToChain(ref LeftArm, Left.UpperArm);
-            addToChain(ref LeftArm, Left.LowerArm);
-            addToChain(ref LeftArm, Left.Hand);
-            addToChain(ref RightArm, MiddleBack);
-            addToChain(ref RightArm, UpperBack);
-            addToChain(ref RightArm, Right.Shoulder);
-            addToChain(ref RightArm, Right.UpperArm);
-            addToChain(ref RightArm, Right.LowerArm);
-            addToChain(ref RightArm, Right.Hand);
-            left = LeftArm.ToArray();
-            right = RightArm.ToArray();
+            left = makeArm(Left);
+            right = makeArm(Right);
+
+            leftHand = makeHand(Left);
+            rightHand = makeHand(Right);
+
             ScheduleContact(false, test, 5f);
+        }
+
+        private IKSegment[] makeArm(Arm arm) {
+            List<IKSegment> chain = new List<IKSegment>();
+            addToChain(ref chain, MiddleBack);
+            addToChain(ref chain, UpperBack);
+            addToChain(ref chain, arm.Shoulder);
+            addToChain(ref chain, arm.UpperArm);
+            addToChain(ref chain, arm.LowerArm);
+            addToChain(ref chain, arm.Hand);
+            return chain.ToArray();
+        }
+
+        private Dictionary<IKContactPoint.Fingers, IKSegment[]> makeHand(Arm arm) {
+            var hand = new Dictionary<IKContactPoint.Fingers, IKSegment[]>();
+            hand.Add(IKContactPoint.Fingers.Index, makeFinger(arm.IndexFinger));
+            hand.Add(IKContactPoint.Fingers.Middle, makeFinger(arm.MiddleFinger));
+            hand.Add(IKContactPoint.Fingers.Ring, makeFinger(arm.RingFinger));
+            hand.Add(IKContactPoint.Fingers.Pinky, makeFinger(arm.PinkyFinger));
+            return hand;
+        }
+
+        private IKSegment[] makeFinger(Finger finger) {
+            List<IKSegment> chain = new List<IKSegment>();
+            addToChain(ref chain, finger.Base);
+            addToChain(ref chain, finger.Mid);
+            addToChain(ref chain, finger.End);
+            return chain.ToArray();
         }
 
         private void addToChain(ref List<IKSegment> chain, IKSegment segment) {

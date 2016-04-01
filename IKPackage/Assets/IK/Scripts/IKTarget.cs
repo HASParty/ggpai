@@ -12,5 +12,6 @@ namespace IK {
     public class IKTarget : MonoBehaviour {
         public IKHandShape HandShape;
         public List<IKContactPoint> ContactPoints;
+        public float Radius;
     }
 }
