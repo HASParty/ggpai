@@ -26,7 +26,9 @@ namespace IK {
         public struct TimingTest {
             public IKTarget goal;
             public float delay;
-            public float duration;
+            public float reach;
+            public float hold;
+            public float retract;
         }
 
         public TimingTest[] goals;
@@ -64,7 +66,8 @@ namespace IK {
 
         IEnumerator ScheduleDelayed(TimingTest item) {
             yield return new WaitForSeconds(item.delay);
-            ScheduleContact(false, item.goal, item.duration);
+            Debug.Log(item.goal.name);
+            ScheduleContact(false, item.goal, item.reach, item.hold, item.retract);
         }
 #endif
 
@@ -72,17 +75,18 @@ namespace IK {
             if (segment != null) chain.Add(segment);
         }
 
-        public void ScheduleContact(bool rightHand, IKTarget IKGoal, float duration) {
+        public void ScheduleContact(bool rightHand, IKTarget IKGoal, float reach, float hold, float retract) {
             IKSegment[] chain = (rightHand ? right : left);
             if(IKCCD.CCD(chain, IKGoal)) {
                 foreach (IKSegment segment in chain) {
-                    StartCoroutine(ScheduleIK(segment, 1f, 0.5f, 0.5f));
+                    StartCoroutine(ScheduleIK(segment, reach, hold, retract));
                 }
             }
         }
 
         IEnumerator ScheduleIK(IKSegment segment, float reachDuration = 1f, float holdDuration = 1f, float revertDuration = 1f) {
             int process = segment.StartIK();
+            Debug.Log("PROCESS " + process);
             float elapsed = 0f;
             float easeIn = (segment.EaseIn != 0 ? segment.EaseIn : 1f);
             float easeOut = segment.EaseOut;
@@ -106,6 +110,8 @@ namespace IK {
                 yield return new WaitForEndOfFrame();
                 elapsed += Time.deltaTime;
             }
+
+            Debug.LogFormat("{0} {1}", process, segment.CurrentIK());
 
         }
     }
