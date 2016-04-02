@@ -63,37 +63,26 @@ namespace IK {
         private static Quaternion constrainLink(Quaternion quat, IKLink link) {
             Debug.Log(link.transform.name);
             if (!link.segRef.Constrain) return quat;
-            Vector3 min = link.segRef.RotationConstraintsMin;
-            Vector3 max = link.segRef.RotationConstraintsMax;
+            Vector3 min = link.segRef.Min;
+            Vector3 max = link.segRef.Max;
             Quaternion baseQuat = link.segRef.GetBaseRotation();
             float error = 360;
-            int brbr = 0;
-            while (error > 5f && brbr < 5) {
-                brbr++;
-                Vector3 center = baseQuat * Vector3.up;
-                Vector3 expected = quat * Vector3.up;
-                float y = Vector3.Angle(center, expected);
-                expected = quat * Vector3.right;
-                center = baseQuat * Vector3.right;
-                float x = Vector3.Angle(center, expected);
-                expected = quat * Vector3.forward;
-                center = baseQuat * Vector3.forward;
-                float z = Vector3.Angle(center, expected);
-                if (y > max.y || y < min.y || x > max.x || x < min.x || z > max.z || z < min.z) {
-                    Debug.Log("ER OR PR");
-                    if (y > max.y) error = Mathf.Abs(max.y - y);
-                    else error = Mathf.Abs(y - min.y);
-                    if (x > max.x) error = Mathf.Max(error, Mathf.Abs(max.x - x));
-                    else error = Mathf.Max(error, Mathf.Abs(x - min.x));
-                    if (z > max.z) error = Mathf.Max(error, Mathf.Abs(max.z - z));
-                    else error = Mathf.Max(error, Math.Abs(z - min.z));
-                    quat = Quaternion.Slerp(baseQuat, quat, 0.75f);
-                    Debug.LogFormat("{0} {1}", center, expected);
-                    Debug.LogFormat("{0} {1} {2} {3} {4} {5}", max.x-x, min.x-x, max.y-y, min.y-y, max.z-z, min.z-z);
+            int iterations = 1;
+            while (error > 0.5f && iterations < 10) {
+                Debug.Log("ERRA");
+                Vector3 center = baseQuat * link.transform.up;
+                Vector3 expected = quat * link.transform.up;
+                float angle = Vector3.Angle(center, expected);
+                Debug.LogFormat("{0} {1}", link.segRef.ConeRadius, angle);
+                if(angle > link.segRef.ConeRadius) {
+                    Debug.Log("SLERP");
+                    quat = Quaternion.Slerp(Quaternion.identity, quat, 1 - iterations*0.1f);
                 } else {
                     Debug.Log("wagtagag");
                     break;
                 }
+
+                iterations++;
             }
             return quat;
         }
@@ -118,7 +107,7 @@ namespace IK {
                         Vector3 cross = Vector3.Cross(currentVector, targetVector).normalized;
                         float turn = Mathf.Min(Mathf.Rad2Deg * Mathf.Acos(cosAngle), root.segRef.DampDegrees);
                         Quaternion result = Quaternion.AngleAxis(turn, cross);
-                        result = constrainLink(result, links[link]);
+                        result = constrainLink(result, root);
                         root.transform.rotation = result*root.transform.rotation;
                     }
 

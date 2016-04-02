@@ -1,27 +1,40 @@
 ﻿using UnityEngine;
 using System.Collections;
 namespace IK {
+    public enum IKJointType {
+        Cone, //shoulder, thumb base
+        OneDOF, //fingers
+        TwoDOF //finger base
+    }
+        
+
     public class IKSegment : MonoBehaviour {
-        public Vector3 RotationConstraintsMax;
-        public Vector3 RotationConstraintsMin;
+        public IKJointType JointType;
+
+        public float ConeRadius;
+        public Vector3 Min, Max;
+
+        public int DOF1 = 0, DOF2 = 1, DOF3 = 2;
+        
         public float DampDegrees;
         public bool Constrain = true;
 
-        [Header("Timing")]
         public float EaseIn;
         public float EaseOut;
         public float Bounce;
 
+
         private int IKInProcess = -1;
 
-        
 
         private Quaternion originalRotation;
+        private Quaternion originalLocalRotation;
         private Quaternion lastRotation;
         private Quaternion targetRotation;
 
         void Awake() {
-            originalRotation = transform.localRotation;
+            originalRotation = transform.rotation;
+            originalLocalRotation = transform.localRotation;
         }
 
         public Quaternion GetBaseRotation() {
@@ -52,7 +65,7 @@ namespace IK {
             Quaternion to = targetRotation;
             if (reverting) {
                 //if reverting interpolate back into animation pose
-                from = originalRotation;
+                from = originalLocalRotation;
             }
             transform.localRotation = Quaternion.Lerp(from, to, t);
             
