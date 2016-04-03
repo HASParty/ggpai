@@ -26,6 +26,8 @@ namespace IK {
 
         public Arm Left;
         public Arm Right;
+        public IKEndEffector LeftEffector;
+        public IKEndEffector RightEffector;
         public IKSegment UpperBack,
                          MiddleBack;
 

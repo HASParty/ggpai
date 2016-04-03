@@ -16,6 +16,7 @@ namespace IK {
         public Vector3 x, y;
 
         public Vector3 originalDir;
+        public Transform End;
         
         public float DampDegrees;
         public bool Constrain = true;
@@ -34,10 +35,24 @@ namespace IK {
         private Quaternion targetRotation;
 
         void Awake() {
+            Init();
+        }
+
+        public void Init() {
             originalRotation = transform.rotation;
             originalLocalRotation = transform.localRotation;
-            if(transform.childCount > 0) {
-                originalDir = (transform.GetChild(0).transform.position - transform.position).normalized;
+            if(End == null && JointType != IKJointType.Cone) {
+                if(transform.childCount > 0) {
+                    Debug.LogWarning("Automatically configured end point of " + name);
+                    End = transform.GetChild(0);
+                } else {
+                    Debug.LogError("Missing end of " + name);
+                }
+            }
+            if (End != null) {
+                originalDir = (Quaternion.Inverse(transform.parent.rotation) * (End.position - transform.position)).normalized;
+            } else if (JointType != IKJointType.Cone) {
+                Debug.LogErrorFormat("Could not configure {0} joint.", name);
             }
         }
 

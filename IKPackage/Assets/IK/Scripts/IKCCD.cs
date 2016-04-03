@@ -17,6 +17,7 @@ namespace IK {
         }
 
         public Transform transform;
+        public Transform hingeAbout;
         public IKSegment segRef;
     }
 
@@ -63,8 +64,6 @@ namespace IK {
         private static Quaternion constrainLink(Quaternion quat, IKLink link) {
             Debug.Log(link.transform.name);
             if (!link.segRef.Constrain) return quat;
-            Vector3 min = link.segRef.Min;
-            Vector3 max = link.segRef.Max;
             Quaternion baseQuat = link.segRef.GetBaseRotation();
             float error = 360;
             int iterations = 1;
@@ -109,15 +108,14 @@ namespace IK {
                         if (root.segRef.JointType == IKJointType.Cone) {
                             result = constrainLink(result, root);
                         } else {
-                            Vector3 toChild = root.segRef.originalDir;
-                            Vector3 axis = (root.transform.rotation*root.segRef.x).normalized;
+                            Vector3 toChild = root.transform.parent.rotation*root.segRef.originalDir;
+                            Vector3 axis = (root.transform.parent.rotation*root.segRef.x).normalized;
                             Vector3 dir = (result * toChild).normalized;
                             Vector3 projection = Vector3.ProjectOnPlane(dir, axis);
                             cosAngle = Vector3.Dot(toChild, projection);
                             Vector3 norm = Vector3.Cross(toChild, projection);
-                            cosAngle = cosAngle*Mathf.Sign(Vector3.Dot(axis, norm));
                            
-                            float actualAngle = Mathf.Rad2Deg * Mathf.Acos(cosAngle);
+                            float actualAngle = Mathf.Rad2Deg * Mathf.Acos(cosAngle) * Mathf.Sign(Vector3.Dot(axis, norm));
 
                             float angle = Mathf.Clamp(actualAngle, root.segRef.Min.x, root.segRef.Max.x);
                             Debug.LogFormat("{2}: {0} {1}", actualAngle, angle, root.transform.name);
