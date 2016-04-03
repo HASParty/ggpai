@@ -69,16 +69,15 @@ namespace IK {
             float error = 360;
             int iterations = 1;
             while (error > 0.5f && iterations < 10) {
-                Debug.Log("ERRA");
-                Vector3 center = baseQuat * link.transform.up;
-                Vector3 expected = quat * link.transform.up;
+                Vector3 center = baseQuat * Vector3.up;
+                Vector3 expected = quat * Vector3.up;
+
                 float angle = Vector3.Angle(center, expected);
-                Debug.LogFormat("{0} {1}", link.segRef.ConeRadius, angle);
+                //Debug.LogFormat("{0} {1}", link.segRef.ConeRadius, angle);
                 if(angle > link.segRef.ConeRadius) {
-                    Debug.Log("SLERP");
                     quat = Quaternion.Slerp(Quaternion.identity, quat, 1 - iterations*0.1f);
                 } else {
-                    Debug.Log("wagtagag");
+                    //Debug.Log("DONE");
                     break;
                 }
 
@@ -107,13 +106,29 @@ namespace IK {
                         Vector3 cross = Vector3.Cross(currentVector, targetVector).normalized;
                         float turn = Mathf.Min(Mathf.Rad2Deg * Mathf.Acos(cosAngle), root.segRef.DampDegrees);
                         Quaternion result = Quaternion.AngleAxis(turn, cross);
-                        result = constrainLink(result, root);
+                        if (root.segRef.JointType == IKJointType.Cone) {
+                            result = constrainLink(result, root);
+                        } else {
+                            Vector3 toChild = root.segRef.originalDir;
+                            Vector3 axis = (root.transform.rotation*root.segRef.x).normalized;
+                            Vector3 dir = (result * toChild).normalized;
+                            Vector3 projection = Vector3.ProjectOnPlane(dir, axis);
+                            cosAngle = Vector3.Dot(toChild, projection);
+                            Vector3 norm = Vector3.Cross(toChild, projection);
+                            cosAngle = cosAngle*Mathf.Sign(Vector3.Dot(axis, norm));
+                           
+                            float actualAngle = Mathf.Rad2Deg * Mathf.Acos(cosAngle);
+
+                            float angle = Mathf.Clamp(actualAngle, root.segRef.Min.x, root.segRef.Max.x);
+                            Debug.LogFormat("{2}: {0} {1}", actualAngle, angle, root.transform.name);
+                            result = Quaternion.AngleAxis(angle, axis);                                                       
+                        }
                         root.transform.rotation = result*root.transform.rotation;
                     }
 
                     link--;
 
-                    if (link < 0) link = links.Length - 1;
+                    if (link < 0) link = links.Length - 2;
                 } else {
                     success = true;
                 }

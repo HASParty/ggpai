@@ -11,6 +11,7 @@ namespace IK {
         SerializedProperty damping;
         SerializedProperty easeIn;
         SerializedProperty easeOut;
+        SerializedProperty x, y, z;
 
         string[] axes;
 
@@ -21,11 +22,18 @@ namespace IK {
             axes[1] = "y";
             axes[2] = "z";
 
+            /*if (seg.transform.childCount > 0) {
+                seg.originalDir = (seg.transform.GetChild(0).transform.position - seg.transform.position).normalized;
+            }*/
+
             type = serializedObject.FindProperty("JointType");
             coneRad = serializedObject.FindProperty("ConeRadius");
             damping = serializedObject.FindProperty("DampDegrees");
             easeIn = serializedObject.FindProperty("EaseIn");
             easeOut = serializedObject.FindProperty("EaseOut");
+            x = serializedObject.FindProperty("x");
+            y = serializedObject.FindProperty("y");
+            //z = serializedObject.FindProperty("z");
         }
 
         public override void OnInspectorGUI() {
@@ -36,33 +44,23 @@ namespace IK {
                     EditorGUILayout.PropertyField(coneRad);
                     break;
                 case IKJointType.OneDOF:
-                    float min, max;
                     EditorGUILayout.BeginHorizontal();
-                    seg.DOF1 = EditorGUILayout.Popup(seg.DOF1, axes);
-                    getMinAndMax(seg.DOF1, out min, out max);
-                    min = EditorGUILayout.FloatField(min);
-                    max = EditorGUILayout.FloatField(max);
-                    setMinAndMax(seg.DOF1, min, max);
+                    seg.Min.x = EditorGUILayout.FloatField(seg.Min.x);
+                    seg.Max.x = EditorGUILayout.FloatField(seg.Max.x);
                     EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.PropertyField(x);
                     break;
                 case IKJointType.TwoDOF:
-                    float minb, maxb;
                     EditorGUILayout.BeginHorizontal();
-                    seg.DOF1 = EditorGUILayout.Popup(seg.DOF1, axes);
-                    if (seg.DOF2 == seg.DOF1) seg.DOF1 = (seg.DOF1 + 1) % 3;
-                    getMinAndMax(seg.DOF1, out min, out max);
-                    min = EditorGUILayout.FloatField(min);
-                    max = EditorGUILayout.FloatField(max);
-                    setMinAndMax(seg.DOF1, min, max);
+                    seg.Min.x = EditorGUILayout.FloatField(seg.Min.x);
+                    seg.Max.x = EditorGUILayout.FloatField(seg.Max.x);                    
                     EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.PropertyField(x);
                     EditorGUILayout.BeginHorizontal();
-                    seg.DOF2 = EditorGUILayout.Popup(seg.DOF2, axes);
-                    if (seg.DOF2 == seg.DOF1) seg.DOF2 = (seg.DOF2 + 1) % 3;
-                    getMinAndMax(seg.DOF2, out minb, out maxb);
-                    minb = EditorGUILayout.FloatField(minb);
-                    maxb = EditorGUILayout.FloatField(maxb);
-                    setMinAndMax(seg.DOF2, minb, maxb);
+                    seg.Min.y = EditorGUILayout.FloatField(seg.Min.y);
+                    seg.Max.y = EditorGUILayout.FloatField(seg.Max.y);                    
                     EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.PropertyField(y);
                     break;
 
 
@@ -80,41 +78,27 @@ namespace IK {
             serializedObject.ApplyModifiedProperties();
         }
 
-        private void getMinAndMax(int selected, out float min, out float max) {
-            switch(selected) {
-                case 0:
-                    min = seg.Min.x;
-                    max = seg.Max.x;
-                    break;
-                case 1:
-                    min = seg.Min.y;
-                    max = seg.Max.y;
-                    break;
-                case 2:
-                    min = seg.Min.z;
-                    max = seg.Max.z;
-                    break;
-                default:
-                    min = 0;
-                    max = 0;
-                    break;
-            }
-        }
+        void OnSceneGUI() {
+            if (seg.JointType == IKJointType.OneDOF || seg.JointType == IKJointType.TwoDOF) {
+                Vector3 x = -(seg.transform.rotation * seg.x);
+                Handles.DrawLine(seg.transform.position - x.normalized * 0.1f, x.normalized * 0.1f + seg.transform.position);
+                Handles.color = Color.cyan;
+                Handles.DrawWireArc(seg.transform.position, x, seg.originalDir, seg.Min.x, 0.2f);
+                Handles.DrawWireArc(seg.transform.position, x, seg.originalDir, seg.Max.x, 0.2f);
+                Vector3 newLoc = (Handles.DoPositionHandle(x.normalized * 0.1f + seg.transform.position, Quaternion.LookRotation(seg.transform.forward)) - seg.transform.position) / 0.1f;
+                if (newLoc != x) {
+                    Undo.RegisterCompleteObjectUndo(seg, "moved x axis");
+                    seg.x = (Quaternion.Inverse(seg.transform.rotation)*newLoc).normalized;
+                }
 
-        private void setMinAndMax(int selected, float min, float max) {
-            switch (selected) {
-                case 0:
-                    seg.Min.x = min;
-                    seg.Max.x = max;
-                    break;
-                case 1:
-                    seg.Min.y = min;
-                    seg.Max.y = max;
-                    break;
-                case 2:
-                    seg.Min.z = min;
-                    seg.Max.z = max;
-                    break;
+                if(seg.JointType == IKJointType.TwoDOF) {
+                    Handles.DrawLine(seg.transform.position - seg.y.normalized * 0.1f, seg.y.normalized * 0.1f + seg.transform.position);
+                    newLoc = (Handles.DoPositionHandle(seg.y.normalized * 0.1f + seg.transform.position, Quaternion.LookRotation(seg.transform.forward)) - seg.transform.position) / 0.1f;
+                    if (newLoc != seg.y) {
+                        Undo.RegisterCompleteObjectUndo(seg, "moved y axis");
+                        seg.y = newLoc.normalized;
+                    }
+                }
             }
         }
     }

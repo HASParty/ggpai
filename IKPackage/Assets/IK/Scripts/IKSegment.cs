@@ -13,8 +13,9 @@ namespace IK {
 
         public float ConeRadius;
         public Vector3 Min, Max;
+        public Vector3 x, y;
 
-        public int DOF1 = 0, DOF2 = 1, DOF3 = 2;
+        public Vector3 originalDir;
         
         public float DampDegrees;
         public bool Constrain = true;
@@ -35,6 +36,9 @@ namespace IK {
         void Awake() {
             originalRotation = transform.rotation;
             originalLocalRotation = transform.localRotation;
+            if(transform.childCount > 0) {
+                originalDir = (transform.GetChild(0).transform.position - transform.position).normalized;
+            }
         }
 
         public Quaternion GetBaseRotation() {
