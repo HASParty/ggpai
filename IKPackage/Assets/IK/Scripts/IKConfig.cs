@@ -41,7 +41,7 @@ namespace IK {
             leftHand = makeHand(Left);
             rightHand = makeHand(Right);
 
-            ScheduleContact(false, test, 5f);
+            ScheduleContact(false, test, 3f);
         }
 
         private IKSegment[] makeArm(Arm arm) {
@@ -81,6 +81,7 @@ namespace IK {
         //TODO: make generating the timings somewhat automated
         public void ScheduleContact(bool rightHand, IKTiming[] timings, float duration) {
             IKSegment[] chain = (rightHand ? right : left);
+            IKEndEffector eff = (rightHand ? RightEffector : LeftEffector);
             //just to be sure things are in the right order
             timings = timings.OrderBy(x => x.Timing).ToArray();
 
@@ -88,7 +89,7 @@ namespace IK {
             //calculate orientations
             for(int i = 0; i < timings.Length; i++) {
                 Quaternion[] result;
-                if (IKCCD.CCD(chain, timings[i].Target, out result)) {
+                if (IKResolve.CCD(chain, eff, timings[i].Target, out result)) {
                     goals.Add(result);
                 } else {
                     Debug.LogWarning("Unreachable goal");
@@ -154,6 +155,8 @@ namespace IK {
                     elapsed += Time.deltaTime;
                 }
             }
+
+            if (process == segment.CurrentIK()) segment.StopIK();
 
         }
     }

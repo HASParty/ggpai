@@ -13,11 +13,12 @@ namespace IK {
 
         public float ConeRadius;
         public Vector3 Min, Max;
-        public Vector3 x, y;
+        public bool Twist;
 
         public Vector3 originalDir;
         public Transform End;
-        
+
+
         public float DampDegrees;
         public bool Constrain = true;
 
@@ -61,12 +62,83 @@ namespace IK {
         }
 
         public int StartIK() {
+            ik = true;
             IKInProcess++;
             return IKInProcess;
         }
 
+        public void StopIK() {
+            ik = false;
+        }
+
         public int CurrentIK() {
             return IKInProcess;
+        }
+
+#if UNITY_EDITOR
+        float currentTwist = 0;
+        int dirTwist = 1;
+        bool testingTwist = false;
+        public void TestTwist() {
+            testingTwist = !testingTwist;
+        }
+
+        float currentX = 0;
+        int dirX = 1;
+        bool testingX = false;
+        public void TestX() {
+            testingX = !testingX;
+        }
+
+        float currentY = 0;
+        int dirY = 1;
+        bool testingY = false;
+        public void TestY() {
+            testingY = !testingY;
+        }
+#endif
+        void LateUpdate() {
+#if UNITY_EDITOR
+           
+            float step = 60 * Time.deltaTime;
+            if (testingTwist || testingX || testingY) currentRot = originalLocalRotation;
+
+            Vector3 toChild = transform.parent.rotation * originalDir;
+            if (testingX) {
+                Vector3 xAxis = transform.parent.up;
+                if (currentX >= Max.x) dirX = -1;
+                else if (currentX <= Min.x) dirX = 1;
+                currentX += dirX * step;              
+                currentRot *= Quaternion.AngleAxis(currentX, xAxis);
+                Debug.LogFormat("Actual {0} calculated {1}", currentX, IKMath.AngleOnPlane(currentRot * toChild, toChild, xAxis));
+            }
+
+            if (testingY) {
+                Vector3 yAxis = transform.parent.right;
+                if (currentY >= Max.y) dirY = -1;
+                else if (currentY <= Min.y) dirY = 1;
+                currentY += dirY * step;
+                currentRot *= Quaternion.AngleAxis(currentY, yAxis);
+            }
+
+            if (testingTwist) {
+                Debug.Log("TWISTY");
+                Vector3 twistAxis = transform.right;
+                if (currentTwist >= Max.z) dirTwist = -1;
+                else if (currentTwist <= Min.z) dirTwist = 1;
+                currentTwist += dirTwist * step;
+                Debug.Log(currentTwist);
+                currentRot *= Quaternion.AngleAxis(currentTwist, Vector3.right);
+            }
+
+            
+
+            if (ik || testingX || testingY || testingTwist) {
+#else
+            if (ik) {
+#endif
+                transform.localRotation = currentRot;
+            }
         }
 
         public void Grab(IKTarget target) {
@@ -79,6 +151,8 @@ namespace IK {
             lastRotation = transform.localRotation;
         }
 
+        bool ik = false;
+        Quaternion currentRot;
         public void RotateStep(float t, bool reverting = false) {
             Quaternion from = lastRotation;
             Quaternion to = targetRotation;
@@ -86,7 +160,7 @@ namespace IK {
                 //if reverting interpolate back into animation pose
                 from = originalLocalRotation;
             }
-            transform.localRotation = Quaternion.Lerp(from, to, t);
+            currentRot = Quaternion.Slerp(from, to, t);
             
         }
     }

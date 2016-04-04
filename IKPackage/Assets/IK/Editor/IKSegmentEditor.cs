@@ -11,10 +11,10 @@ namespace IK {
         SerializedProperty damping;
         SerializedProperty easeIn;
         SerializedProperty easeOut;
-        SerializedProperty end, hingeAbout;
-        SerializedProperty x, y, z;
+        SerializedProperty end;
 
         bool editingAxes = false;
+
 
         void OnEnable() {
             seg = (IKSegment)target;
@@ -25,10 +25,6 @@ namespace IK {
             easeIn = serializedObject.FindProperty("EaseIn");
             easeOut = serializedObject.FindProperty("EaseOut");
             end = serializedObject.FindProperty("End");
-            hingeAbout = serializedObject.FindProperty("HingeAbout");
-            x = serializedObject.FindProperty("x");
-            y = serializedObject.FindProperty("y");
-            //z = serializedObject.FindProperty("z");
         }
 
         public override void OnInspectorGUI() {
@@ -49,7 +45,9 @@ namespace IK {
                     seg.Min.x = EditorGUILayout.FloatField(seg.Min.x);
                     seg.Max.x = EditorGUILayout.FloatField(seg.Max.x);
                     EditorGUILayout.EndHorizontal();
-                    EditorGUILayout.PropertyField(x);
+                    if (GUILayout.Button("Toggle test x")) {
+                        seg.TestX();
+                    }
                     EditorGUILayout.PropertyField(end);
                     break;
                 case IKJointType.TwoDOF:
@@ -57,17 +55,30 @@ namespace IK {
                     seg.Min.x = EditorGUILayout.FloatField(seg.Min.x);
                     seg.Max.x = EditorGUILayout.FloatField(seg.Max.x);
                     EditorGUILayout.EndHorizontal();
-                    EditorGUILayout.PropertyField(x);
+                    if (GUILayout.Button("Toggle test x")) {
+                        seg.TestX();
+                    }
                     EditorGUILayout.BeginHorizontal();
                     seg.Min.y = EditorGUILayout.FloatField(seg.Min.y);
                     seg.Max.y = EditorGUILayout.FloatField(seg.Max.y);
                     EditorGUILayout.EndHorizontal();
-                    EditorGUILayout.PropertyField(y);
+                    if (GUILayout.Button("Toggle test y")) {
+                        seg.TestY();
+                    }
                     EditorGUILayout.PropertyField(end);
                     break;
 
 
             }
+            EditorGUILayout.EndToggleGroup();
+            seg.Twist = EditorGUILayout.BeginToggleGroup("Twisting", seg.Twist);
+            if(GUILayout.Button("Toggle test twist")) {
+                seg.TestTwist();
+            }
+            EditorGUILayout.BeginHorizontal();
+            seg.Min.z = EditorGUILayout.FloatField(seg.Min.z);
+            seg.Max.z = EditorGUILayout.FloatField(seg.Max.z);
+            EditorGUILayout.EndHorizontal();
             EditorGUILayout.EndToggleGroup();
             EditorGUILayout.Separator();
             EditorGUILayout.PropertyField(damping);
@@ -84,27 +95,40 @@ namespace IK {
 
         void OnSceneGUI() {
             if (seg.Constrain && (seg.JointType == IKJointType.OneDOF || seg.JointType == IKJointType.TwoDOF)) {
-                drawHinge(ref seg.x, seg.Min.x, seg.Max.x);
+                drawHinge(seg.transform.parent.up, seg.Min.x, seg.Max.x);
                 if (seg.JointType == IKJointType.TwoDOF) {
-                    drawHinge(ref seg.y, seg.Min.y, seg.Max.y);
+                    drawHinge(seg.transform.parent.forward, seg.Min.y, seg.Max.y);
                 }
+            }
+
+            if (seg.Twist) {
+                Vector3 normal = seg.transform.right;
+                Quaternion twist = IKMath.GetTwist(normal, seg.transform.rotation);
+                Vector3 a = IKMath.GetTwist(normal, seg.GetBaseRotation()) * Vector3.up;
+                Vector3 b = twist * Vector3.up;
+                float angle = IKMath.AngleOnPlane(a, b, normal);
+                Vector3 up = seg.transform.up;
+                Handles.color = Color.red;
+                Handles.DrawLine(seg.transform.position, (Quaternion.AngleAxis(angle, normal) * up) * 0.1f + seg.transform.position);
+                Handles.color = Color.cyan;
+                Handles.DrawLine(seg.transform.position, (Quaternion.AngleAxis(seg.Min.z, normal) * up) * 0.1f + seg.transform.position);
+                Handles.DrawLine(seg.transform.position, (Quaternion.AngleAxis(seg.Max.z, normal) * up) * 0.1f + seg.transform.position);
+
+                Handles.DrawLine(seg.transform.position, seg.transform.position + normal);
+
+                Handles.DrawWireArc(seg.transform.position, normal, up, seg.Min.z, 0.1f);
+                Handles.DrawWireArc(seg.transform.position, normal, up, seg.Max.z, 0.1f);
             }
         }
 
-        void drawHinge(ref Vector3 axis, float min, float max) {
-            Vector3 x = (seg.transform.parent.rotation * axis);
+        void drawHinge(Vector3 axis, float min, float max) {
+            Vector3 x = axis;
+            Handles.color = Color.green;
             Vector3 dir = seg.transform.parent.rotation * seg.originalDir;
             Handles.DrawLine(seg.transform.position - x.normalized * 0.1f, x.normalized * 0.1f + seg.transform.position);
             Handles.color = Color.cyan;
             Handles.DrawWireArc(seg.transform.position, x, dir, min, 0.2f);
             Handles.DrawWireArc(seg.transform.position, x, dir, max, 0.2f);
-            if (editingAxes) {
-                Vector3 newLoc = (Handles.DoPositionHandle(x.normalized * 0.1f + seg.transform.position, Quaternion.LookRotation(seg.transform.forward)) - seg.transform.position) / 0.1f;
-                if (newLoc != x) {
-                    Undo.RegisterCompleteObjectUndo(seg, "moved axis of "+seg.name);
-                    axis = (Quaternion.Inverse(seg.transform.rotation) * newLoc).normalized;
-                }
-            }
         }
     }
 }
