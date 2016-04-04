@@ -93,6 +93,16 @@ namespace Behaviour {
                     Pointing pointchunk = chunk as Pointing;
                     text += pointchunk.ToString();
                     break;
+                case BMLChunkType.Placing:
+                    color = Pointing;
+                    Place placeChunk = chunk as Place;
+                    text += placeChunk.ToString();
+                    break;
+                case BMLChunkType.Grasping:
+                    color = Pointing;
+                    Place graspChunk = chunk as Place;
+                    text += graspChunk.ToString();
+                    break;
                 default:
                     throw new System.ArgumentOutOfRangeException();
             }
