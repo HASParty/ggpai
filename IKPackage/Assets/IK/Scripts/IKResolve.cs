@@ -107,7 +107,7 @@ namespace IK {
             var links = createLinks(segments, effector.transform, out contact);
             if (links.Length < 2) return false;
             IKLink end = links[links.Length - 1];
-            end.transform.localRotation = target.transform.localRotation;
+            end.transform.localRotation = target.transform.rotation;
             int link = links.Length - 2;
             bool success = false;
             for(int i = 0; i < links.Length*30; i++) {
@@ -129,13 +129,13 @@ namespace IK {
                             } else {
                                 Vector3 toChild = root.transform.parent.rotation * root.segRef.originalDir;
                                 Vector3 dir = (result * toChild).normalized;
-                                Vector3 xAxis = root.transform.parent.up;
+                                Vector3 xAxis = root.segRef.ParentOffset*root.transform.parent.up;
                                 float actualAngle;
                                 Debug.Log("Constraining x");
                                 Quaternion xConstrain = constrainAxis(root, xAxis, Vector3.up, toChild, dir, root.segRef.Min.x, root.segRef.Max.x, out actualAngle);
                                 if (root.segRef.JointType == IKJointType.TwoDOF) {
                                     Vector3 dirMinusXAxis = Quaternion.Inverse(Quaternion.AngleAxis(actualAngle, Vector3.up)) * dir;
-                                    Vector3 yAxis = root.transform.parent.forward;
+                                    Vector3 yAxis = root.segRef.ParentOffset*root.transform.parent.forward;
                                     Debug.Log("Constraining y");
                                     Quaternion yConstrain = constrainAxis(root, yAxis, Vector3.forward, toChild, dirMinusXAxis, root.segRef.Min.y, root.segRef.Max.y, out actualAngle);
                                     result = xConstrain * yConstrain;

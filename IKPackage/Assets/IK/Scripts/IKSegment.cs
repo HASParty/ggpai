@@ -28,7 +28,9 @@ namespace IK {
 
 
         private int IKInProcess = -1;
-
+        
+        //for when the parent is wonky
+        public Quaternion ParentOffset = Quaternion.identity;
 
         private Quaternion originalRotation;
         private Quaternion originalLocalRotation;
@@ -105,20 +107,20 @@ namespace IK {
 
             Vector3 toChild = transform.parent.rotation * originalDir;
             if (testingX) {
-                Vector3 xAxis = transform.parent.up;
-                if (currentX >= Max.x) dirX = -1;
-                else if (currentX <= Min.x) dirX = 1;
+                Vector3 xAxis = ParentOffset*transform.parent.up;
+                if (-currentX >= Max.x) dirX = 1;
+                else if (-currentX <= Min.x) dirX = -1;
                 currentX += dirX * step;              
-                currentRot *= Quaternion.AngleAxis(currentX, xAxis);
+                currentRot *= Quaternion.AngleAxis(currentX, Vector3.up);
                 Debug.LogFormat("Actual {0} calculated {1}", currentX, IKMath.AngleOnPlane(currentRot * toChild, toChild, xAxis));
             }
 
             if (testingY) {
-                Vector3 yAxis = transform.parent.right;
-                if (currentY >= Max.y) dirY = -1;
-                else if (currentY <= Min.y) dirY = 1;
+                Vector3 yAxis = ParentOffset*transform.parent.forward;
+                if (-currentY >= Max.y) dirY = 1;
+                else if (-currentY <= Min.y) dirY = -1;
                 currentY += dirY * step;
-                currentRot *= Quaternion.AngleAxis(currentY, yAxis);
+                currentRot *= Quaternion.AngleAxis(currentY, Vector3.forward);
             }
 
             if (testingTwist) {

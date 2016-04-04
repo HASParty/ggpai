@@ -30,7 +30,9 @@ namespace IK {
         public override void OnInspectorGUI() {
             EditorGUI.BeginChangeCheck();
             seg.Constrain = EditorGUILayout.BeginToggleGroup("Joint Constraints", seg.Constrain);
-            editingAxes = EditorGUILayout.ToggleLeft("Axis editing", editingAxes);
+            if(GUILayout.Button("Reset parent offset")) {
+                seg.ParentOffset = Quaternion.identity;
+            }
             if (GUILayout.Button("Recalculate origin")) {
                 seg.Init();
             }
@@ -95,9 +97,15 @@ namespace IK {
 
         void OnSceneGUI() {
             if (seg.Constrain && (seg.JointType == IKJointType.OneDOF || seg.JointType == IKJointType.TwoDOF)) {
-                drawHinge(seg.transform.parent.up, seg.Min.x, seg.Max.x);
+                drawHinge(seg.ParentOffset*seg.transform.parent.up, seg.Min.x, seg.Max.x, Color.red);
                 if (seg.JointType == IKJointType.TwoDOF) {
-                    drawHinge(seg.transform.parent.forward, seg.Min.y, seg.Max.y);
+                    drawHinge(seg.ParentOffset*seg.transform.parent.forward, seg.Min.y, seg.Max.y, Color.yellow);
+                }
+
+                Quaternion newOffset = Handles.RotationHandle(seg.ParentOffset, seg.transform.position);
+                if(newOffset != seg.ParentOffset) {
+                    Undo.RegisterCompleteObjectUndo(seg, "Rotation offset");
+                    seg.ParentOffset = newOffset;
                 }
             }
 
@@ -121,9 +129,9 @@ namespace IK {
             }
         }
 
-        void drawHinge(Vector3 axis, float min, float max) {
-            Vector3 x = axis;
-            Handles.color = Color.green;
+        void drawHinge(Vector3 axis, float min, float max, Color col) {
+            Vector3 x = -axis;
+            Handles.color = col;
             Vector3 dir = seg.transform.parent.rotation * seg.originalDir;
             Handles.DrawLine(seg.transform.position - x.normalized * 0.1f, x.normalized * 0.1f + seg.transform.position);
             Handles.color = Color.cyan;
