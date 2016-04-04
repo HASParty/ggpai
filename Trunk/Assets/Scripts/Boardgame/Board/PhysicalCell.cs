@@ -12,7 +12,9 @@ namespace Boardgame {
         public string id;
 
         public void SetColliderRadius(float radius) {
-            GetComponent<SphereCollider>().radius = radius;
+            SphereCollider col = GetComponent<SphereCollider>();
+            col.radius = radius;
+            col.center.Set(col.center.x, col.center.y - 0.2f, col.center.z);
         }
 
         public bool isEmpty() {

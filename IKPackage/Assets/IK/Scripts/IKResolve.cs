@@ -70,7 +70,7 @@ namespace IK {
         }
 
         private static Quaternion constrainCone(Quaternion quat, IKLink link) {
-            Debug.Log(link.transform.name);
+           // Debug.Log(link.transform.name);
             if (!link.segRef.Constrain) return quat;
             Quaternion baseQuat = link.segRef.GetBaseRotation();
             float error = 360;
@@ -80,7 +80,7 @@ namespace IK {
                 Vector3 expected = quat * Vector3.up;
 
                 float angle = Vector3.Angle(center, expected);
-                Debug.LogFormat("{0} {1}", link.segRef.ConeRadius, angle);
+               // Debug.LogFormat("{0} {1}", link.segRef.ConeRadius, angle);
                 if(angle > link.segRef.ConeRadius) {
                     quat = Quaternion.Slerp(Quaternion.identity, quat, 1 - iterations*0.1f);
                 } else {
@@ -97,7 +97,7 @@ namespace IK {
             actualAngle = IKMath.AngleOnPlane(dir, toChild, axis);
 
             float angle = Mathf.Clamp(actualAngle, min, max);
-            Debug.LogFormat("{2}: {0} {1}", actualAngle, angle, root.transform.name);
+            //Debug.LogFormat("{2}: {0} {1}", actualAngle, angle, root.transform.name);
             return Quaternion.AngleAxis(angle, angleAxis);
         }
 
@@ -131,12 +131,12 @@ namespace IK {
                                 Vector3 dir = (result * toChild).normalized;
                                 Vector3 xAxis = root.segRef.ParentOffset*root.transform.parent.up;
                                 float actualAngle;
-                                Debug.Log("Constraining x");
+                                //Debug.Log("Constraining x");
                                 Quaternion xConstrain = constrainAxis(root, xAxis, Vector3.up, toChild, dir, root.segRef.Min.x, root.segRef.Max.x, out actualAngle);
                                 if (root.segRef.JointType == IKJointType.TwoDOF) {
                                     Vector3 dirMinusXAxis = Quaternion.Inverse(Quaternion.AngleAxis(actualAngle, Vector3.up)) * dir;
                                     Vector3 yAxis = root.segRef.ParentOffset*root.transform.parent.forward;
-                                    Debug.Log("Constraining y");
+                                    //Debug.Log("Constraining y");
                                     Quaternion yConstrain = constrainAxis(root, yAxis, Vector3.forward, toChild, dirMinusXAxis, root.segRef.Min.y, root.segRef.Max.y, out actualAngle);
                                     result = xConstrain * yConstrain;
                                 } else {
@@ -145,7 +145,7 @@ namespace IK {
                             }
 
                             if (root.segRef.Twist) {
-                                Debug.Log("Constraining twist");
+                               // Debug.Log("Constraining twist");
                                 Vector3 toChild = root.transform.parent.rotation * root.segRef.originalDir;
                                 Vector3 dir = (result * toChild).normalized;
                                 float actualAngle;

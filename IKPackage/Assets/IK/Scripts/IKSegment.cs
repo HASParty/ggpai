@@ -112,7 +112,7 @@ namespace IK {
                 else if (-currentX <= Min.x) dirX = -1;
                 currentX += dirX * step;              
                 currentRot *= Quaternion.AngleAxis(currentX, Vector3.up);
-                Debug.LogFormat("Actual {0} calculated {1}", currentX, IKMath.AngleOnPlane(currentRot * toChild, toChild, xAxis));
+                //Debug.LogFormat("Actual {0} calculated {1}", currentX, IKMath.AngleOnPlane(currentRot * toChild, toChild, xAxis));
             }
 
             if (testingY) {
@@ -124,12 +124,12 @@ namespace IK {
             }
 
             if (testingTwist) {
-                Debug.Log("TWISTY");
+                //Debug.Log("TWISTY");
                 Vector3 twistAxis = transform.right;
                 if (currentTwist >= Max.z) dirTwist = -1;
                 else if (currentTwist <= Min.z) dirTwist = 1;
                 currentTwist += dirTwist * step;
-                Debug.Log(currentTwist);
+                //Debug.Log(currentTwist);
                 currentRot *= Quaternion.AngleAxis(currentTwist, Vector3.right);
             }
 
