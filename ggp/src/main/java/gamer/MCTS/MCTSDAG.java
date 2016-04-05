@@ -105,7 +105,7 @@ public final class MCTSDAG extends Thread {
     public void run(){
         int heapCheck = 0;
         mast.loadData();
-        loadDag();
+        // loadDag();
         //While we are alive we keep on searching
         System.out.println("Using MCTSDAG");
         while(!Thread.currentThread().isInterrupted()){
@@ -138,7 +138,7 @@ public final class MCTSDAG extends Thread {
                 return;
             }
         }
-        mast.saveData();
+        // mast.saveData();
     }
 
 
@@ -196,7 +196,6 @@ public final class MCTSDAG extends Thread {
     //}
     //}
     //MCTS playout phase {
-    
     private List<Double> playOut(MachineState state) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
         lastPlayOutDepth = 0;
         return depthCharge(state);
@@ -283,14 +282,10 @@ public final class MCTSDAG extends Thread {
                 if (moves.get(0).equals(entry.getKey().get(0)) &&
                         moves.get(1).equals(entry.getKey().get(1))){
 
+                    markAndSweep(Integer.MAX_VALUE);
                     root = entry.getValue();
                     MCMove.N = root.n();
-                    // if(dag.size() > 100000){
-                    //     markAndSweep(Integer.MAX_VALUE);
-                    // }
-                    // saveDag();
-                    // throw new IllegalStateException("A move was selected that was not one of the root node moves");
-                    // return;
+                    return;
                 }
             }
         }
@@ -305,7 +300,6 @@ public final class MCTSDAG extends Thread {
         mark(root, marked, depth);
         sweep(marked);
         System.out.println("Size of dag after sweep: " + dag.size());
-        
     }
     private void sweep(HashSet<MachineState> marked){
         Iterator<Map.Entry<MachineState, MCMove>> it = dag.entrySet().iterator();
@@ -391,7 +385,7 @@ public final class MCTSDAG extends Thread {
     public String SSRatio(){
         return root.SSRatio();
     }
-    
+
     private List<Double> getGoalsAsDouble(MachineState state)throws GoalDefinitionException{
             List<Double> result = new ArrayList<>();
             for(Integer inte : machine.getGoals(state)){
