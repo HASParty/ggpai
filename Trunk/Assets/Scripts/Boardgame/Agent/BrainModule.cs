@@ -152,9 +152,11 @@ namespace Boardgame.Agent {
                             break;
                         case FMLFunction.FunctionType.BOARDGAME_MAKE_MOVE:
                             //TODO: BMLIFY
-                            BoardgameManager.Instance.MakeMove((function as MakeMoveFunction).MoveToMake, player);
+                            GameObject piece = BoardgameManager.Instance.MakeMove((function as MakeMoveFunction).MoveToMake, player);
+                            Pointing point = new Pointing("reachTowardsPiece", chunk.owner, piece, Behaviour.Lexemes.Mode.LEFT_HAND, Behaviour.Lexemes.Head.ACK, 0, end: 1f);
                             Gaze glance = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 0.25f, end: 0.5f);
                             curr.AddChunk(glance);
+                            curr.AddChunk(point);
                             break;
                         case FMLFunction.FunctionType.EMOTION:
                             //transform expression

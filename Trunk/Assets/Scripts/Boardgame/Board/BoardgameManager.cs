@@ -125,10 +125,10 @@ namespace Boardgame {
             return grid.GetCellPosition(id);
         }
 
-        public void MakeMove(List<Move> moves, Player player) {
+        public GameObject MakeMove(List<Move> moves, Player player) {
+            GameObject piece = null;
             foreach(var move in moves) {
                 Debug.Log(move);
-                GameObject piece;
                 switch (move.Type) {
                     case MoveType.PLACE:
                         string heap = player == Player.First ? gameScriptable.FirstPile : gameScriptable.SecondPile;
@@ -147,6 +147,7 @@ namespace Boardgame {
             }
             //notify listeners the move has been made
             OnMakeMove.Invoke(moves, player);
+            return piece;
         }
 
         public bool CanSelectCell(PhysicalCell cell, PhysicalCell selected) {

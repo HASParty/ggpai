@@ -8,6 +8,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 458336}
+  - 114: {fileID: 11464398}
   m_Layer: 0
   m_Name: BlackCirclePrefab
   m_TagString: Untagged
@@ -52,7 +53,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 106502}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -2.1126227, y: -1.806, z: 8.201}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 428618}
@@ -103,6 +104,29 @@ MeshCollider:
   serializedVersion: 2
   m_Convex: 1
   m_Mesh: {fileID: 4300000, guid: c7b9d74cb732cc444b8aacf31e8bc861, type: 3}
+--- !u!114 &11464398
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 106502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3f72949566a78f49b2cf54655179640, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HandShape: 0
+  ContactPoints:
+  - Location: {x: 0.014722347, y: 0.010767698, z: -0.027067184}
+    Normal: {x: 0.24890244, y: 0.8111033, z: -0.5293005}
+    Finger: 0
+  - Location: {x: -0.01931858, y: 0.004595399, z: 0.013382912}
+    Normal: {x: 0, y: 1, z: 0}
+    Finger: 1
+  - Location: {x: 0.015178204, y: 0, z: 0.01371479}
+    Normal: {x: 0, y: 1, z: 0}
+    Finger: 2
+  Radius: 0.01
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1

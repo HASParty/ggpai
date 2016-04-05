@@ -2,7 +2,7 @@
 using System.Collections;
 namespace FML
 {
-    public class Participant : MonoBehaviour
+    public class Participant
     {
 
         public Identikit identikit;

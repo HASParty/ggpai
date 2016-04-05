@@ -15,6 +15,8 @@ namespace Behaviour
 		Posture,
 		Speech,
 		Pointing,
+        Grasping,
+        Placing
 	}
 
 }
