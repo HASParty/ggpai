@@ -5,7 +5,6 @@ using FML;
 using Boardgame.Configuration;
 
 namespace Boardgame.Agent {
-    [SerializePrivateVariables]
     public class PersonalityModule : MonoBehaviour {
         [System.Serializable]
         public struct Trait {
@@ -25,25 +24,41 @@ namespace Boardgame.Agent {
             public float arousalDecay;
         }
 
+        [SerializeField]
         private Mood mood;
+        [SerializeField]
         private float restingArousal;
+        [SerializeField]
         private float restingValence;
 
+        [SerializeField]
         private float arousalBaseDecayRate = 0.005f;
+        [SerializeField]
         private float valenceBaseDecayRate = 0.005f;
+        [SerializeField]
         private float arousalDecayRate;
+        [SerializeField]
         private float valenceDecayRate;
 
+        [SerializeField]
         private int Low;
+        [SerializeField]
         private int Neutral;
+        [SerializeField]
         private int High;
 
+        [SerializeField]
         private Trait agreeableness;
+        [SerializeField]
         private Trait conscientiousness;
+        [SerializeField]
         private Trait extraversion;
+        [SerializeField]
         private Trait neuroticism;
+        [SerializeField]
         private Trait openness;
 
+        [SerializeField]
         private Identikit identikit;
 
         // Use this for initialization

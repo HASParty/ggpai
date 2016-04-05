@@ -14,7 +14,7 @@ namespace Boardgame {
         public void SetColliderRadius(float radius) {
             SphereCollider col = GetComponent<SphereCollider>();
             col.radius = radius;
-            col.center.Set(col.center.x, col.center.y - 0.2f, col.center.z);
+            col.center = new Vector3(col.center.x, col.center.y - radius/2, col.center.z);
         }
 
         public bool isEmpty() {

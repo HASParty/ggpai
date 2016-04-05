@@ -5,7 +5,7 @@ using System.Collections;
 public class Asteroid : MonoBehaviour {
 
     Rigidbody rb;
-    SphereCollider sc;
+   // SphereCollider sc;
     public Vector3 MaxRotation = new Vector3(20,20,20);
     private Vector3 rotation;
 
@@ -17,7 +17,7 @@ public class Asteroid : MonoBehaviour {
                     Random.Range(-12f, 12f),
                     Random.Range(-30f, 30f),
                     ForceMode.Impulse);
-        sc = GetComponent<SphereCollider>();
+       // sc = GetComponent<SphereCollider>();
         rotation = new Vector3(Random.Range(-MaxRotation.x, MaxRotation.x),
                                Random.Range(-MaxRotation.y, MaxRotation.y), 
                                Random.Range(-MaxRotation.z, MaxRotation.z));

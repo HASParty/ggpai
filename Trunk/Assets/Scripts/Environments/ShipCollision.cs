@@ -2,11 +2,11 @@
 using System.Collections;
 
 public class ShipCollision : MonoBehaviour {
-    private AudioSource audio;
+    private AudioSource source;
 
     void Start()
     {
-        audio = GetComponent<AudioSource>();
+        source = GetComponent<AudioSource>();
     }
 
     void OnCollisionEnter(Collision collision)
@@ -15,6 +15,6 @@ public class ShipCollision : MonoBehaviour {
         {
             Debug.DrawRay(contact.point, contact.normal, Color.white);
         }
-        audio.Play();
+        source.Play();
     }
 }

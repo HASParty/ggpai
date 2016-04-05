@@ -103,7 +103,7 @@ public class FaceControllerGUI : MonoBehaviour {
 			}
 		}		
 		TextEditor te = new TextEditor();
-		te.content = new GUIContent(str);
+		te.text = str;
 		te.SelectAll();
 		te.Copy();
 	}

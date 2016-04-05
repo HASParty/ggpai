@@ -2,9 +2,9 @@
 
 namespace FML {
     public class InteractionalChunk : FMLChunk {
-        public TrackType TrackType { get { return TrackType.Interactional; } }
+        public override TrackType track { get { return TrackType.Interactional; } }
 
-        public bool AddFunction(FMLFunction func) {
+        public override bool AddFunction(FMLFunction func) {
             //maybe give functions track types...?
             if (func.Function == FMLFunction.FunctionType.GROUNDING ||
                func.Function == FMLFunction.FunctionType.CLOSING ||

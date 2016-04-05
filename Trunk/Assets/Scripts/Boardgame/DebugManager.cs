@@ -14,7 +14,7 @@ public class DebugManager : MonoBehaviour {
 	BMLScheduleDebugger bmlDebug;
     UIMoodViewer mood;
     
-    List<GameObject> hiddenCache = new List<GameObject> ();
+    //List<GameObject> hiddenCache = new List<GameObject> ();
 
     public Vector3 scale;
 

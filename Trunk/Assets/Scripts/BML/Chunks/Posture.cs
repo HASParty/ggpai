@@ -1,6 +1,5 @@
 ﻿using FML;
 using System.Collections.Generic;
-using FML;
 
 namespace Behaviour {
 	public class Pose { 

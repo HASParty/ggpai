@@ -5,11 +5,9 @@ using UnityEngine.VR;
 
 public class CameraController : MonoBehaviour {
 
-    private Camera cam;
     private MouseLook ml;
 
 	void Start () {
-        cam = GetComponent<Camera>();
         ml = new MouseLook();
         ml.Init(transform.parent, transform);
 	}

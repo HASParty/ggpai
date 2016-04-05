@@ -2,9 +2,9 @@
 
 namespace FML {
     public class MentalChunk : FMLChunk {
-        public TrackType TrackType { get { return TrackType.MentalState; } }
+        public override TrackType track { get { return TrackType.MentalState; } }
 
-        public bool AddFunction(FMLFunction func) {
+        public override bool AddFunction(FMLFunction func) {
             functions.Add(func);
             return true;
         }

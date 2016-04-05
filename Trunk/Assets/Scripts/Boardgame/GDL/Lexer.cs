@@ -50,6 +50,7 @@ namespace Boardgame.GDL {
             this.moveID = moveID;
             this.removeID = removeID;
             this.handID = handID;
+            this.controlID = controlID;
         }
 
         public List<Token> Lex(string sentence) {

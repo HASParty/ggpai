@@ -2,7 +2,7 @@
 
 namespace FML {
     public class PerformativeChunk : FMLChunk {
-        public TrackType TrackType { get { return TrackType.Performative; } }
+        public override TrackType track { get { return TrackType.Performative; } }
 
         public PerformativeChunk() {
             functions = new List<FMLFunction>();

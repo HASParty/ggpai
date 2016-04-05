@@ -266,15 +266,15 @@ public class BehaviourRealiser : MonoBehaviour {
         Debug.Log("Point");
         if (target != null) {
             float angle = SignedAngle(transform.forward * 5, target.transform.position - transform.position, transform.up);
-            if (angle <= 85 && angle >= -85) {
-                 _motion.Point(duration, target, lookAtTarget, angle < 0);
-            } else {
+            //if (angle <= 85 && angle >= -85) {
+                 _motion.Point(duration, target, lookAtTarget, true);
+           /* } else {
                 if (angle < 0) {
                     //  _motion.OpenPalmLeft();
                 } else {
                     // _motion.OpenPalm();
-                }
-            }
+              *  }
+            }*/
         }
         yield return new WaitForSeconds(duration);
     }
@@ -283,7 +283,7 @@ public class BehaviourRealiser : MonoBehaviour {
     /// Grasp target taking time duration to do so.
     /// </summary>
     /// <param name="duration">Duration of motion.</param>
-    IEnumerator Grasp(float duration = 3f, GameObject target = null, bool left)
+    IEnumerator Grasp(float duration = 3f, GameObject target = null, bool left = true)
     {
         Debug.Log("Grasp");
         if (target != null)
@@ -297,7 +297,7 @@ public class BehaviourRealiser : MonoBehaviour {
     /// Place whatever is in hand at target taking time duration to do so.
     /// </summary>
     /// <param name="duration">Duration of motion.</param>
-    IEnumerator Place(float duration = 3f, GameObject target = null, bool left)
+    IEnumerator Place(float duration = 3f, GameObject target = null, bool left = true)
     {
         Debug.Log("Place");
         if (target != null)

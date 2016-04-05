@@ -73,43 +73,43 @@ namespace Boardgame.Agent {
             var last = myUCTavg;
             //need to observe how these change
             myUCTavg = (myUCTavg * its * Config.UCTDecay + myUCT) / (its + 1);
-            Debug.LogFormat("{0} vs {1}", last, myUCTavg);
+            //Debug.LogFormat("{0} vs {1}", last, myUCTavg);
             foeUCTavg = (foeUCTavg * its * Config.UCTDecay + myUCT) / (its + 1);
             
             if(isMyTurn) {
                 //this is a promising move for me which I'm disproportionately simulating
                 if (d.SimulationStdDev >= 2.5) {
                     if (myUCT > foeUCT) {
-                        Debug.Log("likes");
+                        //Debug.Log("likes");
                         if (pm.GetArousal() < Config.Neutral) arousal += 15;
                         valence += 0.2f;
                         arousal += 0.25f;
                     } else { //my best move isn't even in my favour
-                        Debug.Log("no no no");
+                        //Debug.Log("no no no");
                         if (pm.GetArousal() < Config.Neutral) arousal += 15;
                         valence -= 0.2f;
                         arousal += 0.25f;
                     }
                 } else if (d.SimulationStdDev < 2.5f) {
                     if (myUCT > foeUCT) {
-                        Debug.Log("thinks is pretty decent");
+                       // Debug.Log("thinks is pretty decent");
                         valence += 0.1f;
                         arousal += 0.1f;
                     } else { //my best move isn't even in my favour
-                        Debug.Log("ehhhh");
+                      //  Debug.Log("ehhhh");
                         valence -= 0.1f;
                         arousal += 0.12f;
                     }
                 } else if (d.SimulationStdDev < 2f) { 
                     //moves are pretty even for me, in my favour, so I'm feeling calm
                     if (myUCT > foeUCT) {
-                        Debug.Log("chillax");
+                       // Debug.Log("chillax");
                         if (pm.GetArousal() > Config.Neutral) arousal -= 15;
                         arousal -= 0.3f;
                         valence += 0.1f;
                     } else {
                         //pretty uniformly bad for me eh
-                        Debug.Log("sadness...");
+                      //  Debug.Log("sadness...");
                         if (pm.GetArousal() > Config.Neutral) arousal -= 15;
                         arousal -= 0.3f;
                         valence -= 0.1f;
