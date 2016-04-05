@@ -41,7 +41,7 @@ public class JeffGamer extends StateMachineGamer {
     public void stateMachineMetaGame(long timeout) {
 
         roleMap = getStateMachine().getRoleIndices();
-        mcts = new MCTSDAG(this, lock1, false);
+        mcts = new MCTSDAG(this, lock1, false, 0.9f, 400);
         long finishBy = timeout - 1100;
         mcts.start();
         while(System.currentTimeMillis() < finishBy){

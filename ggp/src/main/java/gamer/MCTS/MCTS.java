@@ -294,8 +294,8 @@ public final class MCTS extends Thread {
                 result += "("; 
                 result += "m:" + entry.getKey();
                 result += " n:" + entry.getValue().n();
-                result += " v:[" + f.format(root.calcValue(0, entry.getValue())) + " " + 
-                          f.format(root.calcValue(1, entry.getValue())) + "]";
+                result += " v:[" + f.format(root.Qvalue(0, entry.getValue())) + " " + 
+                          f.format(root.Qvalue(1, entry.getValue())) + "]";
                 result += ") ";
             }
         }

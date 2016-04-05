@@ -30,8 +30,9 @@ public class MAST extends MovePick{
                 double mastValue;
                 if (mast.containsKey(moves.get(i))){
                     mastValue = mast.get(moves.get(i)).get(0);
+                    mastValue += rand.nextFloat() * 5;
                 } else {
-                    mastValue = rand.nextInt(5);  //Arbitrary random value
+                    mastValue = rand.nextInt(30000);  //Arbitrary random value
                 }
                 if((bestMoves[i] == null) || (bestValue[i] > mastValue)){
                     bestMoves[i] = moves.get(i);

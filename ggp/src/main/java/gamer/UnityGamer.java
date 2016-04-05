@@ -41,7 +41,7 @@ public class UnityGamer extends StateMachineGamer {
     @Override
     public void stateMachineMetaGame(long timeout) {
         roleMap = getStateMachine().getRoleIndices();
-        mcts = new MCTSDAG(this, lock1, silent);
+        mcts = new MCTSDAG(this, lock1, silent, 0.9f, 100);
         long finishBy = timeout - 1000;
         mcts.start();
     }

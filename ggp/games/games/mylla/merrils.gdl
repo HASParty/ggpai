@@ -64,7 +64,7 @@
 	(true (pieces_on_board ?p 2))
 )
 (<= (lost ?p)
-	(true (control ?p))
+	(moving ?p)
 	(not (has_legal_move ?p))
 )
 
@@ -143,7 +143,7 @@
 (<= (legal_move ?p (remove ?x ?y))
     (removing ?p)
 	(opponent ?p ?o)
-	(not (exists_piece_outside_of_mill ?p))
+	(not (exists_piece_outside_of_mill ?o))
     (true (pit ?x ?y ?o))
 )
 (<= (exists_piece_outside_of_mill ?p)
