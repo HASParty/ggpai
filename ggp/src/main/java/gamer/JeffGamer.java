@@ -39,9 +39,8 @@ public class JeffGamer extends StateMachineGamer {
     public ReentrantReadWriteLock lock1= new ReentrantReadWriteLock(true);
     @Override
     public void stateMachineMetaGame(long timeout) {
-
         roleMap = getStateMachine().getRoleIndices();
-        mcts = new MCTSDAG(this, lock1, false, 0.9f, 400);
+        mcts = new MCTSDAG(this, lock1, false, 0.9f, 100);
         long finishBy = timeout - 1100;
         mcts.start();
         while(System.currentTimeMillis() < finishBy){

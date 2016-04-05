@@ -60,7 +60,7 @@ public final class MCTSDAG extends Thread {
     private int DagCounter = 0;
     private static Runtime runtime = Runtime.getRuntime();
     private static boolean expanding;
-    private static final int limit = 0;
+    private static final int limit = 5000;
     private int lastPlayOutDepth;
     private int playOutCount;
     private float avgPlayOutDepth;
