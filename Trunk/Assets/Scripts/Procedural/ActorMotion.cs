@@ -106,18 +106,22 @@ public class ActorMotion : MonoBehaviour {
         public float Weight = 0f;
         public float FinalWeight = 0f;
         public float Elapsed = 0f;
+        public float Duration = 0f;
         public GameObject Target;
-        public float TargetHeight = 0f;
         public AvatarIKGoal IKGoal;
         public bool Active = false;
     }
 
     IKLookAt leftHand;
     IKLookAt rightHand;
-    public Transform LeftHand;
-    public Transform RightHand;
-    public Transform LeftHandHolding;
-    public Transform RightHandHolding;
+
+    [System.Serializable]
+    public class Arm {
+        public Transform transform;
+        public Transform holding;
+    }
+    public Arm Left = new Arm();
+    public Arm Right = new Arm();
     void OnAnimatorIK()
     {
         if (leftHand == null)
@@ -135,17 +139,17 @@ public class ActorMotion : MonoBehaviour {
     {
         if (ik == null)
             return;
-        if (ik.Weight < 0.2f && ik.Elapsed <= 1f && ik.Active)
+        if (ik.Weight < 0.8f && ik.Elapsed <= 1f && ik.Active)
         {
             //Debug.Log ("up "+ ik.Weight);
-            ik.Weight = Mathf.Lerp(0, 0.2f, ik.Elapsed / 1f);
+            ik.Weight = Mathf.Lerp(0, 0.2f, ik.Elapsed / ik.Duration);
             ik.FinalWeight = ik.Weight;
             ik.Elapsed += Time.deltaTime;
         }
         else if (ik.Weight > 0f && ik.Elapsed <= 1f && !ik.Active)
         {
             //Debug.Log ("down "+ ik.Weight);
-            ik.Weight = Mathf.Lerp(ik.FinalWeight, 0, ik.Elapsed / 1f);
+            ik.Weight = Mathf.Lerp(ik.FinalWeight, 0, ik.Elapsed / ik.Duration);
             ik.Elapsed += Time.deltaTime;
         }
         else if (!ik.Active)
@@ -166,12 +170,12 @@ public class ActorMotion : MonoBehaviour {
         }
         else
         {
-            curTarget = ik.Target.transform.position + new Vector3(0, ik.TargetHeight, 0);
+            curTarget = ik.Target.transform.position;
         }
         animator.SetIKPosition(ik.IKGoal, curTarget);
     }
 
-    public void Grab(float duration, GameObject target, bool left = true)
+    public IEnumerator Grab(float duration, GameObject target, bool left = true)
     {
         IKLookAt ik = (left ? leftHand : rightHand);
         if (left)
@@ -187,20 +191,20 @@ public class ActorMotion : MonoBehaviour {
         ik.Elapsed = 0f;
         ik.Active = true;
         ik.Target = target;
-        ik.TargetHeight = 0f;
-        StartCoroutine(FinishGrab(duration, ik, left));
+        ik.Duration = duration/2;
+        yield return StartCoroutine(FinishGrab(duration/2, ik, left));
     }
 
-    public void Place(float duration, GameObject where, bool left = true)
+    public IEnumerator Place(float duration, GameObject where, bool left = true)
     {
-        Transform what = (left ? LeftHandHolding : RightHandHolding);
+        Transform what = (left ? Left.holding : Right.holding);
         if(what == null) Debug.LogWarning("What should I place");
         else
         {
             IKLookAt ik = (left ? leftHand : rightHand);
             if (left)
             {
-                animator.SetTrigger("Reach");
+                //animator.SetTrigger("Reach");
             }
             else
             {
@@ -211,8 +215,8 @@ public class ActorMotion : MonoBehaviour {
             ik.Elapsed = 0f;
             ik.Active = true;
             ik.Target = where;
-            ik.TargetHeight = 0f;
-            StartCoroutine(FinishPlace(what, duration, ik, left));
+            ik.Duration = duration / 2;
+            yield return StartCoroutine(FinishPlace(what, duration/2, ik, left));
         }
     }
 
@@ -220,14 +224,14 @@ public class ActorMotion : MonoBehaviour {
     {
         yield return new WaitForSeconds(duration);
         ik.Elapsed = 0f;
-        placeMe.SetParent(ik.Target.transform);
+        //placeMe.SetParent(ik.Target.transform);
         if (left)
         {
-            LeftHandHolding = null;
+            Left.holding = null;
         }
         else
         {
-            RightHandHolding = null;
+            Right.holding = null;
         }
         ik.Active = false;
         yield return null;
@@ -237,16 +241,6 @@ public class ActorMotion : MonoBehaviour {
     {
         yield return new WaitForSeconds(duration);
         ik.Elapsed = 0f;
-        if (left)
-        {
-            ik.Target.transform.SetParent(LeftHand);
-            LeftHandHolding = ik.Target.transform;
-        }
-        else
-        {
-            ik.Target.transform.SetParent(RightHand);
-            RightHandHolding = ik.Target.transform;
-        }
         ik.Active = false;
         yield return null;
     }
@@ -256,7 +250,7 @@ public class ActorMotion : MonoBehaviour {
         IKLookAt ik = (left ? leftHand : rightHand);
         if (left)
         {
-            animator.SetTrigger("Reach");
+           // animator.SetTrigger("Reach");
         }
         else
         {
@@ -270,7 +264,7 @@ public class ActorMotion : MonoBehaviour {
         ik.Elapsed = 0f;
         ik.Active = true;
         ik.Target = target;
-        ik.TargetHeight = 0f;
+        ik.Duration = 1f;
         StartCoroutine(StopPointing(duration, ik));
     }
 

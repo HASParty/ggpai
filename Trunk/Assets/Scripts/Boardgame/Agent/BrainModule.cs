@@ -7,6 +7,7 @@ using Behaviour;
 using System.Collections;
 using Boardgame.Configuration;
 using System;
+using UnityEngine.Events;
 
 namespace Boardgame.Agent {
     [RequireComponent(typeof(PersonalityModule), typeof(InputModule), typeof(BehaviourRealiser))]
@@ -51,9 +52,11 @@ namespace Boardgame.Agent {
             }
         }
 
-        //running 'averages'
+        [SerializeField]
         private float myUCTavg = 0;
+        [SerializeField]
         private int its = 0;
+        [SerializeField]
         private float foeUCTavg = 0;
         //add standard deviation for simulations, running average for UCT, etc
         public void EvaluateConfidence(Networking.FeedData d, bool isMyTurn) {
@@ -72,11 +75,13 @@ namespace Boardgame.Agent {
             uctDiff = myUCT - foeUCT;
             var last = myUCTavg;
             //need to observe how these change
-            myUCTavg = (myUCTavg * its * Config.UCTDecay + myUCT) / (its + 1);
-            //Debug.LogFormat("{0} vs {1}", last, myUCTavg);
-            foeUCTavg = (foeUCTavg * its * Config.UCTDecay + myUCT) / (its + 1);
-            
-            if(isMyTurn) {
+            myUCTavg = myUCTavg * Config.UCTDecay + myUCT * (1 - Config.UCTDecay);
+            //we need a stable average before we try to detect swings...
+            if (its > 50) {
+                arousal += Mathf.Abs(last - myUCTavg)/5;
+            }
+
+            if (isMyTurn) {
                 //this is a promising move for me which I'm disproportionately simulating
                 if (d.SimulationStdDev >= 2.5) {
                     if (myUCT > foeUCT) {
@@ -152,11 +157,18 @@ namespace Boardgame.Agent {
                             break;
                         case FMLFunction.FunctionType.BOARDGAME_MAKE_MOVE:
                             //TODO: BMLIFY
-                            GameObject piece = BoardgameManager.Instance.MakeMove((function as MakeMoveFunction).MoveToMake, player);
-                            Pointing point = new Pointing("reachTowardsPiece", chunk.owner, piece, Behaviour.Lexemes.Mode.LEFT_HAND, Behaviour.Lexemes.Head.ACK, 0, end: 1f);
-                            Gaze glance = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 0.25f, end: 0.5f);
+                            MakeMoveFunction move = function as MakeMoveFunction;
+                            BoardgameManager.Instance.MoveMade(move.MoveToMake, player);
+                            PhysicalCell from, to;
+                            BoardgameManager.Instance.GetMoveFromTo(move.MoveToMake[0], player, out from, out to);
+                            Grasp reach = new Grasp("reachTowardsPiece", chunk.owner, from.gameObject,
+                                Behaviour.Lexemes.Mode.LEFT_HAND, (arm) => { GraspPiece(from, arm); }, 0, end: 1.5f);
+                            Place place = new Place("placePiece", chunk.owner, to.gameObject,
+                                Behaviour.Lexemes.Mode.LEFT_HAND, (piece) => { PlacePiece(piece, to); }, 1.25f, end: 2f);
+                            Gaze glance = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 2f, end: 1.25f);
                             curr.AddChunk(glance);
-                            curr.AddChunk(point);
+                            curr.AddChunk(reach);
+                            curr.AddChunk(place);
                             break;
                         case FMLFunction.FunctionType.EMOTION:
                             //transform expression
@@ -185,6 +197,17 @@ namespace Boardgame.Agent {
             foreach(var chunk in body.chunks) {
                 behave.ScheduleBehaviour(chunk.BMLRef);
             }
+        }
+
+        public void GraspPiece(PhysicalCell piece, ActorMotion.Arm arm) {
+            GameObject p = piece.RemovePiece();
+            p.transform.SetParent(arm.transform);
+            p.transform.localPosition = Vector3.zero;
+            arm.holding = p.transform;
+        }
+
+        public void PlacePiece(GameObject piece, PhysicalCell newCell) {
+            newCell.Place(piece);
         }
 
         float lastTime = -1f;

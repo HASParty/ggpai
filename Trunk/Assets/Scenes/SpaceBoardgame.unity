@@ -1465,10 +1465,12 @@ MonoBehaviour:
   Chin:
     Target: {fileID: 0}
     Effect: 0
-  LeftHand: {fileID: 1345391877}
-  RightHand: {fileID: 189008030}
-  LeftHandHolding: {fileID: 0}
-  RightHandHolding: {fileID: 0}
+  Left:
+    transform: {fileID: 1838306449}
+    holding: {fileID: 0}
+  Right:
+    transform: {fileID: 224330603}
+    holding: {fileID: 0}
 --- !u!114 &500687592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3069,7 +3071,7 @@ MonoBehaviour:
   MatchID: 1234
   GameName: mylla
   StartTime: 25
-  TurnTime: 15
+  TurnTime: 5
   Low: 0
   Neutral: 1
   High: 2
@@ -5182,6 +5184,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: 0
+  myUCTavg: 0
+  its: 0
+  foeUCTavg: 0
 --- !u!114 &2039804517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5201,7 +5206,7 @@ MonoBehaviour:
   restingValence: 0
   arousalBaseDecayRate: 0.01
   valenceBaseDecayRate: 0.005
-  arousalDecayRate: 0.005
+  arousalDecayRate: 0.01
   valenceDecayRate: 0.005
   Low: 0
   Neutral: 0

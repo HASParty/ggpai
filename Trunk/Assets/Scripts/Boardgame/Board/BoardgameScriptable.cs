@@ -21,5 +21,6 @@ namespace Boardgame.Script {
         public PhysicalPieces[] PhysicalPieces;
         public string SecondPile;
         public string FirstPile;
+        public string TrashPile;
     }
 }

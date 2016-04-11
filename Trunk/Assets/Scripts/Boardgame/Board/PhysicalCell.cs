@@ -51,6 +51,7 @@ namespace Boardgame {
             }
             piece[piece.Count-1].transform.SetParent(transform);
             piece[piece.Count-1].transform.localPosition = Vector3.zero;
+            piece[piece.Count - 1].transform.localRotation = Quaternion.identity;
         }
 
         public bool HasPiece() {

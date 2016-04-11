@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using FML;
+using UnityEngine.Events;
 
 namespace Behaviour
 {
@@ -25,9 +26,12 @@ namespace Behaviour
         public float StrokeEnd { get; private set; }
         public float Relax { get; private set; }
 
+        public UnityAction<ActorMotion.Arm> Callback;
+
 
         //constructor
         public Grasp(string id, Participant character, GameObject target, Lexemes.Mode mode,
+                     UnityAction<ActorMotion.Arm> callback,
                        float start = 0f, float ready = -1f, float strokeStart = -1f,
                        float stroke = -1f, float strokeEnd = -1f, float relax = -1f,
                        float end = 1f)
@@ -43,6 +47,7 @@ namespace Behaviour
             Ready = ready;
             Relax = relax;
             End = end;
+            Callback = callback;
         }
 
         public override float GetTime(SyncPoints point)

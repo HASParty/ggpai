@@ -100,7 +100,7 @@ namespace Behaviour {
                     break;
                 case BMLChunkType.Grasping:
                     color = Pointing;
-                    Place graspChunk = chunk as Place;
+                    Grasp graspChunk = chunk as Grasp;
                     text += graspChunk.ToString();
                     break;
                 default:

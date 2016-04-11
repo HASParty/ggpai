@@ -1,6 +1,7 @@
 ﻿using Boardgame.GDL;
 using System;
 using System.Linq;
+using UnityEngine;
 
 namespace Boardgame.Networking {
     public class FeedData {
@@ -21,9 +22,13 @@ namespace Boardgame.Networking {
                 }
             }
 
-            double avgSim = moves.Average(v => v.Simulations);
-            double stdDev = Math.Sqrt(moves.Average(v => Math.Pow(v.Simulations - avgSim, 2)));
-            SimulationStdDev = (MaxSimulation - (float)avgSim) / (float)stdDev;
+            try {
+                double avgSim = moves.Average(v => v.Simulations);
+                double stdDev = Math.Sqrt(moves.Average(v => Math.Pow(v.Simulations - avgSim, 2)));
+                SimulationStdDev = (MaxSimulation - (float)avgSim) / (float)stdDev;
+            } catch (Exception e) {
+                Debug.LogWarning(e);
+            }
         }
     }
 }
