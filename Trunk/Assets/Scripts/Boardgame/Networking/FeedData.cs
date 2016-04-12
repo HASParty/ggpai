@@ -6,9 +6,11 @@ using UnityEngine;
 namespace Boardgame.Networking {
     public class FeedData {
         public Move Best;
+        public Move Worst;
         public float FirstUCT;
         public float SecondUCT;
         public int MaxSimulation;
+        public int MinSimulation = int.MaxValue;
         public float SimulationStdDev;
 
         public FeedData(string parse) {
@@ -19,6 +21,10 @@ namespace Boardgame.Networking {
                     MaxSimulation = cm.Simulations;                    
                     FirstUCT = cm.FirstUCT;
                     SecondUCT = cm.SecondUCT;
+                }
+                if(cm.Simulations < MinSimulation) {
+                    MinSimulation = cm.Simulations;
+                    Worst = (cm.First != null ? cm.First : cm.Second);
                 }
             }
 

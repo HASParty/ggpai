@@ -27,6 +27,8 @@ namespace Boardgame.Agent {
         [SerializeField]
         private Mood mood;
         [SerializeField]
+        private Mood swing;
+        [SerializeField]
         private float restingArousal;
         [SerializeField]
         private float restingValence;

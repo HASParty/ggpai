@@ -40,6 +40,10 @@ public class ActorMotion : MonoBehaviour {
         SetTarget(Table.transform);
 	}
 
+    public void SetLean(float lean) {
+        headlook.lean = lean;
+    }
+
     private float desiredHlEffect = 0f;
     private float prevHlEffect = 0f;
     private float elapsed = 0f;
@@ -276,6 +280,10 @@ public class ActorMotion : MonoBehaviour {
         ik.Active = false;
         yield return null;
     }
+
+
+    //IDLING
+    
 
 
 }

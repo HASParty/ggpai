@@ -5202,12 +5202,15 @@ MonoBehaviour:
   mood:
     valence: 0
     arousal: 0
+  swing:
+    valence: 0
+    arousal: 0
   restingArousal: 0
   restingValence: 0
   arousalBaseDecayRate: 0.01
-  valenceBaseDecayRate: 0.005
-  arousalDecayRate: 0.01
-  valenceDecayRate: 0.005
+  valenceBaseDecayRate: 0.008
+  arousalDecayRate: 0.008
+  valenceDecayRate: 0.008
   Low: 0
   Neutral: 0
   High: 0

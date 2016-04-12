@@ -258,7 +258,7 @@ public class FaceControllerII : MonoBehaviour {
         offset.HoldTime = 0f;
         offset.EaseIn = 0;
         offset.EaseOut = 0;
-        offset.Weight = 1f;
+        offset.Weight = 0.7f;
 
         string valenceExpr = (valence < Config.Neutral ? "unhappy" : "happy");
         string arousalExpr = (arousal < Config.Neutral ? "calm" : "surprised");
@@ -271,8 +271,8 @@ public class FaceControllerII : MonoBehaviour {
         if (ExpressionLibrary.Contains(valenceExpr)) {
             var valGoal = new Dictionary<string, Vector3>(ExpressionLibrary.Get(valenceExpr));
             var aroGoal = new Dictionary<string, Vector3>(ExpressionLibrary.Get(arousalExpr));
-            float u = 0.5f;
-            float l = -0.01f;
+            float u = 0.8f;
+            float l = -0.02f;
             foreach(var key in valGoal.Keys)
             {
                 Vector3 tinyError = new Vector3(Random.Range(l, u), Random.Range(l, u), Random.Range(l, u));
@@ -332,16 +332,17 @@ public class FaceControllerII : MonoBehaviour {
                 }
             }
 
+            //additive
             foreach (var bone in boneBlender) {
-                if (bone.Value.Count > 0) {
-                    float div = 1f / bone.Value.Count;
-                    Vector3 goalPos = Vector3.zero;
-                    foreach (var loc in bone.Value) {
-                        goalPos += loc * div;
-                    }
-                    bones[bone.Key].localPosition = goalPos;
-                }
-            }
+                 if (bone.Value.Count > 0) {
+                     float div = 1f / bone.Value.Count;
+                     Vector3 goalPos = Vector3.zero;
+                     foreach (var loc in bone.Value) {
+                         goalPos += loc * div;
+                     }
+                     bones[bone.Key].localPosition = goalPos;
+                 }
+             }
 
             foreach (var ex in flaggedForDeletion) {
                 for (int i = 0; i < currentExpressions.Count; i++) {

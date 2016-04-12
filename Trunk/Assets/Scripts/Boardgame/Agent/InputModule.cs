@@ -28,12 +28,13 @@ namespace Boardgame.Agent {
         public void CheckGame(GameData data) {
             if (data.IsStart && data.LegalMoves.Count == 0) {
                 bm.player = Player.First;
-            } else if(data.IsStart) {
+            } else if (data.IsStart) {
                 bm.player = Player.Second;
             }
-            if (!data.IsStart && bm.player == data.Control && data.MovesMade.Count > 0) {
-                var move = data.MovesMade;
+            var move = data.MovesMade;
+            if (!data.IsStart && bm.player == data.Control && data.MovesMade.Count > 0) {                
                 bm.ExecuteMove(move);
+                OnMoveMade(move, bm.player);                
             }
 
             isMyTurn = !data.IsHumanPlayerTurn;
@@ -49,12 +50,7 @@ namespace Boardgame.Agent {
 
         public void OnMoveMade(List<GDL.Move> moves, Player player) {
             Debug.Log("InputModule acknowledging a move has been made");
-            if (player == bm.player) {
-               
-            } else {
-                Debug.Log("This information should be passed through a GameWriter and on to the AI.");
-
-            }
+            bm.ReactMove(moves, player);
         }
     }
 }

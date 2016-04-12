@@ -14,7 +14,8 @@ namespace FML {
             INITIATION,
             CLOSING,
             //performative
-            BOARDGAME_MAKE_MOVE
+            BOARDGAME_MAKE_MOVE,
+            BOARDGAME_REACT_MOVE
         }
 
         public virtual FunctionType Function { get; protected set; }

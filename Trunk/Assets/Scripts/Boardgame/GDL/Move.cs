@@ -41,5 +41,12 @@ namespace Boardgame.GDL {
             }
             return string.Format("( {0}: {1} -> {2} )", Type, From, To);
         }
+
+        public override bool Equals(object obj) {
+            if (obj.GetType().Equals(this.GetType())) {
+                Move other = obj as Move;
+                return other.Type == Type && other.From == From && other.To == To;
+            } else return false;
+        }
     }
 }

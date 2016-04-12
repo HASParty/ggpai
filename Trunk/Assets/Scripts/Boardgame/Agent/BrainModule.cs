@@ -52,13 +52,66 @@ namespace Boardgame.Agent {
             }
         }
 
+        Move bestMove;
+        Move worstMove;
+        Player forWho; //making sure the data is in sync
+        enum MoveReaction {
+            CONFUSED,
+            POSITIVE,
+            NEGATIVE,
+            NEUTRAL
+        }
+
+        private MoveReaction react(Move move, Player who) {
+            //our timing was bad :( be neutral to be safe
+            if (who != forWho) return MoveReaction.NEUTRAL;
+
+            Debug.Log("Getting reaction");
+
+            if(player == who) {
+                if (move.Equals(bestMove)) {
+                    if (myUCTavg > foeUCTavg) {
+                        //depending on personality might be neut
+                        return MoveReaction.POSITIVE;
+                    } else { 
+                        //depending on personality might be neutral
+                        return MoveReaction.NEGATIVE;
+                    }
+                }
+
+                if(move.Equals(worstMove)) {
+
+                    if (myUCTavg < foeUCTavg) return MoveReaction.NEGATIVE;
+                    //might be amused depending on personality
+                    return MoveReaction.CONFUSED;
+                }
+            } else {
+                if (move.Equals(bestMove)) {
+                    if (myUCTavg > foeUCTavg) {
+                        return MoveReaction.NEUTRAL;
+                    } else {
+                        //depending on personality might be neutral
+                        return MoveReaction.NEGATIVE;
+                    }
+                }
+
+                if (move.Equals(worstMove)) {
+                    if (myUCTavg < foeUCTavg) return MoveReaction.CONFUSED;
+                    //might be amused depending on personality
+                    return MoveReaction.POSITIVE;
+                }
+            }
+
+            return MoveReaction.NEUTRAL;
+        }
+
         [SerializeField]
         private float myUCTavg = 0;
         [SerializeField]
         private int its = 0;
         [SerializeField]
         private float foeUCTavg = 0;
-        //add standard deviation for simulations, running average for UCT, etc
+
         public void EvaluateConfidence(Networking.FeedData d, bool isMyTurn) {
             float myUCT, foeUCT, uctDiff, valence, arousal;
             float mySwing, foeSwing;
@@ -72,6 +125,10 @@ namespace Boardgame.Agent {
                 foeUCT = d.FirstUCT;
             }
 
+            bestMove = d.Best;
+            worstMove = d.Worst;
+            forWho = isMyTurn ? player : (player == Player.First ? Player.Second : Player.First);
+
             uctDiff = myUCT - foeUCT;
             var last = myUCTavg;
             //need to observe how these change
@@ -81,21 +138,22 @@ namespace Boardgame.Agent {
                 arousal += Mathf.Abs(last - myUCTavg)/5;
             }
 
-            if (isMyTurn) {
+            //not sure this matters
+            //if (isMyTurn) {
                 //this is a promising move for me which I'm disproportionately simulating
                 if (d.SimulationStdDev >= 2.5) {
                     if (myUCT > foeUCT) {
                         //Debug.Log("likes");
                         if (pm.GetArousal() < Config.Neutral) arousal += 15;
                         valence += 0.2f;
-                        arousal += 0.25f;
+                        arousal += 0.3f;
                     } else { //my best move isn't even in my favour
                         //Debug.Log("no no no");
                         if (pm.GetArousal() < Config.Neutral) arousal += 15;
                         valence -= 0.2f;
-                        arousal += 0.25f;
+                        arousal += 0.3f;
                     }
-                } else if (d.SimulationStdDev < 2.5f) {
+                } else if (d.SimulationStdDev < 2.5f && d.SimulationStdDev >= 2f) {
                     if (myUCT > foeUCT) {
                        // Debug.Log("thinks is pretty decent");
                         valence += 0.1f;
@@ -110,17 +168,17 @@ namespace Boardgame.Agent {
                     if (myUCT > foeUCT) {
                        // Debug.Log("chillax");
                         if (pm.GetArousal() > Config.Neutral) arousal -= 15;
-                        arousal -= 0.3f;
+                        arousal -= 0.2f;
                         valence += 0.1f;
                     } else {
                         //pretty uniformly bad for me eh
                       //  Debug.Log("sadness...");
                         if (pm.GetArousal() > Config.Neutral) arousal -= 15;
-                        arousal -= 0.3f;
+                        arousal -= 0.2f;
                         valence -= 0.1f;
                     }
                 }
-            }
+           // }
 
             //game unique weights here affecting the factors?
             //differences in how much confidence bounds vary between games
@@ -139,41 +197,72 @@ namespace Boardgame.Agent {
                 chunk.BMLRef = curr;                
                 foreach (var function in chunk.functions) {
                     switch(function.Function) {
+                        case FMLFunction.FunctionType.BOARDGAME_REACT_MOVE:
+                            ReactMoveFunction react = function as ReactMoveFunction;
+                            MoveReaction reaction = this.react(react.MoveToReact[0], react.MyMove ? player : (player == Player.First ? Player.Second : Player.First));
+                            Debug.Log(reaction);
+                            FaceEmotion faceReact;
+                            switch (reaction) {
+                                case MoveReaction.CONFUSED:
+                                    faceReact = new FaceEmotion("ConfusedFace", chunk.owner, 0f, 1.8f, 0.6f);
+                                    curr.AddChunk(faceReact);
+                                    break;
+                                case MoveReaction.NEGATIVE:
+                                    faceReact = new FaceEmotion("NegativeFace", chunk.owner, 0f, 1.2f, 0.4f);
+                                    curr.AddChunk(faceReact);
+                                    break;
+                                case MoveReaction.POSITIVE:
+                                    faceReact = new FaceEmotion("HappyFace", chunk.owner, 0f, 1.4f, 2.5f);
+                                    curr.AddChunk(faceReact);
+                                    break;
+                            }
+                            break;
                         case FMLFunction.FunctionType.BOARDGAME_CONSIDER_MOVE:
                             ConsiderMoveFunction func = function as ConsiderMoveFunction;
                             if (func.MoveToConsider.Type == MoveType.MOVE) {
                                 Gaze glanceFrom = new Gaze("glanceAtFrom", chunk.owner, BoardgameManager.Instance.GetCellObject(func.MoveToConsider.From), 
-                                    Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 1.75f);
+                                    Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 2f);
                                 curr.AddChunk(glanceFrom);
                                 Gaze glanceTo = new Gaze("glanceAtTo", chunk.owner, BoardgameManager.Instance.GetCellObject(func.MoveToConsider.To), 
-                                    Behaviour.Lexemes.Influence.HEAD, start: 1.8f, end: 2.75f);
+                                    Behaviour.Lexemes.Influence.HEAD, start: 2.1f, end: 2f);
                                 curr.AddChunk(glanceTo);
                             } else {
                                 Gaze glanceTo = new Gaze("glanceAtCell", chunk.owner, BoardgameManager.Instance.GetCellObject(func.MoveToConsider.To),
-                                   Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 2.75f);
+                                   Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 2f);
                                 curr.AddChunk(glanceTo);
                             }
                             
                             break;
                         case FMLFunction.FunctionType.BOARDGAME_MAKE_MOVE:
-                            //TODO: BMLIFY
                             MakeMoveFunction move = function as MakeMoveFunction;
                             BoardgameManager.Instance.MoveMade(move.MoveToMake, player);
                             PhysicalCell from, to;
                             BoardgameManager.Instance.GetMoveFromTo(move.MoveToMake[0], player, out from, out to);
                             Grasp reach = new Grasp("reachTowardsPiece", chunk.owner, from.gameObject,
                                 Behaviour.Lexemes.Mode.LEFT_HAND, (arm) => { GraspPiece(from, arm); }, 0, end: 1.5f);
+                            Posture leanReach = new Posture("leantowardsPiece", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0, end: 1.5f);
+                            Gaze lookReach = new Gaze("glanceAtReach", chunk.owner, from.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 1.25f);
+                            leanReach.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD);
                             Place place = new Place("placePiece", chunk.owner, to.gameObject,
                                 Behaviour.Lexemes.Mode.LEFT_HAND, (piece) => { PlacePiece(piece, to); }, 1.25f, end: 2f);
+                            Gaze lookPlace = new Gaze("glanceAtPlace", chunk.owner, to.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 1.25f, end: 2f);
                             Gaze glance = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 2f, end: 1.25f);
                             curr.AddChunk(glance);
+                            curr.AddChunk(lookReach);
+                            curr.AddChunk(lookPlace);
+                            curr.AddChunk(leanReach);
                             curr.AddChunk(reach);
                             curr.AddChunk(place);
                             break;
                         case FMLFunction.FunctionType.EMOTION:
                             //transform expression
                             EmotionFunction f = function as EmotionFunction;
-                            FaceEmotion fe = new FaceEmotion("emote " + f.Arousal + " " + f.Valence, chunk.owner, 0f, f.Arousal, f.Valence);
+                            FaceEmotion fe = new FaceEmotion("emote " + f.Arousal + " " + f.Valence, chunk.owner, 0f, ((f.Arousal-Config.Neutral)*0.8f)+Config.Neutral, f.Valence);
+                            //TODO: make this bml
+                            float lean = Mathf.Clamp((f.Arousal - Config.Neutral) * 50, -20, 30);
+                            
+                            motion.SetLean(lean);
+                            //Debug.Log(lean);
                             curr.AddChunk(fe);
                             break;
                     }
@@ -213,18 +302,22 @@ namespace Boardgame.Agent {
         float lastTime = -1f;
         public void ConsiderMove(Move move) {
             if (lastTime == -1) lastTime = Time.time;
-            if(Time.time >= lastTime  + 4f) {
-                FMLBody body = new FMLBody();
+            FMLBody body = new FMLBody();
+            if (Time.time >= lastTime  + 4f) {                
                 MentalChunk mc = new MentalChunk();
-
+                //eye movement every 4
                 mc.AddFunction(new ConsiderMoveFunction(move));
                 mc.owner = me;
                 body.AddChunk(mc);
                 body.AddChunk(getEmotion());
-
                 interpret(body);
                 lastTime = Time.time;
+            } else if(Time.time >= lastTime + 2f) {
+                //emotions every second
+                body.AddChunk(getEmotion());
+                interpret(body);
             }
+            
         }
 
         public void ExecuteMove(List<Move> moves) {
@@ -235,6 +328,17 @@ namespace Boardgame.Agent {
             pc.owner = me;
             body.AddChunk(pc);     
             body.AddChunk(getEmotion());
+
+            interpret(body);
+        }
+
+        public void ReactMove(List<Move> moves, Player who) {
+            FMLBody body = new FMLBody();
+            PerformativeChunk pc = new PerformativeChunk();
+
+            pc.AddFunction(new ReactMoveFunction(moves, who == player));
+            pc.owner = me;
+            body.AddChunk(pc);
 
             interpret(body);
         }
