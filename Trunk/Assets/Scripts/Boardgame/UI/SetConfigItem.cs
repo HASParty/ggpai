@@ -2,6 +2,9 @@
 using System.Collections;
 
 namespace Boardgame.UI {
+    /// <summary>
+    /// Script that connects a UI item with a property in the config and allows setting it
+    /// </summary>
     public class SetConfigItem : MonoBehaviour {
 
         public string Which;

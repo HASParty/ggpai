@@ -14,10 +14,12 @@ public class ExpressionNode {
     public float EaseIn;
     public float EaseOut;
     public bool RevertToNeutral = true;
-    //need the sender to be able to cancel the expression
-
 }
 
+/// <summary>
+/// Glitchy face controller. Needs rewriting. Blending is glitchy at best.
+/// </summary>
+[RequireComponent(typeof(AgentBoneFinder))]
 public class FaceControllerII : MonoBehaviour {
     public bool TriggerExpression = false;
     public string ExpressionName;
@@ -49,8 +51,6 @@ public class FaceControllerII : MonoBehaviour {
     Vector3 LowerLidLOrigin;
     Vector3 LowerLidROrigin;
 
-    #region IRegistrable implementation
-
     public void Awake() {
         AgentBoneFinder abf = GetComponent<AgentBoneFinder>();
         bones = new Dictionary<string, Transform>();
@@ -73,8 +73,6 @@ public class FaceControllerII : MonoBehaviour {
             boneOrigin.Add(bone.name, bone.localPosition);
         }
     }
-
-    #endregion
 
     void findFaceBones(Transform parent) {
         foreach (Transform child in parent) {
@@ -153,6 +151,7 @@ public class FaceControllerII : MonoBehaviour {
     }
     #endregion
 
+    #region scheduling
     public void ScheduleExpression(string name, float transitionTime = 1f, float weight = 1f) {
         ScheduleExpression(GenerateExpressionNode(name, transitionTime: transitionTime, weight: weight));
     }
@@ -222,6 +221,8 @@ public class FaceControllerII : MonoBehaviour {
         ScheduleExpression(offset, timeElapsed);
     }
 
+    #endregion
+
     public bool ShowingExpression(string expression) {
         foreach (ExpressionNode e in currentExpressions) {
             if (e.Name == expression) return true;
@@ -229,6 +230,7 @@ public class FaceControllerII : MonoBehaviour {
         return false;
     }
 
+    #region node generation
     public static ExpressionNode GenerateExpressionNode(string expression, float transitionTime = 1f, float revertTime = 1f, float holdTime = 0f, float easeIn = 0f, float easeOut = 0f, float weight = 1f, float modifier = 1f) {
         var offset = new ExpressionNode();
         offset.Name = expression;
@@ -296,6 +298,8 @@ public class FaceControllerII : MonoBehaviour {
 
         return offset;
     }
+    #endregion
+
     void LerpFace() {
 #if UNITY_EDITOR
         CurrentExpressions = new string[currentExpressions.Count];

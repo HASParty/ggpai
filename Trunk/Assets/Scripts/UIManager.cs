@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
-using System;
 using System.Collections.Generic;
 
 namespace Boardgame {
+    /// <summary>
+    /// UI manager. Images etc. set in inspector.
+    /// </summary>
     public class UIManager : Singleton<UIManager> {
 
         public Canvas canvas;
@@ -79,7 +80,7 @@ namespace Boardgame {
 
         public void HideHighlightEffect() {
             if (highlightObject != null) {
-                GameObject.Destroy(highlightObject);
+                Destroy(highlightObject);
             }
         }
 
@@ -87,7 +88,7 @@ namespace Boardgame {
         {
             if (selectObject != null)
             {
-                GameObject.Destroy(selectObject);
+                Destroy(selectObject);
             }
         }
 

@@ -29,7 +29,7 @@ namespace Behaviour {
 		public float Modifier { get; private set; }
 
 		/// <summary>
-		/// Initializes a new instance of the <see cref="VirtualReykjavik.Behaviour.Face"/> class.
+		/// Initializes a new instance of the <see cref="Face"/> class.
 		/// </summary>
 		/// <param name="character">Character to execute the behaviour.</param>
 		/// <param name="lexeme">Which expression to execute.</param>

@@ -9,7 +9,10 @@ using Boardgame.Networking;
 namespace Boardgame {
 
     public enum Player { First, Second };
-
+    /// <summary>
+    /// Manages the boardgame. Spawns the board, pieces, and so on. Moving pieces,
+    /// validity checks for player interactions, etc.
+    /// </summary>
     public class BoardgameManager : Singleton<BoardgameManager> {
 
         [SerializeField]

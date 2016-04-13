@@ -10,6 +10,11 @@ using System;
 using UnityEngine.Events;
 
 namespace Boardgame.Agent {
+    /// <summary>
+    /// A script that attempts to make sense of the game state and uses the agent's
+    /// personality to determine his reaction to it, and interprets FML chunks appropriately.
+    /// Essentially the agent's brain...
+    /// </summary>
     [RequireComponent(typeof(PersonalityModule), typeof(InputModule), typeof(BehaviourRealiser))]
     public class BrainModule : MonoBehaviour {
         private PersonalityModule pm;
@@ -18,6 +23,9 @@ namespace Boardgame.Agent {
         private ActorMotion motion;
         private Participant me;
 
+        /// <summary>
+        /// Which player the agent is in the current game.
+        /// </summary>
         public Player player;
 
         void Awake() {
@@ -27,41 +35,27 @@ namespace Boardgame.Agent {
             me = new Participant();
             me.identikit = GetComponent<Identikit>();
             motion = transform.parent.GetComponentInChildren<ActorMotion>();
-
-            //StartCoroutine(FakeEmotion());
         }
 
-        private MentalChunk getEmotion() {
-            MentalChunk chunk = new MentalChunk();
-            chunk.AddFunction(new EmotionFunction(pm.GetArousal(), pm.GetValence()));
-            chunk.owner = me;
-            return chunk;
-        }
 
-        IEnumerator FakeEmotion()
-        {
-            while (true)
-            {
-                yield return new WaitForSeconds(2f);
-                FMLBody body = new FMLBody();
-                MentalChunk chunk = new MentalChunk();
-                chunk.AddFunction(new EmotionFunction(UnityEngine.Random.Range((float)Config.Low, (float)Config.High), UnityEngine.Random.Range((float)Config.Low, (float)Config.High)));
-                chunk.owner = me;
-                body.AddChunk(chunk);
-                interpret(body);
-            }
-        }
-
-        Move bestMove;
-        Move worstMove;
-        Player forWho; //making sure the data is in sync
-        enum MoveReaction {
+        #region React to move
+        private Move bestMove;
+        private Move worstMove;
+        private Player forWho; //making sure the data is in sync
+        private enum MoveReaction {
             CONFUSED,
             POSITIVE,
             NEGATIVE,
             NEUTRAL
         }
-
+        
+        /// <summary>
+        /// Using the data currently stored, attempt to work out whether the
+        /// move was a "surprise" and such for the AI
+        /// </summary>
+        /// <param name="move">The move in question</param>
+        /// <param name="who">The player who made it</param>
+        /// <returns>The agent's reaction</returns>
         private MoveReaction react(Move move, Player who) {
             //our timing was bad :( be neutral to be safe
             if (who != forWho) return MoveReaction.NEUTRAL;
@@ -104,14 +98,19 @@ namespace Boardgame.Agent {
 
             return MoveReaction.NEUTRAL;
         }
+        #endregion
 
-        [SerializeField]
+        #region React to general game state
         private float myUCTavg = 0;
-        [SerializeField]
         private int its = 0;
-        [SerializeField]
         private float foeUCTavg = 0;
 
+        /// <summary>
+        /// Evaluates the state of the game via data fed by the GGP AI.
+        /// Adjusts mood accordingly.
+        /// </summary>
+        /// <param name="d">The data</param>
+        /// <param name="isMyTurn">whether it is the agent's turn or not</param>
         public void EvaluateConfidence(Networking.FeedData d, bool isMyTurn) {
             float myUCT, foeUCT, uctDiff, valence, arousal;
             float mySwing, foeSwing;
@@ -131,8 +130,8 @@ namespace Boardgame.Agent {
 
             uctDiff = myUCT - foeUCT;
             var last = myUCTavg;
-            //need to observe how these change
             myUCTavg = myUCTavg * Config.UCTDecay + myUCT * (1 - Config.UCTDecay);
+            foeUCTavg = foeUCTavg * Config.UCTDecay + foeUCT * (1 - Config.UCTDecay);
             //we need a stable average before we try to detect swings...
             if (its > 50) {
                 arousal += Mathf.Abs(last - myUCTavg)/5;
@@ -190,8 +189,14 @@ namespace Boardgame.Agent {
 
         }
 
+        #endregion
+
+        #region Transform FML into BML and helpers
+        /// <summary>
+        /// Transforms FML into BML and executes
+        /// </summary>
+        /// <param name="body">the FML body containing the FML functions to be interpreted</param>
         private void interpret(FMLBody body) {
-            BMLBody last = null;
             foreach(var chunk in body.chunks) {
                 BMLBody curr = new BMLBody();
                 chunk.BMLRef = curr;                
@@ -239,12 +244,12 @@ namespace Boardgame.Agent {
                             PhysicalCell from, to;
                             BoardgameManager.Instance.GetMoveFromTo(move.MoveToMake[0], player, out from, out to);
                             Grasp reach = new Grasp("reachTowardsPiece", chunk.owner, from.gameObject,
-                                Behaviour.Lexemes.Mode.LEFT_HAND, (arm) => { GraspPiece(from, arm); }, 0, end: 1.5f);
+                                Behaviour.Lexemes.Mode.LEFT_HAND, (arm) => { graspPiece(from, arm); }, 0, end: 1.5f);
                             Posture leanReach = new Posture("leantowardsPiece", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0, end: 1.5f);
                             Gaze lookReach = new Gaze("glanceAtReach", chunk.owner, from.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 1.25f);
                             leanReach.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD);
                             Place place = new Place("placePiece", chunk.owner, to.gameObject,
-                                Behaviour.Lexemes.Mode.LEFT_HAND, (piece) => { PlacePiece(piece, to); }, 1.25f, end: 2f);
+                                Behaviour.Lexemes.Mode.LEFT_HAND, (piece) => { placePiece(piece, to); }, 1.25f, end: 2f);
                             Gaze lookPlace = new Gaze("glanceAtPlace", chunk.owner, to.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 1.25f, end: 2f);
                             Gaze glance = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 2f, end: 1.25f);
                             curr.AddChunk(glance);
@@ -288,18 +293,37 @@ namespace Boardgame.Agent {
             }
         }
 
-        public void GraspPiece(PhysicalCell piece, ActorMotion.Arm arm) {
-            GameObject p = piece.RemovePiece();
+        /// <summary>
+        /// Callback for grasping pieces, called upon reaching target
+        /// </summary>
+        /// <param name="cell">Cell from where to get piece</param>
+        /// <param name="arm">The arm that should take the piece</param>
+        private void graspPiece(PhysicalCell cell, ActorMotion.Arm arm) {
+            GameObject p = cell.RemovePiece();
             p.transform.SetParent(arm.transform);
             p.transform.localPosition = Vector3.zero;
             arm.holding = p.transform;
         }
 
-        public void PlacePiece(GameObject piece, PhysicalCell newCell) {
+        /// <summary>
+        /// Callback for placing pieces, called upon reaching cell
+        /// </summary>
+        /// <param name="piece">The piece gameObject</param>
+        /// <param name="newCell">Cell in which to place piece</param>
+        private void placePiece(GameObject piece, PhysicalCell newCell) {
             newCell.Place(piece);
         }
+        #endregion
 
+        #region FML generation
         float lastTime = -1f;
+        /// <summary>
+        /// Generates the appropriate FML for considering the given move.
+        /// Every 2 seconds, generates the emotion only.
+        /// Every 4 seconds, generates both emotion and move consideration.
+        /// Interprets it instantly.
+        /// </summary>
+        /// <param name="move">Move to consider.</param>
         public void ConsiderMove(Move move) {
             if (lastTime == -1) lastTime = Time.time;
             FMLBody body = new FMLBody();
@@ -320,6 +344,10 @@ namespace Boardgame.Agent {
             
         }
 
+        /// <summary>
+        /// Generates the FML for executing a move and interprets it.
+        /// </summary>
+        /// <param name="moves"></param>
         public void ExecuteMove(List<Move> moves) {
             FMLBody body = new FMLBody();
             PerformativeChunk pc = new PerformativeChunk();
@@ -332,6 +360,11 @@ namespace Boardgame.Agent {
             interpret(body);
         }
 
+        /// <summary>
+        /// Generate a reaction to a move
+        /// </summary>
+        /// <param name="moves">Moves</param>
+        /// <param name="who">who made the move(s)</param>
         public void ReactMove(List<Move> moves, Player who) {
             FMLBody body = new FMLBody();
             PerformativeChunk pc = new PerformativeChunk();
@@ -342,5 +375,17 @@ namespace Boardgame.Agent {
 
             interpret(body);
         }
+
+        /// <summary>
+        /// Helper that generates an emotion function.
+        /// </summary>
+        /// <returns>emotion function with data from current mood</returns>
+        private MentalChunk getEmotion() {
+            MentalChunk chunk = new MentalChunk();
+            chunk.AddFunction(new EmotionFunction(pm.GetArousal(), pm.GetValence()));
+            chunk.owner = me;
+            return chunk;
+        }
+        #endregion
     }
 }

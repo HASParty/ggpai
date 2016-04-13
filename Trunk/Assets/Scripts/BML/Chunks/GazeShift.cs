@@ -31,7 +31,7 @@ namespace Behaviour {
 		public float Relax { get; private set; }
 		
 		/// <summary>
-		/// Initializes a new instance of the <see cref="VirtualReykjavik.Behaviour.GazeShift"/> class.
+		/// Initializes a new instance of the <see cref="GazeShift"/> class.
 		/// </summary>
 		/// <param name="character">Character to execute the behaviour.</param>
 		/// <param name="target">Target to be gazed at.</param>

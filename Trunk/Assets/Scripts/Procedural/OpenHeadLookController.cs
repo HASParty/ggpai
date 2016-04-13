@@ -6,6 +6,7 @@ using Impulsion;
 /// Open head look controller. Subclass of HeadLookController, allows
 /// for a variety of more options and control.
 /// </summary>
+[RequireComponent(typeof(AgentBoneFinder))]
 public class OpenHeadLookController : HeadLookController
 {
     public float lean = 0;
@@ -26,7 +27,6 @@ public class OpenHeadLookController : HeadLookController
     #region Segment populater
     public void AutoPopulateSegments()
     {
-        //if(segments.Length > 0) return; //something is filling it, not sure what
         segments = new BendingSegment[5];
         nonAffectedJoints = new Impulsion.NonAffectedJoints[2];
 

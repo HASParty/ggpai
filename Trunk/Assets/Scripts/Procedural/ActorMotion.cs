@@ -33,20 +33,36 @@ public class ActorMotion : MonoBehaviour {
     public IKTarget Nose;
     public IKTarget Chin;
 
-	// Use this for initialization
 	void Start () {
         headlook = GetComponent<OpenHeadLookController>();
         animator = GetComponent<Animator>();
         SetTarget(Table.transform);
 	}
 
+    void Update() {
+        if (isLooking) {
+            headlook.SetTarget(GetTarget());
+            SetHeadLookEffect(1f, headLookEffectDampTime, Time.deltaTime);
+        } else {
+            SetHeadLookEffect(0f, headLookEffectDampTime, Time.deltaTime);
+        }
+
+        LerpIK(leftHand);
+        LerpIK(rightHand);
+
+    }
+
+
     public void SetLean(float lean) {
         headlook.lean = lean;
     }
 
-    private float desiredHlEffect = 0f;
-    private float prevHlEffect = 0f;
-    private float elapsed = 0f;
+    #region headlook
+    public Vector3 GetTarget() {
+        if (usingObj) return targetObject.position;
+        return targetPoint;
+    }
+
 
     public void SetTarget(Vector3 pos) {
         targetPoint = pos;
@@ -58,12 +74,9 @@ public class ActorMotion : MonoBehaviour {
         usingObj = true;
     }
 
-    public Vector3 GetTarget() {
-        if (usingObj) return targetObject.position;
-        return targetPoint;
-    }
-    
-
+    private float desiredHlEffect = 0f;
+    private float prevHlEffect = 0f;
+    private float elapsed = 0f;
     public void SetHeadLookEffect(float val, float dampTime, float deltaTime)
     {
         val = Mathf.Clamp01(val);
@@ -81,26 +94,11 @@ public class ActorMotion : MonoBehaviour {
             headlook.effect = Mathf.SmoothStep(prevHlEffect, desiredHlEffect, elapsed / dampTime);
         }
     }
+    #endregion
 
-    // Update is called once per frame
-    void Update () {
-        if (isLooking)
-        {
-            headlook.SetTarget(GetTarget());
-            SetHeadLookEffect(1f, headLookEffectDampTime, Time.deltaTime);
-        }
-        else
-        {
-            SetHeadLookEffect(0f, headLookEffectDampTime, Time.deltaTime);
-        }
+    #region IK
 
-        LerpIK(leftHand);
-        LerpIK(rightHand);
-
-    }
-
-    //IK
-
+    #region class definitions
     class IKLookAt
     {
         public IKLookAt(AvatarIKGoal avatarIKGoal)
@@ -115,15 +113,15 @@ public class ActorMotion : MonoBehaviour {
         public AvatarIKGoal IKGoal;
         public bool Active = false;
     }
-
-    IKLookAt leftHand;
-    IKLookAt rightHand;
-
     [System.Serializable]
     public class Arm {
         public Transform transform;
         public Transform holding;
     }
+    #endregion
+
+    IKLookAt leftHand;
+    IKLookAt rightHand;  
     public Arm Left = new Arm();
     public Arm Right = new Arm();
     void OnAnimatorIK()
@@ -178,6 +176,8 @@ public class ActorMotion : MonoBehaviour {
         }
         animator.SetIKPosition(ik.IKGoal, curTarget);
     }
+
+    #region coroutines for grabbing, placing, pointing
 
     public IEnumerator Grab(float duration, GameObject target, bool left = true)
     {
@@ -280,10 +280,11 @@ public class ActorMotion : MonoBehaviour {
         ik.Active = false;
         yield return null;
     }
-
+    #endregion
+    #endregion
 
     //IDLING
-    
+
 
 
 }

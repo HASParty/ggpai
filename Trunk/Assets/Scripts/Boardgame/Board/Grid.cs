@@ -4,6 +4,9 @@ using Boardgame.Script;
 using System;
 
 namespace Boardgame {
+    /// <summary>
+    /// Populates a board with cells and helps manage them and retrieve locations.
+    /// </summary>
     public class Grid : MonoBehaviour {
         [Tooltip("Game board configuration to load")]
         public GridScriptable Source;

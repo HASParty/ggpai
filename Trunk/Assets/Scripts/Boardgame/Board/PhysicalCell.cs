@@ -4,6 +4,9 @@ using System;
 using System.Collections.Generic;
 
 namespace Boardgame {
+    /// <summary>
+    /// Interactable physical representation of a cell
+    /// </summary>
     [RequireComponent(typeof(SphereCollider))]
     public class PhysicalCell : MonoBehaviour {
         private List<GameObject> piece = new List<GameObject>();

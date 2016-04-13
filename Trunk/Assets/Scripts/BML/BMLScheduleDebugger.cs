@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 namespace Behaviour {
 
+    /// <summary>
+    /// Visual debugger in scene for BML
+    /// </summary>
     public class BMLScheduleDebugger : MonoBehaviour {
 
         public Color Face;
@@ -18,17 +21,6 @@ namespace Behaviour {
         public RectTransform ContentBox;
         public Text HoverText;
         public float TimeScaler = 10f;
-
-
-        // Use this for initialization
-        void Start() {
-
-        }
-
-        // Update is called once per frame
-        void Update() {
-
-        }
 
         public void Spawn(BMLChunk chunk) {
             //Debug.Log ("spawninating");

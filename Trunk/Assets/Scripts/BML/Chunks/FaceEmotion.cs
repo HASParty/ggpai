@@ -11,7 +11,7 @@ namespace Behaviour {
         public float Valence;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VirtualReykjavik.Behaviour.Face"/> class.
+        /// Initializes a new instance of the <see cref="FaceEmotion"/> class.
         /// </summary>
         /// <param name="character">Character to execute the behaviour.</param>
         /// <param name="start">Start of animation from the given moment.</param>

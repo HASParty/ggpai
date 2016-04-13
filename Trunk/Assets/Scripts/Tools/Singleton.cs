@@ -1,12 +1,19 @@
 ﻿using UnityEngine;
 
+/// <summary>
+/// Used to create script singletons
+/// </summary>
+/// <typeparam name="T">The monobehaviour script type</typeparam>
 public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
+    /// <summary>
+    /// Stores the instance.
+    /// </summary>
 	protected static T instance;
 	
-	/**
-      Returns the instance of this singleton.
-   */
+	/// <summary>
+    /// Returns the instance of the singleton if it exists, otherwise creates it.
+    /// </summary>
 	public static T Instance
 	{
 		get

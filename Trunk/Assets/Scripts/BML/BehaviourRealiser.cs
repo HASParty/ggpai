@@ -278,7 +278,7 @@ public class BehaviourRealiser : MonoBehaviour {
     IEnumerator Point(float duration = 3f, GameObject target = null, bool lookAtTarget = true) {
         Debug.Log("Point");
         if (target != null) {
-            float angle = SignedAngle(transform.forward * 5, target.transform.position - transform.position, transform.up);
+            //float angle = SignedAngle(transform.forward * 5, target.transform.position - transform.position, transform.up);
             //if (angle <= 85 && angle >= -85) {
                  _motion.Point(duration, target, lookAtTarget, true);
            /* } else {

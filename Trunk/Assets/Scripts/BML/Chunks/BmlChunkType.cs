@@ -3,10 +3,13 @@ using System.Collections;
 
 namespace Behaviour
 {
+    /// <summary>
+    /// Types of BML chunks
+    /// </summary>
 	public enum BMLChunkType
 	{
 		Face,
-        FaceEmotion,
+       
 		Gaze,
 		GazeShift,
 		Gesture,
@@ -15,6 +18,8 @@ namespace Behaviour
 		Posture,
 		Speech,
 		Pointing,
+        //Boardgame additions
+        FaceEmotion,
         Grasping,
         Placing
 	}

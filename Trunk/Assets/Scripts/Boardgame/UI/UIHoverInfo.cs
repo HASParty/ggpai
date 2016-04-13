@@ -5,6 +5,10 @@ using UnityEngine.UI;
 
 namespace Boardgame.UI {
 	
+    /// <summary>
+    /// Script that sets the text on a hover prefab to the text
+    /// defined in the property
+    /// </summary>
 	public class UIHoverInfo : MonoBehaviour, IPointerEnterHandler {
 		[Tooltip("Text to be displayed on hover")]
 		public string Text;
