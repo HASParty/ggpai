@@ -1,8 +1,12 @@
 ﻿using UnityEngine;
 using FML;
+using UnityEngine.Events;
 
 namespace Behaviour
 {
+    /// <summary>
+    /// Have the actor grasp an object
+    /// </summary>
     public class Grasp : BMLChunk
     {
         public override BMLChunkType Type { get { return BMLChunkType.Grasping; } }
@@ -25,9 +29,22 @@ namespace Behaviour
         public float StrokeEnd { get; private set; }
         public float Relax { get; private set; }
 
+        //TODO: try not to make things so codependent
+        public UnityAction<ActorMotion.Arm> Callback;
 
-        //constructor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Grasp"/> class.
+        /// </summary>
+        /// <param name="id">the name of the chunk</param>
+        /// <param name="character">the actor</param>
+        /// <param name="target">the target object</param>
+        /// <param name="mode">wihich hand</param>
+        /// <param name="callback">a delegate to call on grasping completion</param>
+        /// <param name="start">The start of the movement</param>
+        /// <param name="end">The duration of the movement</param>
         public Grasp(string id, Participant character, GameObject target, Lexemes.Mode mode,
+                     UnityAction<ActorMotion.Arm> callback,
                        float start = 0f, float ready = -1f, float strokeStart = -1f,
                        float stroke = -1f, float strokeEnd = -1f, float relax = -1f,
                        float end = 1f)
@@ -43,6 +60,7 @@ namespace Behaviour
             Ready = ready;
             Relax = relax;
             End = end;
+            Callback = callback;
         }
 
         public override float GetTime(SyncPoints point)

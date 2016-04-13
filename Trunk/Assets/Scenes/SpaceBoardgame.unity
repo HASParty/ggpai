@@ -437,7 +437,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 419182, guid: c4a2fa9640b3be64a8b618845f46cbe1, type: 2}
       propertyPath: m_RootOrder
-      value: 4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 11421282, guid: c4a2fa9640b3be64a8b618845f46cbe1, type: 2}
       propertyPath: Asteroids
@@ -1465,10 +1465,12 @@ MonoBehaviour:
   Chin:
     Target: {fileID: 0}
     Effect: 0
-  LeftHand: {fileID: 1345391877}
-  RightHand: {fileID: 189008030}
-  LeftHandHolding: {fileID: 0}
-  RightHandHolding: {fileID: 0}
+  Left:
+    transform: {fileID: 1838306449}
+    holding: {fileID: 0}
+  Right:
+    transform: {fileID: 224330603}
+    holding: {fileID: 0}
 --- !u!114 &500687592
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1650,7 +1652,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 559548946}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071067}
-  m_LocalPosition: {x: -5.006, y: 2.2323, z: -3.352}
+  m_LocalPosition: {x: -5.1, y: 2.2323, z: -3.352}
   m_LocalScale: {x: 0.05, y: 0.1, z: 0.05}
   m_Children:
   - {fileID: 165993902}
@@ -2001,7 +2003,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 659147524}
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -5.432, y: 1.6593016, z: -2.622}
+  m_LocalPosition: {x: -5.432, y: 1.6593016, z: -2.686}
   m_LocalScale: {x: 0.22, y: 0.22, z: 0.055}
   m_Children: []
   m_Father: {fileID: 1432929962}
@@ -2117,7 +2119,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 690579758}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.495, y: 1.2503016, z: -2.633}
+  m_LocalPosition: {x: -5.495, y: 1.2503016, z: -2.697}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 500687589}
@@ -3069,7 +3071,7 @@ MonoBehaviour:
   MatchID: 1234
   GameName: mylla
   StartTime: 25
-  TurnTime: 15
+  TurnTime: 5
   Low: 0
   Neutral: 1
   High: 2
@@ -4014,7 +4016,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 436122, guid: 1fff78a672e8c314fbda056e76a895ee, type: 2}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 10848126, guid: 1fff78a672e8c314fbda056e76a895ee, type: 2}
       propertyPath: m_SpotAngle
@@ -4640,7 +4642,7 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -565, y: -1085.4}
+  m_AnchoredPosition: {x: -507, y: -1085.4}
   m_SizeDelta: {x: 95, y: 45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1848117883
@@ -4668,8 +4670,8 @@ MonoBehaviour:
     m_FontSize: 14
     m_FontStyle: 0
     m_BestFit: 1
-    m_MinSize: 10
-    m_MaxSize: 20
+    m_MinSize: 8
+    m_MaxSize: 16
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -5182,6 +5184,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: 0
+  myUCTavg: 0
+  its: 0
+  foeUCTavg: 0
 --- !u!114 &2039804517
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5197,12 +5202,15 @@ MonoBehaviour:
   mood:
     valence: 0
     arousal: 0
+  swing:
+    valence: 0
+    arousal: 0
   restingArousal: 0
   restingValence: 0
   arousalBaseDecayRate: 0.01
-  valenceBaseDecayRate: 0.005
-  arousalDecayRate: 0.005
-  valenceDecayRate: 0.005
+  valenceBaseDecayRate: 0.008
+  arousalDecayRate: 0.008
+  valenceDecayRate: 0.008
   Low: 0
   Neutral: 0
   High: 0
@@ -5509,7 +5517,7 @@ Transform:
   m_GameObject: {fileID: 2113192864}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -5.43174, y: 1.25, z: -3.3408513}
-  m_LocalScale: {x: 0.5, y: 0.55, z: 0.5}
+  m_LocalScale: {x: 0.4, y: 0.55, z: 0.4}
   m_Children:
   - {fileID: 593630198}
   m_Father: {fileID: 1432929962}

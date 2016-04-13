@@ -4,6 +4,9 @@ using System;
 using System.Collections.Generic;
 
 namespace Boardgame {
+    /// <summary>
+    /// Interactable physical representation of a cell
+    /// </summary>
     [RequireComponent(typeof(SphereCollider))]
     public class PhysicalCell : MonoBehaviour {
         private List<GameObject> piece = new List<GameObject>();
@@ -51,6 +54,7 @@ namespace Boardgame {
             }
             piece[piece.Count-1].transform.SetParent(transform);
             piece[piece.Count-1].transform.localPosition = Vector3.zero;
+            piece[piece.Count - 1].transform.localRotation = Quaternion.identity;
         }
 
         public bool HasPiece() {

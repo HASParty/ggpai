@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System;
 
+/// <summary>
+/// Finds and organises bones in a skeleton.
+/// Tries to be somewhat efficient.
+/// </summary>
 public class AgentBoneFinder : MonoBehaviour {
 
     List<Transform> transforms;

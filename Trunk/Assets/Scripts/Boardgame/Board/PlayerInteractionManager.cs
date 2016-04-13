@@ -4,6 +4,9 @@ using System;
 using Boardgame.Networking;
 
 namespace Boardgame {
+    /// <summary>
+    /// Manages player interactions with the game.
+    /// </summary>
     public class PlayerInteractionManager : Singleton<PlayerInteractionManager> {
 
         private PhysicalCell selectedPiece;
@@ -15,17 +18,23 @@ namespace Boardgame {
         private bool waitingForUpdate = false;
         private bool gameOver = false;
 
-        // Use this for initialization
         void Start() {
             selectedPiece = null;
             currentPiece = null;
             ConnectionMonitor.Instance.OnGameUpdate.AddListener(OnGameUpdate);
         }
 
+
+        /// <summary>
+        /// Called when the game state is updated.
+        /// </summary>
+        /// <param name="data">the data from the GGP AI</param>
         public void OnGameUpdate(GameData data) {
             updated = true;
             waitingForUpdate = false;
+            //if the state is terminal
             if(data.State != GDL.Terminal.FALSE) {
+                //hide all UI effects
                 UIManager.Instance.HideHighlightEffect();
                 UIManager.Instance.HideLegalCells();
                 UIManager.Instance.HideSelectEffect();
@@ -37,9 +46,14 @@ namespace Boardgame {
 
         void Update() {
             if (ConnectionMonitor.Instance.other != player) player = ConnectionMonitor.Instance.other;
+            //sub optimal
             ShowLegalCells();
         }
 
+        /// <summary>
+        /// highlights piece if possible
+        /// </summary>
+        /// <param name="piece">which piece</param>
         public void PieceHighlight(PhysicalCell piece) {
             if (gameOver) return;
             if (BoardgameManager.Instance.CanSelectPiece(piece, player)) {
@@ -50,6 +64,10 @@ namespace Boardgame {
             }
         }
 
+        /// <summary>
+        /// highlights cell if possible
+        /// </summary>
+        /// <param name="cell">which cell</param>
         public void CellHighlight(PhysicalCell cell) {
             if (gameOver) return;
             if (BoardgameManager.Instance.CanSelectCell(cell, selectedPiece)) {
@@ -59,6 +77,10 @@ namespace Boardgame {
             }
         }
 
+        /// <summary>
+        /// Select the cell if possible
+        /// </summary>
+        /// <param name="cell">which cell</param>
         public void CellSelect(PhysicalCell cell) {
             if (gameOver) return;
             if (BoardgameManager.Instance.CanSelectCell(cell, selectedPiece)) {
@@ -72,6 +94,10 @@ namespace Boardgame {
             }
         }
 
+        /// <summary>
+        /// Focus leaves the cell
+        /// </summary>
+        /// <param name="piece">the cell in question</param>
         public void PieceLeave(PhysicalCell piece) {
             if (gameOver) return;
             if (piece == currentPiece) {
@@ -80,6 +106,10 @@ namespace Boardgame {
             }
         }
 
+        /// <summary>
+        /// Select piece if possible
+        /// </summary>
+        /// <param name="piece">which piece</param>
         public void PieceSelect(PhysicalCell piece) {
             if (gameOver) return;
             if (BoardgameManager.Instance.CanSelectPiece(piece, player)) {
@@ -102,6 +132,9 @@ namespace Boardgame {
         }
 
         string lastPiece;
+        /// <summary>
+        /// Display all the available cells for selection
+        /// </summary>
         private void ShowLegalCells() {
             if (gameOver) return;
             if (waitingForUpdate) {

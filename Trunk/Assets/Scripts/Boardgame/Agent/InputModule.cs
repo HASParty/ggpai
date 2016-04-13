@@ -5,7 +5,10 @@ using Boardgame.Networking;
 using Boardgame.Configuration;
 
 namespace Boardgame.Agent {
-
+    /// <summary>
+    /// Listens to the boardgame state and GGP AI and relays events to the appropriate
+    /// locations
+    /// </summary>
     [RequireComponent(typeof(PersonalityModule), typeof(BrainModule))]
     public class InputModule : MonoBehaviour {
         private PersonalityModule pm;
@@ -25,20 +28,30 @@ namespace Boardgame.Agent {
 
         }
 
+        /// <summary>
+        /// Receive game state and execute moves if necessary
+        /// </summary>
+        /// <param name="data">The game state data</param>
         public void CheckGame(GameData data) {
             if (data.IsStart && data.LegalMoves.Count == 0) {
                 bm.player = Player.First;
-            } else if(data.IsStart) {
+            } else if (data.IsStart) {
                 bm.player = Player.Second;
             }
-            if (!data.IsStart && bm.player == data.Control && data.MovesMade.Count > 0) {
-                var move = data.MovesMade;
+            var move = data.MovesMade;
+            if (!data.IsStart && bm.player == data.Control && data.MovesMade.Count > 0) {                
                 bm.ExecuteMove(move);
+                OnMoveMade(move, bm.player);                
             }
 
             isMyTurn = !data.IsHumanPlayerTurn;
         }
 
+        /// <summary>
+        /// Receive evaluation information from the AI
+        /// and relay to the brain. 
+        /// </summary>
+        /// <param name="data">evaluation info</param>
         public void CheckStatus(FeedData data) {
             bm.EvaluateConfidence(data, isMyTurn);
             bm.ConsiderMove(data.Best);
@@ -47,14 +60,14 @@ namespace Boardgame.Agent {
             }
         }
 
+        /// <summary>
+        /// If a move has been made, react to it
+        /// </summary>
+        /// <param name="moves">Moves</param>
+        /// <param name="player">by whom</param>
         public void OnMoveMade(List<GDL.Move> moves, Player player) {
             Debug.Log("InputModule acknowledging a move has been made");
-            if (player == bm.player) {
-               
-            } else {
-                Debug.Log("This information should be passed through a GameWriter and on to the AI.");
-
-            }
+            bm.ReactMove(moves, player);
         }
     }
 }

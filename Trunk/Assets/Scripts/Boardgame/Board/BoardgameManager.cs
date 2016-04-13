@@ -9,7 +9,10 @@ using Boardgame.Networking;
 namespace Boardgame {
 
     public enum Player { First, Second };
-
+    /// <summary>
+    /// Manages the boardgame. Spawns the board, pieces, and so on. Moving pieces,
+    /// validity checks for player interactions, etc.
+    /// </summary>
     public class BoardgameManager : Singleton<BoardgameManager> {
 
         [SerializeField]
@@ -76,6 +79,7 @@ namespace Boardgame {
         }
 
         public void GameStart(State state) {
+            grid.SetPile(gameScriptable.TrashPile);
             foreach(GDL.Cell cell in state.Cells) {
                 if (piecePrefabs.ContainsKey(cell.Type)) {
                     if (cell.Count > 0) {
@@ -125,7 +129,7 @@ namespace Boardgame {
             return grid.GetCellPosition(id);
         }
 
-        public GameObject MakeMove(List<Move> moves, Player player) {
+        public void MakeMove(List<Move> moves, Player player) {
             GameObject piece = null;
             foreach(var move in moves) {
                 Debug.Log(move);
@@ -137,7 +141,8 @@ namespace Boardgame {
                         break;
                     case MoveType.REMOVE:
                         piece = grid.RemovePiece(move.From);
-                        Destroy(piece);
+                        Debug.Log("I PUT IN TRASH "+piece.name+" "+gameScriptable.TrashPile);
+                        grid.PlacePiece(piece, gameScriptable.TrashPile);
                         break;
                     case MoveType.MOVE:
                         piece = grid.RemovePiece(move.From);
@@ -147,7 +152,32 @@ namespace Boardgame {
             }
             //notify listeners the move has been made
             OnMakeMove.Invoke(moves, player);
-            return piece;
+        }
+
+        public void GetMoveFromTo(Move move, Player player, out PhysicalCell from, out PhysicalCell to) {
+            switch (move.Type) {
+                case MoveType.PLACE:
+                    string heap = player == Player.First ? gameScriptable.FirstPile : gameScriptable.SecondPile;
+                    from = grid.GetPhysicalCell(heap);
+                    to = grid.GetPhysicalCell(move.To);
+                    break;
+                case MoveType.REMOVE:
+                    from = grid.GetPhysicalCell(move.From);
+                    to = grid.GetPhysicalCell(gameScriptable.TrashPile);
+                    break;
+                case MoveType.MOVE:
+                    from = grid.GetPhysicalCell(move.From);
+                    to = grid.GetPhysicalCell(move.To);
+                    break;
+                default:
+                    from = null;
+                    to = null;
+                    break;
+            }
+        } 
+
+        public void MoveMade(List<Move> moves, Player player) {
+            OnMakeMove.Invoke(moves, player);
         }
 
         public bool CanSelectCell(PhysicalCell cell, PhysicalCell selected) {

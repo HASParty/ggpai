@@ -2,6 +2,9 @@
 using System.Collections;
 
 namespace Boardgame {
+    /// <summary>
+    /// Simple struct representing a cell
+    /// </summary>
 	[System.Serializable]
 	public struct Cell {
 		public string id;

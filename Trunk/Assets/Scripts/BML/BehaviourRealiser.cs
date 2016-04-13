@@ -56,6 +56,12 @@ public class BehaviourRealiser : MonoBehaviour {
             case BMLChunkType.Pointing:
                 StartCoroutine(Schedule(chunk as Pointing));
                 break;
+            case BMLChunkType.Grasping:
+                StartCoroutine(Schedule(chunk as Grasp));
+                break;
+            case BMLChunkType.Placing:
+                StartCoroutine(Schedule(chunk as Place));
+                break;
             case BMLChunkType.Head:
                 StartCoroutine(Schedule(chunk as Head));
                 break;
@@ -90,7 +96,7 @@ public class BehaviourRealiser : MonoBehaviour {
         yield return new WaitForSeconds(chunk.Start);
         DebugManager.Instance.OnChunkStart(chunk);
         
-        var node = FaceControllerII.GenerateEmotionalExpression(chunk.Arousal, chunk.Valence);
+        var node = FaceControllerII.GenerateEmotionalExpression(chunk.Arousal, chunk.Valence, 0.75f);
         //Debug.Log("scheduling emotional expression for " + gameObject.name);
         _fc.ScheduleExpression(node);
         yield return null;
@@ -196,7 +202,11 @@ public class BehaviourRealiser : MonoBehaviour {
         yield return new WaitForSeconds(chunk.Start);
         DebugManager.Instance.OnChunkStart(chunk);
         float duration = chunk.End;
-        StartCoroutine(Grasp(duration, chunk.Target, chunk.Mode == Behaviour.Lexemes.Mode.LEFT_HAND));
+        bool left = chunk.Mode == Behaviour.Lexemes.Mode.LEFT_HAND;
+        ActorMotion.Arm which = left ? _motion.Left : _motion.Right;
+        yield return StartCoroutine(Grasp(duration, chunk.Target, left));
+        chunk.Callback(which);
+
     }
 
     IEnumerator Schedule(Place chunk)
@@ -204,7 +214,10 @@ public class BehaviourRealiser : MonoBehaviour {
         yield return new WaitForSeconds(chunk.Start);
         DebugManager.Instance.OnChunkStart(chunk);
         float duration = chunk.End;
-        StartCoroutine(Place(duration, chunk.Target, chunk.Mode == Behaviour.Lexemes.Mode.LEFT_HAND));
+        bool left = chunk.Mode == Behaviour.Lexemes.Mode.LEFT_HAND;
+        GameObject which = left ? _motion.Left.holding.gameObject : _motion.Right.holding.gameObject;
+        yield return StartCoroutine(Place(duration, chunk.Target, chunk.Mode == Behaviour.Lexemes.Mode.LEFT_HAND));
+        chunk.Callback(which);
     }
 
     IEnumerator Schedule(Posture chunk) {
@@ -265,7 +278,7 @@ public class BehaviourRealiser : MonoBehaviour {
     IEnumerator Point(float duration = 3f, GameObject target = null, bool lookAtTarget = true) {
         Debug.Log("Point");
         if (target != null) {
-            float angle = SignedAngle(transform.forward * 5, target.transform.position - transform.position, transform.up);
+            //float angle = SignedAngle(transform.forward * 5, target.transform.position - transform.position, transform.up);
             //if (angle <= 85 && angle >= -85) {
                  _motion.Point(duration, target, lookAtTarget, true);
            /* } else {
@@ -288,9 +301,9 @@ public class BehaviourRealiser : MonoBehaviour {
         Debug.Log("Grasp");
         if (target != null)
         {
-            _motion.Grab(duration, target, left);
+            yield return StartCoroutine(_motion.Grab(duration, target, left));
+            
         }
-        yield return new WaitForSeconds(duration);
     }
 
     /// <summary>
@@ -302,9 +315,8 @@ public class BehaviourRealiser : MonoBehaviour {
         Debug.Log("Place");
         if (target != null)
         {
-            _motion.Place(duration, target, left);
+            yield return _motion.Place(duration, target, left);
         }
-        yield return new WaitForSeconds(duration);
     }
 
     float SignedAngle(Vector3 fromVector, Vector3 toVector, Vector3 upVector) {

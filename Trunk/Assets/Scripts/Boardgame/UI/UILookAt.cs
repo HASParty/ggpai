@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 namespace Boardgame.UI {
-
+    /// <summary>
+    /// Rotates UI elements to face the camera
+    /// </summary>
     public class UILookAt : MonoBehaviour {
         public Transform Target;
 

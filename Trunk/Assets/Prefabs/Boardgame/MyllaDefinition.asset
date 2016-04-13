@@ -22,3 +22,4 @@ MonoBehaviour:
     Prefab: {fileID: 187284, guid: 99ec9765718577e4a882dc102543019b, type: 2}
   SecondPile: black heap
   FirstPile: white heap
+  TrashPile: trash heap

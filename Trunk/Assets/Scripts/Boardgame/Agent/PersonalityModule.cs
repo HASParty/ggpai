@@ -5,6 +5,9 @@ using FML;
 using Boardgame.Configuration;
 
 namespace Boardgame.Agent {
+    /// <summary>
+    /// The personality of the agent.
+    /// </summary>
     public class PersonalityModule : MonoBehaviour {
         [System.Serializable]
         public struct Trait {

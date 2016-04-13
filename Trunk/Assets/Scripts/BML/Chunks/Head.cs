@@ -3,6 +3,9 @@ using System.Collections;
 using FML;
 
 namespace Behaviour {
+    /// <summary>
+    /// Head gestures and actions
+    /// </summary>
 	public class Head : BMLChunk {
 		public override BMLChunkType Type { get { return BMLChunkType.Head; } }
 		/// <summary>
@@ -28,9 +31,23 @@ namespace Behaviour {
 		public float StrokeEnd { get; private set; }
 		public float Relax { get; private set; }
 
-		
-		//constructor
-		public Head(string id, Participant character, int repetition, float amount, Lexemes.Head lexeme, 
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Head"/> class.
+        /// </summary>
+        /// <param name="id">name of the chunk</param>
+        /// <param name="character">the actor</param>
+        /// <param name="repetition">whether the action should repeat</param>
+        /// <param name="amount">the degree/intensity of the action</param>
+        /// <param name="lexeme">which action</param>
+        /// <param name="start">the start of the action</param>
+        /// <param name="ready">when the action is ready</param>
+        /// <param name="strokeStart">the start of the stroke</param>
+        /// <param name="stroke">the exact moment of the stroke</param>
+        /// <param name="strokeEnd">the end of the stroke</param>
+        /// <param name="relax">relaxation of the action</param>
+        /// <param name="end">duration of the action</param>
+        public Head(string id, Participant character, int repetition, float amount, Lexemes.Head lexeme, 
 		               float start = 0f, float ready = -1f, float strokeStart = -1f, 
 		               float stroke = -1f, float strokeEnd = -1f, float relax = -1f, 
 		               float end = 1f) 

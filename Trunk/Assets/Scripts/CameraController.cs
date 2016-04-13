@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityStandardAssets.Characters.FirstPerson;
 using UnityEngine.VR;
 
+/// <summary>
+/// Uses mouselook if vr is not enabled.
+/// </summary>
 public class CameraController : MonoBehaviour {
 
     private MouseLook ml;

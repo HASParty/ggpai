@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
+/// <summary>
+/// Handy for debug output of lists and arrays
+/// </summary>
 namespace Tools {
     public static class Stringify<T> {
         public static string List(List<T> l, string sep = " ") {

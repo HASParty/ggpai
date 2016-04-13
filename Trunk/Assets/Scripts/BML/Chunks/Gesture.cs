@@ -3,6 +3,9 @@ using System.Collections;
 using FML;
 
 namespace Behaviour {
+    /// <summary>
+    /// A gesture the actor should execute
+    /// </summary>
 	public class Gesture : BMLChunk {
 		public override BMLChunkType Type { get { return BMLChunkType.Gesture; } }
 		/// <summary>
@@ -23,8 +26,21 @@ namespace Behaviour {
 		public float StrokeEnd { get; private set; }
 		public float Relax { get; private set; }
 
-		//constructor
-		public Gesture(string id, Participant character, Lexemes.Mode mode, Lexemes.Gestures lexeme, 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Gesture"/> class.
+        /// </summary>
+        /// <param name="id">the name of the chunk</param>
+        /// <param name="character">the actor</param>
+        /// <param name="mode">which hand, etc.</param>
+        /// <param name="lexeme">what gesture</param>
+        /// <param name="start">time of the start of the gesture</param>
+        /// <param name="ready">the time when the gesture is ready to stroke</param>
+        /// <param name="strokeStart">when the stroke begins</param>
+        /// <param name="stroke">the beat of the stroke</param>
+        /// <param name="strokeEnd">the end of the stroke</param>
+        /// <param name="relax">when the gesture begins to relax</param>
+        /// <param name="end">the end of the gesture</param>
+        public Gesture(string id, Participant character, Lexemes.Mode mode, Lexemes.Gestures lexeme, 
 		               float start = 0f, float ready = -1f, float strokeStart = -1f, 
 		               float stroke = -1f, float strokeEnd = -1f, float relax = -1f, 
 		               float end = 1f) 
