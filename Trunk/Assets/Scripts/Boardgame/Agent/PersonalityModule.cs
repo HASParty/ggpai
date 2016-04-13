@@ -10,21 +10,43 @@ namespace Boardgame.Agent {
     /// </summary>
     public class PersonalityModule : MonoBehaviour {
         [System.Serializable]
+        public struct MoodEffect {
+            public float Positive;
+            public float Negative;
+            public float Surprising;
+            public float Expected;
+        }
+        [System.Serializable]
+        public struct Modifier {
+            public MoodEffect High;
+            public MoodEffect Low;
+        }
+        [System.Serializable]
+        public struct Interpolation {
+            public Mood High;
+            public Mood Low;
+        }
+        [System.Serializable]
         public struct Trait {
+            [HideInInspector]
             public int value;
-            //how much the mood swings as a result
-            //of events when trait high
-            public float valenceEffectHigh;
-            public float arousalEffectHigh;
-            //when trait low
-            public float valenceEffectLow;
-            public float arousalEffectLow;
-            //amount of default deviation from neutral
-            public float valenceInterpolation;
-            public float arousalInterpolation;
-            //add/subtract to decay if high/low
-            public float valenceDecay;
-            public float arousalDecay;
+            /// <summary>
+            /// Damp/exaggerate mood depending on trait value and quadrant
+            /// </summary>
+            public Modifier baseMoodMod;
+            /// <summary>
+            /// Add/sub mood decay depending on trait value and quadrant
+            /// </summary>
+            public Modifier moodDecayAddSub;
+
+            public Modifier negativeReactionMod;
+            public Modifier positiveReactionMod;
+            public Modifier confusedReactionMod;
+
+            /// <summary>
+            /// Default mood deviation from neutral
+            /// </summary>
+            public Interpolation interpolation;
         }
 
         [SerializeField]
@@ -38,10 +60,16 @@ namespace Boardgame.Agent {
         private float arousalBaseDecayRate = 0.005f;
         [SerializeField]
         private float valenceBaseDecayRate = 0.005f;
-        [SerializeField]
-        private float arousalDecayRate;
-        [SerializeField]
-        private float valenceDecayRate;
+
+        private float arousalSurpriseDecayRate;
+        private float arousalCalmDecayRate;
+        private float valenceNegativeDecayRate;
+        private float valencePositiveDecayRate;
+
+        private float arousalSurpriseEffect;
+        private float arousalCalmEffect;
+        private float valenceNegativeEffect;
+        private float valencePositiveEffect;
 
         [SerializeField]
         private int Low;
@@ -61,21 +89,33 @@ namespace Boardgame.Agent {
         [SerializeField]
         private Trait openness;
 
+        private Trait[] traits = new Trait[5];
+
         [SerializeField]
         private Identikit identikit;
 
         // Use this for initialization
-        void Start() {
+        private void Start() {
             Low = Config.Low;
             Neutral = Config.Neutral;
             High = Config.High;
-            RecalcDecayRate();
-            RecalcRestingMood();
-            ResetMood();
+            traits[0] = agreeableness;
+            traits[1] = conscientiousness;
+            traits[2] = extraversion;
+            traits[3] = neuroticism;
+            traits[4] = openness;
             ReloadPersonality();
+            Recalc();
         }
 
-        public void ResetMood() {
+        public void Recalc() {
+            recalcRestingMood();
+            resetMood();
+            recalcDecayRate();
+            recalcEffectWeights();
+        }
+
+        private void resetMood() {
             mood.valence = restingValence;
             mood.arousal = restingArousal;
         }
@@ -96,47 +136,90 @@ namespace Boardgame.Agent {
 
         }
 
-        float GetArousalEffectWeight(Trait trait) {
+        private void recalcEffectWeights() {
+            arousalCalmEffect = getArousalEffectWeightFor(0f);
+            arousalSurpriseEffect = getArousalEffectWeightFor(2f);
+            valencePositiveEffect = getValenceEffectWeightFor(2f);
+            valenceNegativeEffect = getValenceEffectWeightFor(0f);
+        }
+
+        private float getCurrentArousalEffectWeight() {
+            if (mood.arousal < Neutral) return arousalCalmEffect;
+            return arousalSurpriseEffect;
+        }
+
+        private float getCurrentValenceEffectWeight() {
+            if (mood.valence < Neutral) return valenceNegativeEffect;
+            return valencePositiveEffect;
+        }
+
+        private float getValenceEffectWeightFor(float valence) {
+            return GetValenceEffectWeight(agreeableness, valence) *
+               GetValenceEffectWeight(conscientiousness, valence) *
+               GetValenceEffectWeight(extraversion, valence) *
+               GetValenceEffectWeight(neuroticism, valence) *
+               GetValenceEffectWeight(openness, valence);
+        }
+
+        private float getArousalEffectWeightFor(float arousal) {
+            return GetArousalEffectWeight(agreeableness, arousal) *
+               GetArousalEffectWeight(conscientiousness, arousal) *
+               GetArousalEffectWeight(extraversion, arousal) *
+               GetArousalEffectWeight(neuroticism, arousal) *
+               GetArousalEffectWeight(openness, arousal);
+        }
+
+        /*private float getByArousal(float value, Modifier mod, float arousal, float retdefault = 1f) {
+            if(value == Low) {
+                return (arousal < Neutral ? mod.Low.Negative : baseMoodMod.Low.Positive;
+            } else if (value == High) {
+
+            }
+
+            return retdefault;
+        }*/
+
+        private float GetArousalEffectWeight(Trait trait, float arousal) {
             if (trait.value == Low) {
-                return trait.arousalEffectLow;
+                return (arousal < Neutral ? trait.baseMoodMod.Low.Expected : trait.baseMoodMod.Low.Surprising);
             } else if (trait.value == High) {
-                return trait.arousalEffectHigh;
+                return (arousal < Neutral ? trait.baseMoodMod.High.Expected : trait.baseMoodMod.High.Surprising);
             }
 
             return 1f;
         }
 
-        float GetValenceEffectWeight(Trait trait) {
+        private float GetValenceEffectWeight(Trait trait, float valence) {
             if (trait.value == Low) {
-                return trait.valenceEffectLow;
+                return (valence < Neutral ? trait.baseMoodMod.Low.Negative : trait.baseMoodMod.Low.Positive);
             } else if (trait.value == High) {
-                return trait.valenceEffectHigh;
+                return (valence < Neutral ? trait.baseMoodMod.High.Negative : trait.baseMoodMod.High.Positive);
             }
 
             return 1f;
         }
 
-        float GetArousalInterpolation(Trait trait) {
+        private float GetArousalInterpolation(Trait trait) {
             if (trait.value == Low) {
-                return (0.5f - trait.arousalInterpolation) * 0.2f;
+                return (0.5f + trait.interpolation.Low.arousal) * 0.2f;
             } else if (trait.value == High) {
-                return (0.5f + trait.arousalInterpolation) * 0.2f;
+                return (0.5f + trait.interpolation.High.arousal) * 0.2f;
             }
 
             return 0.5f * 0.2f;
         }
 
-        float GetValenceInterpolation(Trait trait) {
+        private float GetValenceInterpolation(Trait trait) {
             if (trait.value == Low) {
-                return (0.5f - trait.valenceInterpolation) * 0.2f;
+                return (0.5f + trait.interpolation.Low.valence) * 0.2f;
             } else if (trait.value == High) {
-                return (0.5f + trait.valenceInterpolation) * 0.2f;
+                return (0.5f + trait.interpolation.High.valence) * 0.2f;
             }
 
             return 0.5f * 0.2f;
         }
 
-        public void RecalcRestingMood() {
+        private void recalcRestingMood() {
             float arousalInterpolate = GetArousalInterpolation(agreeableness) +
                                        GetArousalInterpolation(conscientiousness) +
                                        GetArousalInterpolation(extraversion) +
@@ -151,94 +234,87 @@ namespace Boardgame.Agent {
             restingValence = Mathf.Lerp(Low, High, Mathf.Clamp01(valenceInterpolate));
         }
 
-        float GetArousalDecay(Trait trait) {
+        private float getArousalDecay(Trait trait, float arousal) {
             if (trait.value == Low) {
-                return -trait.arousalDecay;
+               return (arousal < Neutral ? trait.moodDecayAddSub.Low.Expected : trait.moodDecayAddSub.Low.Surprising);
             } else if (trait.value == High) {
-                return trait.arousalDecay;
+                return (arousal < Neutral ? trait.moodDecayAddSub.High.Expected : trait.moodDecayAddSub.High.Surprising);
             }
 
-            return 0;
+            return 0f;
         }
 
-        float GetValenceDecay(Trait trait) {
-            if (trait.value == Low) {
-                return -trait.valenceDecay;
+        private float getValenceDecay(Trait trait, float valence) {
+            if(trait.value == Low) {
+                return (valence < Neutral ? trait.moodDecayAddSub.Low.Negative : trait.moodDecayAddSub.Low.Positive);
             } else if (trait.value == High) {
-                return trait.valenceDecay;
-            }
+                return (mood.valence < Neutral ? trait.moodDecayAddSub.High.Negative : trait.moodDecayAddSub.High.Positive);
+             }
 
-            return 0;
+            return 0f;
         }
 
-        public void RecalcDecayRate() {
-            arousalDecayRate = GetArousalDecay(agreeableness) +
-                                GetArousalDecay(conscientiousness) +
-                                GetArousalDecay(extraversion) +
-                                GetArousalDecay(neuroticism) +
-                                GetArousalDecay(openness) +
-                                arousalBaseDecayRate;
-            valenceDecayRate = GetValenceDecay(agreeableness) +
-                                GetValenceDecay(conscientiousness) +
-                                GetValenceDecay(extraversion) +
-                                GetValenceDecay(neuroticism) +
-                                GetValenceDecay(openness) +
-                                valenceBaseDecayRate;
+        public float getCurrentArousalDecay() {
+            if (mood.arousal < Neutral) return arousalCalmDecayRate;
+            return arousalSurpriseDecayRate;
+        }
+
+        public float getCurrentValenceDecay() {
+            if (mood.valence < Neutral) return valenceNegativeDecayRate;
+            return valencePositiveDecayRate;
+        }
+
+        private float getArousalDecayFor(float arousal) {
+            return getArousalDecay(agreeableness, arousal) +
+                getArousalDecay(conscientiousness, arousal) +
+                getArousalDecay(extraversion, arousal) +
+                getArousalDecay(neuroticism, arousal) +
+                getArousalDecay(openness, arousal) +
+                arousalBaseDecayRate;
+        }
+
+        private float getValenceDecayFor(float valence) {
+            return getValenceDecay(agreeableness, valence) +
+                getValenceDecay(conscientiousness, valence) +
+                getValenceDecay(extraversion, valence) +
+                getValenceDecay(neuroticism, valence) +
+                getValenceDecay(openness, valence) +
+                valenceBaseDecayRate;
+        }
+
+
+        private void recalcDecayRate() {
+            arousalSurpriseDecayRate = getArousalDecayFor(2f);
+            arousalCalmDecayRate = getArousalDecayFor(0f);
+            valenceNegativeDecayRate = getValenceDecayFor(0f);
+            valencePositiveDecayRate = getValenceDecayFor(2f);
         }
 
         public float GetArousal() {
-            return mood.arousal;
+            return mood.arousal * getCurrentArousalEffectWeight();
         }
 
         public float GetValence() {
-            return mood.valence;
+            return mood.valence * getCurrentValenceEffectWeight();
         }
 
-        // Update is called once per frame
-        void Update() {
+        private void Update() {
             //Mood decay, mood strays back to neutral gradually. 
-            //Values need to be tested to determine best rate.
             float dt = Time.deltaTime;
             int arousalMod = (mood.arousal < restingArousal ? 1 : -1);
             int valenceMod = (mood.valence < restingValence ? 1 : -1);
 
-            mood.arousal += arousalMod * dt * arousalDecayRate;
-            mood.valence += valenceMod * dt * valenceDecayRate;
+            mood.arousal += arousalMod * dt * getCurrentArousalDecay();
+            mood.valence += valenceMod * dt * getCurrentValenceDecay();
 
             mood.arousal = Mathf.Clamp(mood.arousal, Low, High);
             mood.valence = Mathf.Clamp(mood.valence, Low, High);
+            
         }
 
         public void Evaluate(float positivity, float suddenness) {
             mood.valence += positivity / 100;
             mood.arousal += suddenness / 100;
-        }
-
-
-        //will we need these?
-        public float GetExtraversion() {
-            //TODO: determine personality value based on trait degree and current mood
-            return 0f;
-        }
-
-        public float GetConscientousness() {
-            //TODO: determine personality value based on trait degree and current mood
-            return 0f;
-        }
-
-        public float GetAgreeableness() {
-            //TODO: determine personality value based on trait degree and current mood
-            return 0f;
-        }
-
-        public float GetNeuroticism() {
-            //TODO: determine personality value based on trait degree and current mood
-            return 0f;
-        }
-
-        public float GetOpenness() {
-            //TODO: determine personality value based on trait degree and current mood
-            return 0f;
         }
     }
 }
