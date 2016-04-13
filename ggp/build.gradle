@@ -35,6 +35,7 @@ dependencies {
 }
 test {
     testLogging {
+        // events 'started', 'passed', 'standardOut', 'standardError'
         events 'started', 'passed'
     }
 }

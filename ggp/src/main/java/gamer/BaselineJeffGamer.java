@@ -34,6 +34,7 @@ import gamer.MCTS.MCTSDAG;
 
 public class BaselineJeffGamer extends StateMachineGamer {
     private MCTS mcts;
+    // private MCTSDAG mcts;
     private Role other;
     private Map<Role, Integer> roleMap;
     public ReentrantReadWriteLock lock1= new ReentrantReadWriteLock(true);

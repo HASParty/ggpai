@@ -60,7 +60,7 @@ public final class MCTSDAG extends Thread {
     private int DagCounter = 0;
     private static Runtime runtime = Runtime.getRuntime();
     private static boolean expanding;
-    private static final int limit = 5000;
+    private static final int limit = 0;
     private int lastPlayOutDepth;
     private int playOutCount;
     private float avgPlayOutDepth;
@@ -132,7 +132,7 @@ public final class MCTSDAG extends Thread {
                     checkHeap();
                 }
                 heapCheck++;
-                search(root, gamer.getCurrentState(), new ArrayList<List<Move>>());
+                search(root, null, gamer.getCurrentState(), new ArrayList<List<Move>>());
                 lock.writeLock().unlock();
             } catch (InterruptedException e) {
                 System.out.println("this never seems to happen?");
@@ -147,7 +147,6 @@ public final class MCTSDAG extends Thread {
         // mast.saveData();
     }
 
-
     //search(MCMove, MachineState){
     /**
      * A recursive MCTS search function that searches through MCM nodes.
@@ -158,7 +157,7 @@ public final class MCTSDAG extends Thread {
      *
      * @return The simulated value of this node for each player from one simulation.
      */
-    private List<Double> search(MCMove node, MachineState state, List<List<Move>> rave) throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException{
+    private List<Double> search(MCMove node, List<HashMap<Move, double[]>> grave, MachineState state, List<List<Move>> rave) throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException{
         List<Double> result;
         if(!node.equals(root)){ //If we aren't at the root we change states
             state = node.state;
@@ -176,7 +175,9 @@ public final class MCTSDAG extends Thread {
             }
             result = playOut(state, rave); //We do one playout
         } else {
-            List<Move> ci = node.select();
+            grave = ((RaveMCMove)node).updateGrave(grave);
+            List<Move> ci = ((RaveMCMove)node).select(grave);
+            // List<Move> ci = node.select();
             MCMove child = node.children.get(ci);
             if(child.n() == 0){ //We only ever use the SM once for each state
                 child.state = machine.getNextState(state, ci);
@@ -190,13 +191,15 @@ public final class MCTSDAG extends Thread {
             }
             /* This is ugly but its more efficient than checking them all each time */
             int prev = child.size();
-            result = search(child, state, rave);
+            // grave = null;
+            grave = ((RaveMCMove)node).updateGrave(grave);
+            result = search(child, grave, state, rave);
             rave.add(ci);
             node.size(child.size(), prev);
             mast.update(ci, result);
         }
         node.update(result);
-        if(RaveMCMove.k > 0){
+        if(RaveMCMove.k > 0 && !node.terminal){
             ((RaveMCMove)node).updateRave(rave, result);
         }
         applyDiscount(result, treeDiscount);
@@ -218,10 +221,10 @@ public final class MCTSDAG extends Thread {
             playOutCount++;
             return getGoalsAsDouble(state);
         }
-        if(lastPlayOutDepth >= 50){
+        if(lastPlayOutDepth >= 110){
             avgPlayOutDepth = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth) / (float)(playOutCount + 1);
             playOutCount++;
-            return new ArrayList<Double>(Arrays.asList(20.0d, 20.0d));
+            return new ArrayList<Double>(Arrays.asList(40.0d, 40.0d));
         }
 
         List<List<Move>> moves = machine.getLegalJointMoves(state);
@@ -232,8 +235,8 @@ public final class MCTSDAG extends Thread {
             chosen = mast.pickMove(moves);
         }
         state = machine.getNextState(state, chosen);
-        rave.add(chosen);
         result = depthCharge(state, rave);
+        rave.add(chosen);
         mast.update(chosen, result);
         applyDiscount(result, chargeDiscount);
         return result;
