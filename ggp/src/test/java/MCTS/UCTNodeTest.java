@@ -1,4 +1,4 @@
-package MCTS;
+package MCTS.test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,26 +14,22 @@ import org.ggp.base.util.match.Match;
 import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.statemachine.Role;
 
-import gamer.MCTS.MCMove;
+import gamer.MCTS.nodes.UCTNode;
 
-public class MCMoveTest extends TestCase {
-    protected MCMove node;
+public class UCTNodeTest extends TestCase {
+    protected UCTNode node;
     private static final double DELTA = 1e-15;
 
     protected void setUp(){
         ArrayList<Move> moves = new ArrayList<>();
         moves.add(Move.create("moveX"));
         moves.add(Move.create("moveY"));
-        node = new MCMove(moves);
+        node = new UCTNode(moves);
     }
 
     public void testExpand(){
         ArrayList<List<Move>> moves = genMoves(0, 0);
         node.expand(moves);
-        System.out.println(MCMove.N);
-        System.out.println(node.size());
-        System.out.println(node);
-        assertEquals(MCMove.N, 1);
         assertEquals(node.size(), 11);
         boolean there;
         for(List<Move> m: moves){

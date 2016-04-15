@@ -157,7 +157,7 @@ public class BaselineJeffGamer extends StateMachineGamer {
     }
 
     public String getEvaluation(){
-        return "[ Base:(" + mcts.baseEval() + ") SSRatio:(" + mcts.SSRatio() + ")]" ;
+        return "[ Base:(" + mcts.baseEval() + ")]" ;
     }
     public Move stateMachineSelectMove(long timeout) throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException{
 

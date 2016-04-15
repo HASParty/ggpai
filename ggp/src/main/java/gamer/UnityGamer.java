@@ -26,13 +26,13 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import org.ggp.base.util.statemachine.implementation.propnet.forwardDeadReckon.ForwardDeadReckonPropnetStateMachine;
 import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
-import gamer.MCTS.MCTSDAG;
+import gamer.MCTS.MCTSRAVE;
 /**
  * UnityGamer is a special snowflake that does not work with a normal GGP server or the kiosk 
  */
 
 public class UnityGamer extends StateMachineGamer {
-    protected MCTSDAG mcts;
+    protected MCTSRAVE mcts;
     private Role other;
     public boolean silent = false;
     public Map<Role, Integer> roleMap;
@@ -41,7 +41,7 @@ public class UnityGamer extends StateMachineGamer {
     @Override
     public void stateMachineMetaGame(long timeout) {
         roleMap = getStateMachine().getRoleIndices();
-        mcts = new MCTSDAG(this, lock1, silent, 0.9f, 100);
+        mcts = new MCTSRAVE(this, lock1, silent, 0.9f, 100);
         long finishBy = timeout - 1000;
         mcts.start();
     }
@@ -206,7 +206,7 @@ public class UnityGamer extends StateMachineGamer {
      * @return the Evaluation of the players current state
      */
     public String getEvaluation(){
-        return "[ Base:(" + mcts.baseEval() + ") SSRatio:(" + mcts.SSRatio() + ")]" ;
+        return "[ Base:(" + mcts.baseEval() + ")]" ;
     }
 
     /**

@@ -18,11 +18,13 @@ import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
+import gamer.MCTS.nodes.UCTNode;
+
 
 
 /*
  * A simple MCTS Thread that defines a Monte carlo search algorithm for
- * a tree made up of MCMove nodes.
+ * a tree made up of UCTNode nodes.
  */ 
 public final class MCTS extends Thread {
     private static final int limit = 0;
@@ -34,7 +36,7 @@ public final class MCTS extends Thread {
     private static boolean expanding;
     protected StateMachineGamer gamer;
     protected StateMachine machine;
-    protected MCMove root;
+    protected UCTNode root;
     private long accum;
     private long count;
     public boolean silent;
@@ -54,7 +56,7 @@ public final class MCTS extends Thread {
         this.gamer = gamer;
         expanding = true;
         machine = gamer.getStateMachine();
-        root = new MCMove(null);
+        root = new UCTNode(null);
         newRoot = null;
         alive = true;
         this.lock = lock;
@@ -86,14 +88,17 @@ public final class MCTS extends Thread {
                 search(root, gamer.getCurrentState());
                 lock.writeLock().unlock();
             } catch (InterruptedException e) {
+                lock.writeLock().unlock();
                 System.out.println("this never seems to happen?");
+                break;
             } catch (Exception e){
+                lock.writeLock().unlock();
                 System.out.println("EXCEPTION: " + e.toString());
                 e.printStackTrace();
                 Thread.currentThread().interrupt();
+                return;
             }
         }
-        System.out.println("this never seems to happen?");
     }
 
     private void checkHeap(){
@@ -113,7 +118,7 @@ public final class MCTS extends Thread {
      *
      * @return The simulated value of this node for each player from one simulation.
      */
-    private List<Double> search(MCMove node, MachineState state) throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException{
+    private List<Double> search(UCTNode node, MachineState state) throws MoveDefinitionException, TransitionDefinitionException, GoalDefinitionException{
         List<Double> result;
         if(!node.equals(root)){ //If we aren't at the root we change states
             state = node.state;
@@ -123,7 +128,7 @@ public final class MCTS extends Thread {
                 node.goals = getGoalsAsDouble(state);
                 node.terminal = true;
             }
-            MCMove.N++;
+            UCTNode.N++;
             result = node.goals;
         } else if (node.leaf()){
             if(expanding){
@@ -132,7 +137,7 @@ public final class MCTS extends Thread {
             result = playOut(state); //We do one playout
         } else {
             List<Move> ci = node.select();
-            MCMove child = node.children.get(ci);
+            UCTNode child = node.children.get(ci);
             if(child.n() == 0){ //We only ever use the SM once for each state
                 child.state = machine.getNextState(state, ci); 
             }
@@ -209,11 +214,11 @@ public final class MCTS extends Thread {
      * @return The best move at this point
      */
     public List<Move> selectMove() throws MoveDefinitionException {
-        Map.Entry<List<Move>, MCMove> bestMove = null;
+        Map.Entry<List<Move>, UCTNode> bestMove = null;
         if (!silent){
             System.out.println("================================Available moves================================");
         }
-        for (Map.Entry<List<Move>, MCMove> entry : root.children.entrySet()){
+        for (Map.Entry<List<Move>, UCTNode> entry : root.children.entrySet()){
             if (!silent){
                 System.out.println("Move: " + entry.getKey() + " " + entry.getValue());
             }
@@ -252,11 +257,11 @@ public final class MCTS extends Thread {
             System.out.println("Total Memory:" + runtime.totalMemory() / mb);
             //Print Maximum available memory
             System.out.println("Max Memory:" + runtime.maxMemory() / mb);
-            for (Map.Entry<List<Move>, MCMove> entry: root.children.entrySet()){
+            for (Map.Entry<List<Move>, UCTNode> entry: root.children.entrySet()){
                 if (moves.get(0).equals(entry.getKey().get(0)) &&
                     moves.get(1).equals(entry.getKey().get(1))){
                     root = entry.getValue();
-                    MCMove.N = root.n();
+                    UCTNode.N = root.n();
                     return;
                 }
             }
@@ -268,9 +273,9 @@ public final class MCTS extends Thread {
     }
 
 
-    // private void printTree(String indent, MCMove node){
+    // private void printTree(String indent, UCTNode node){
     //     System.out.println(indent + node);
-    //     for (MCMove move : node.children){
+    //     for (UCTNode move : node.children){
     //         printTree(indent + "    ", move);
     //     }
     // }
@@ -282,20 +287,17 @@ public final class MCTS extends Thread {
     //     printTree("", root);
     // }
     
-    public String SSRatio(){
-        return root.SSRatio();
-    }
 
     public String baseEval(){
         String result = "";
         synchronized(root){
             DecimalFormat f = new DecimalFormat("#.##f");
-            for(Map.Entry<List<Move>, MCMove> entry : root.children.entrySet()){
+            for(Map.Entry<List<Move>, UCTNode> entry : root.children.entrySet()){
                 result += "("; 
                 result += "m:" + entry.getKey();
                 result += " n:" + entry.getValue().n();
-                result += " v:[" + f.format(root.Qvalue(0, entry.getValue())) + " " + 
-                          f.format(root.Qvalue(1, entry.getValue())) + "]";
+                result += " v:[" + f.format(root.QValue(0, entry.getValue())) + " " + 
+                          f.format(root.QValue(1, entry.getValue())) + "]";
                 result += ") ";
             }
         }
@@ -326,3 +328,6 @@ public final class MCTS extends Thread {
     }
 
 }
+
+// vim: set foldmethod=marker:
+// vim: set foldmarker={{,}}:
