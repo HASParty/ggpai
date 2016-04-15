@@ -5,6 +5,9 @@ using System.Text;
 using UnityEngine;
 
 namespace Boardgame.Networking {
+    /// <summary>
+    /// Manages the network connection and settings.
+    /// </summary>
     static class Connection {
         public enum Status {
             OFF,

@@ -12,7 +12,7 @@ public class PersonalityModuleEditor : Editor {
     SerializedProperty openness, opennessWeight;
 
 
-    SerializedProperty arousalDecay, valenceDecay, arousalActualDecay, valenceActualDecay;
+    SerializedProperty arousalDecay, valenceDecay;
 
     PersonalityModule pm;
 
@@ -21,9 +21,7 @@ public class PersonalityModuleEditor : Editor {
     void OnEnable() {
         pm = target as PersonalityModule;
         pm.ReloadPersonality();
-        pm.RecalcDecayRate();
-        pm.RecalcRestingMood();
-        pm.ResetMood();
+        pm.Recalc();
 
         agreeableness = serializedObject.FindProperty("agreeableness");
         conscientiousness = serializedObject.FindProperty("conscientiousness");
@@ -33,9 +31,6 @@ public class PersonalityModuleEditor : Editor {
 
         arousalDecay = serializedObject.FindProperty("arousalBaseDecayRate");
         valenceDecay = serializedObject.FindProperty("valenceBaseDecayRate");
-
-        arousalActualDecay = serializedObject.FindProperty("arousalDecayRate");
-        valenceActualDecay = serializedObject.FindProperty("valenceDecayRate");
     }
 
     void OnSceneGUI() {
@@ -77,14 +72,12 @@ public class PersonalityModuleEditor : Editor {
         EditorGUILayout.LabelField("Arousal: " + pm.GetArousal(), GUILayout.Width(120));
         EditorGUILayout.LabelField("Valence: " + pm.GetValence(), GUILayout.Width(120));
         EditorGUILayout.EndHorizontal();
-        EditorGUILayout.LabelField("Arousal decay / s: " + arousalActualDecay.floatValue);
-        EditorGUILayout.LabelField("Valence decay / s: " + valenceActualDecay.floatValue);
+        EditorGUILayout.LabelField("Arousal decay / s: " + pm.getCurrentArousalDecay());
+        EditorGUILayout.LabelField("Valence decay / s: " + pm.getCurrentValenceDecay());
         EditorGUILayout.PropertyField(arousalDecay);
         EditorGUILayout.PropertyField(valenceDecay);
         if (GUILayout.Button("Recalculate")) {
-            pm.RecalcDecayRate();
-            pm.RecalcRestingMood();
-            pm.ResetMood();
+            pm.Recalc();
         }
         EditorGUI.indentLevel--;
         serializedObject.ApplyModifiedProperties();
@@ -97,34 +90,7 @@ public class PersonalityModuleEditor : Editor {
         SerializedProperty value = trait.FindPropertyRelative("value");
         EditorGUILayout.LabelField("Value is " + value.intValue);
         if (showTraits) {
-            SerializedProperty v = trait.FindPropertyRelative("valenceEffectHigh");
-            SerializedProperty a = trait.FindPropertyRelative("arousalEffectHigh");
-            EditorGUILayout.LabelField("High mood effect (weight)");
-            EditorGUILayout.BeginHorizontal();
-            a.floatValue = EditorGUILayout.FloatField(a.floatValue);
-            v.floatValue = EditorGUILayout.FloatField(v.floatValue);
-            EditorGUILayout.EndHorizontal();
-            v = trait.FindPropertyRelative("valenceEffectLow");
-            a = trait.FindPropertyRelative("arousalEffectLow");
-            EditorGUILayout.LabelField("Low mood effect (weight)");
-            EditorGUILayout.BeginHorizontal();
-            a.floatValue = EditorGUILayout.FloatField(a.floatValue);
-            v.floatValue = EditorGUILayout.FloatField(v.floatValue);
-            EditorGUILayout.EndHorizontal();
-            v = trait.FindPropertyRelative("valenceInterpolation");
-            a = trait.FindPropertyRelative("arousalInterpolation");
-            EditorGUILayout.LabelField("Interpolation effect (adds/subs)");
-            EditorGUILayout.BeginHorizontal();
-            a.floatValue = EditorGUILayout.FloatField(a.floatValue);
-            v.floatValue = EditorGUILayout.FloatField(v.floatValue);
-            EditorGUILayout.EndHorizontal();
-            v = trait.FindPropertyRelative("valenceDecay");
-            a = trait.FindPropertyRelative("arousalDecay");
-            EditorGUILayout.LabelField("Decay effect (adds/subs)");
-            EditorGUILayout.BeginHorizontal();
-            a.floatValue = EditorGUILayout.FloatField(a.floatValue);
-            v.floatValue = EditorGUILayout.FloatField(v.floatValue);
-            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.PropertyField(trait, true);
         }
         EditorGUI.indentLevel--;
     }

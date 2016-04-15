@@ -209,15 +209,15 @@ namespace Boardgame.Agent {
                             FaceEmotion faceReact;
                             switch (reaction) {
                                 case MoveReaction.CONFUSED:
-                                    faceReact = new FaceEmotion("ConfusedFace", chunk.owner, 0f, 1.8f, 0.6f);
+                                    faceReact = new FaceEmotion("ConfusedFace", chunk.owner, 0f, 1.8f*pm.GetArousalConfusedMod(), 0.6f*pm.GetValenceConfusedMod());
                                     curr.AddChunk(faceReact);
                                     break;
                                 case MoveReaction.NEGATIVE:
-                                    faceReact = new FaceEmotion("NegativeFace", chunk.owner, 0f, 1.2f, 0.4f);
+                                    faceReact = new FaceEmotion("NegativeFace", chunk.owner, 0f, 1.2f * pm.GetArousalNegativeMod(), 0.4f * pm.GetValenceNegativeMod());
                                     curr.AddChunk(faceReact);
                                     break;
                                 case MoveReaction.POSITIVE:
-                                    faceReact = new FaceEmotion("HappyFace", chunk.owner, 0f, 1.4f, 2.5f);
+                                    faceReact = new FaceEmotion("HappyFace", chunk.owner, 0f, 1.4f * pm.GetArousalPositiveMod(), 2.5f * pm.GetValencePositiveMod());
                                     curr.AddChunk(faceReact);
                                     break;
                             }
