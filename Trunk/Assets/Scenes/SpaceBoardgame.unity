@@ -5207,7 +5207,7 @@ MonoBehaviour:
   Neutral: 0
   High: 0
   agreeableness:
-    value: 2
+    value: 1
     baseMoodMod:
       High:
         Positive: 1.2
@@ -5265,8 +5265,8 @@ MonoBehaviour:
         Expected: 0
     interpolation:
       High:
-        valence: 0.8
-        arousal: 0.2
+        valence: 0.4
+        arousal: 0.1
       Low:
         valence: -0.6
         arousal: 0

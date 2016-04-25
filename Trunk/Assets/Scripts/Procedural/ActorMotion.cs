@@ -49,6 +49,7 @@ public class ActorMotion : MonoBehaviour {
 
         LerpIK(leftHand);
         LerpIK(rightHand);
+        Idle();
 
     }
 
@@ -181,6 +182,7 @@ public class ActorMotion : MonoBehaviour {
 
     public IEnumerator Grab(float duration, GameObject target, bool left = true)
     {
+        PauseIdling();
         IKLookAt ik = (left ? leftHand : rightHand);
         if (left)
         {
@@ -201,6 +203,7 @@ public class ActorMotion : MonoBehaviour {
 
     public IEnumerator Place(float duration, GameObject where, bool left = true)
     {
+        PauseIdling();
         Transform what = (left ? Left.holding : Right.holding);
         if(what == null) Debug.LogWarning("What should I place");
         else
@@ -238,12 +241,14 @@ public class ActorMotion : MonoBehaviour {
             Right.holding = null;
         }
         ik.Active = false;
+        ResumeIdling();
         yield return null;
     }
 
     IEnumerator FinishGrab(float duration, IKLookAt ik, bool left = true)
     {
         yield return new WaitForSeconds(duration);
+        ResumeIdling();
         ik.Elapsed = 0f;
         ik.Active = false;
         yield return null;
@@ -252,6 +257,7 @@ public class ActorMotion : MonoBehaviour {
     public void Point(float duration, GameObject target, bool lookAtTarget, bool left = true)
     {
         IKLookAt ik = (left ? leftHand : rightHand);
+        PauseIdling();
         if (left)
         {
            // animator.SetTrigger("Reach");
@@ -278,13 +284,47 @@ public class ActorMotion : MonoBehaviour {
         ik.Elapsed = 0f;
         //animator.SetInteger("Point", 0);
         ik.Active = false;
+        ResumeIdling();
         yield return null;
     }
     #endregion
     #endregion
 
-    //IDLING
+    #region idling
+    bool idling = true;
+    float idleNextShift = 0f;
+    float idleElapsed = 0f;
+    void PauseIdling() {
+        idling = false;
+    }
 
+    void ResumeIdling() {
+        idling = true;
+    }
+    void Idle() {
+        if(idling) {
+            idleElapsed += Time.deltaTime;
+            if(idleElapsed >= idleNextShift) {
+                CalculateNextIdle();
+                PickPose();
+            }
+        }
+    }
+
+    void PickPose() {
+        //tODO: bml
+        int hand = Random.Range(0, 2);
+        animator.SetInteger("left", hand);
+        animator.SetInteger("right", hand);
+    }
+
+    void CalculateNextIdle() {
+        idleElapsed = 0f;
+        idleNextShift = 10f;
+    }
+
+
+    #endregion
 
 
 }
