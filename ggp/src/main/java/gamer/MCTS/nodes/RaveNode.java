@@ -1,4 +1,4 @@
-package gamer.MCTS;
+package gamer.MCTS.nodes;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -17,21 +17,23 @@ import org.ggp.base.util.statemachine.Move;
  * A basic Monte Carlo move wrapper with UCT
  */
 @SuppressWarnings("serial")
-public class RaveMCMove extends MCMove {
+public class RaveNode extends Node {
+    //Variables {{
     private List<HashMap<Move, double[]>> rave;
     private static final int graveThresh = 20;
+    private HashMap<List<Move>, RaveNode> children;
     public static int k = 0;
-    private double beta;
+    //}}
     /**
      * A tree node carrying the calculated value of the contained state.
      * @param move The move itself.
      */
-    public RaveMCMove(List<Move> move){
-        super(move);
+    public RaveNode(List<Move> move){
+        super();
+        children = new HashMap<List<Move>, RaveNode>(); //TODO: Replace with a saner mapping
         rave = null;
     }
 
-    @Override
     public void expand(List<List<Move>> moves){
         leaf = false;
         rave = new ArrayList<HashMap<Move, double[]>>();
@@ -39,7 +41,7 @@ public class RaveMCMove extends MCMove {
             rave.add(new HashMap<>());
         }
         for (List<Move> move : moves){
-            children.put(move, new RaveMCMove(move));
+            children.put(move, new RaveNode(move));
             size++;
             for (int i = 0; i < move.size(); i++){
                 rave.get(i).put(move.get(i), new double[]{0.0d, 0.0d});
@@ -65,7 +67,6 @@ public class RaveMCMove extends MCMove {
                     Move move = entry.getKey();
                     grave.get(i).put(move, value);
                 }
-            
             }
         } else {
             for(int i = 0; i < rave.size(); i++){
@@ -85,40 +86,33 @@ public class RaveMCMove extends MCMove {
         return grave;
     }
 
-    @Override
-    public double calcValue(int win, Map.Entry<List<Move>, MCMove> entry){
-        MCMove node = entry.getValue();
+    /**
+     * @return The new UCT value of the move
+     */
+    public double QValue(int win, RaveNode node){
         if(node.n == 0){
             return Integer.MAX_VALUE;
         }
-        double Qvalue = (node.wins[win] / node.n) + (C * Math.sqrt(Math.log(n)/node.n));
-        if(k == 0){
-            return Qvalue;
-        }
-        double raveValue;
-        raveValue = rave.get(win).get(entry.getKey().get(win))[0];
-        return beta * raveValue + (1-beta)*Qvalue;
+        return (node.wins[win] / node.n) + (C * Math.sqrt(Math.log(n)/node.n));
     }
 
-    public double calcValue(int win, Map.Entry<List<Move>, MCMove> entry, HashMap<Move, double[]> grave){
-        MCMove node = entry.getValue();
-        if(node.n == 0){
+    public double calcValue(int win, Map.Entry<List<Move>, RaveNode> entry, HashMap<Move, double[]> grave){
+        double beta = Math.sqrt(k/(3*n+k));
+        List<Move> move = entry.getKey();
+        RaveNode node = entry.getValue();
+        double QValue = QValue(win, node);
+        if((QValue > (Integer.MAX_VALUE - 1))){
             return Integer.MAX_VALUE;
         }
-        double Qvalue = (node.wins[win] / node.n) + (C * Math.sqrt(Math.log(n)/node.n));
-        if(k == 0){
-            return Qvalue;
-        }
         double raveValue;
-        if(grave.containsKey(entry.getKey()) && rave.get(win).get(entry.getKey().get(win))[1] < graveThresh){
-            raveValue = grave.get(entry.getKey().get(win))[0];
+        if(grave.containsKey(move) && rave.get(win).get(move.get(win))[1] < graveThresh){
+            raveValue = grave.get(move.get(win))[0];
         } else {
-            raveValue = rave.get(win).get(entry.getKey().get(win))[0];
+            raveValue = rave.get(win).get(move.get(win))[0];
         }
-        return beta * raveValue + (1-beta)*Qvalue;
+        return beta * raveValue + (1-beta)*QValue;
     }
 
-    // select(){
     /**
      * Sorts the moves and returns the first one.
      *
@@ -127,12 +121,11 @@ public class RaveMCMove extends MCMove {
      * @return the child node with the highest UCT value
      */
     public List<Move> select(List<HashMap<Move, double[]>> grave){
-        beta = Math.sqrt(k/(3*n+k));
         double best = -1;
         double best2 = -1;
-        Map.Entry<List<Move>, MCMove> bestMove = null;
-        Map.Entry<List<Move>, MCMove> bestMove2 = null;
-        for (Map.Entry<List<Move>, MCMove> entry : children.entrySet()){
+        Map.Entry<List<Move>, RaveNode> bestMove = null;
+        Map.Entry<List<Move>, RaveNode> bestMove2 = null;
+        for (Map.Entry<List<Move>, RaveNode> entry : children.entrySet()){
             double value = calcValue(0, entry, grave.get(0));
             double value2 = calcValue(1, entry, grave.get(1));
             if (value > best){
@@ -152,12 +145,6 @@ public class RaveMCMove extends MCMove {
             }
         }
         return null; 
-    }
-
-    @Override
-    public List<Move> select(){
-        beta = Math.sqrt(k/(3*n+k));
-        return super.select();
     }
 
     public void updateRave(List<List<Move>> jointMoves, List<Double> result){
@@ -187,17 +174,20 @@ public class RaveMCMove extends MCMove {
         return res;
     }
 
+    public HashMap<List<Move>, RaveNode> getChildren(){
+        return children;
+    }
+
     @Override
     public String toString(){
-        String result = "(";
+        String result;
         if(n > 0){
-            result += String.format("| n:%8d |",  n);
-            result += String.format("value:(%5.1f , %5.1f) | "  , Qvalue(0, this), Qvalue(1, this));
-            result += String.format("wins:[%10s , %10s])", f.format(wins[0]), f.format(wins[1]));
+            result = super.toString();
+            result += String.format("value:(%5.1f , %5.1f) | "  , QValue(0, this), QValue(1, this));
+            result += ")";
         } else {
-            result += "<LEAF> ";
+            result =  super.toString();
         }
         return  result;
     }
-
 }

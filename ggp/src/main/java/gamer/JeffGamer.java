@@ -26,21 +26,21 @@ import org.ggp.base.util.statemachine.implementation.propnet.forwardDeadReckon.F
 import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
 
 import gamer.MCTS.MCTS;
-import gamer.MCTS.MCTSDAG;
+import gamer.MCTS.MCTSRAVE;
 
 /**
  * JeffGamer implements a simple MCTS search with UCT
  */
 
 public class JeffGamer extends StateMachineGamer {
-    private MCTSDAG mcts;
+    private MCTSRAVE mcts;
     private Role other;
     private Map<Role, Integer> roleMap;
     public ReentrantReadWriteLock lock1= new ReentrantReadWriteLock(true);
     @Override
     public void stateMachineMetaGame(long timeout) {
         roleMap = getStateMachine().getRoleIndices();
-        mcts = new MCTSDAG(this, lock1, false, 0.9f, 100);
+        mcts = new MCTSRAVE(this, lock1, false, 0.9f, 100);
         long finishBy = timeout - 1100;
         mcts.start();
         while(System.currentTimeMillis() < finishBy){
@@ -156,7 +156,7 @@ public class JeffGamer extends StateMachineGamer {
     }
 
     public String getEvaluation(){
-        return "[ Base:(" + mcts.baseEval() + ") SSRatio:(" + mcts.SSRatio() + ")]" ;
+        return "[ Base:(" + mcts.baseEval() + ")]" ;
     }
     public Move stateMachineSelectMove(long timeout) throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException{
 

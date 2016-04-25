@@ -31,20 +31,19 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 
 import gamer.MCTS.MovePick.MAST;
 import gamer.MCTS.MovePick.MovePick;
-import gamer.MCTS.nodes.UCTNode;
-
+import gamer.MCTS.nodes.RaveNode;
 
 // Note: The weird comments are for forcing sane folding with marks.
 
 /*
  * A simple MCTS Thread that defines a Monte carlo search algorithm for
- * a tree made up of UCTNode nodes.
+ * a tree made up of RaveNode nodes.
  */
-public final class MCTSDAG extends Thread {
+public final class MCTSRAVE extends Thread {
     //Variables {{
     //MCTS Enhancement variables {{
     //MCTS DAG
-    private HashMap<MachineState, UCTNode> dag;
+    private HashMap<MachineState, RaveNode> dag;
     //MAST
     private MovePick mast;
     private double epsilon;
@@ -53,7 +52,7 @@ public final class MCTSDAG extends Thread {
     private Random rand = new Random();
     private ReentrantReadWriteLock lock;
     private static boolean alive;
-    protected UCTNode root;
+    protected RaveNode root;
     protected StateMachine machine;
     protected StateMachineGamer gamer;
     public List<Move> newRoot;
@@ -75,16 +74,18 @@ public final class MCTSDAG extends Thread {
     //}}
     //MCTSDAG(StateMachineGamer, ReadWriteLock, boolean) {{
     //DocString MCTSDAG {{
-    /** 
+    /**
      * Simple constructor
+     *
      *
      * @param gamer The gamer using this search
      * @param lock A lock just to be safe
      * @param silent Set to false to make it silent
-     */ //}}
-    public MCTSDAG(StateMachineGamer gamer, ReentrantReadWriteLock lock, //{{
-            boolean silent, double epsilon){
+     *///}}
+    public MCTSRAVE(StateMachineGamer gamer, ReentrantReadWriteLock lock,
+            boolean silent, double epsilon, int k){
         this.epsilon = epsilon; 
+        RaveNode.k = k;
         this.silent = silent;
         this.gamer = gamer;
         lastPlayOutDepth = 0;
@@ -101,11 +102,11 @@ public final class MCTSDAG extends Thread {
         mast = new MAST(gameName);
         expanding = true;
         machine = gamer.getStateMachine();
-        root = new UCTNode(null);
+        root = new RaveNode(null);
         newRoot = null;
         alive = true;
         this.lock = lock;
-    } //}}
+    }
     //}}
     //MCTS selection phase {{
     @Override
@@ -132,7 +133,7 @@ public final class MCTSDAG extends Thread {
                     checkHeap();
                 }
                 heapCheck++;
-                search(root, gamer.getCurrentState());
+                search(root, null, gamer.getCurrentState(), new ArrayList<List<Move>>());
                 lock.writeLock().unlock();
             } catch (InterruptedException e) {
                 lock.writeLock().unlock();
@@ -142,13 +143,15 @@ public final class MCTSDAG extends Thread {
                 lock.writeLock().unlock();
                 System.out.println("EXCEPTION: " + e.toString());
                 e.printStackTrace();
+                // Thread.currentThread().interrupt();
                 return;
             }
         }
         // mast.saveData();
     }
 
-    //search(UCTNode, MachineState){{
+    //search(RaveNode, MachineState){{
+    //DocString search {{
     /**
      * A recursive MCTS search function that searches through MCM nodes.
      * It only expands one node each run when it hits a new leaf.
@@ -157,10 +160,13 @@ public final class MCTSDAG extends Thread {
      * @param state The current state entering this node
      *
      * @return The simulated value of this node for each player from one simulation.
-     */
-    private List<Double> search(UCTNode node,MachineState state) throws MoveDefinitionException,
-                                                                        TransitionDefinitionException,
-                                                                        GoalDefinitionException{
+     */ //}}
+    private List<Double> search(RaveNode node,
+                                List<HashMap<Move, double[]>> grave,
+                                MachineState state,
+                                List<List<Move>> rave) throws MoveDefinitionException,
+                                                              TransitionDefinitionException,
+                                                              GoalDefinitionException{
         List<Double> result;
         if(!node.equals(root)){ //If we aren't at the root we change states
             state = node.state;
@@ -175,50 +181,58 @@ public final class MCTSDAG extends Thread {
             if(expanding){
                 node.expand(machine.getLegalJointMoves(state));
             }
-            result = playOut(state); //We do one playout
+            result = playOut(state, rave); //We do one playout
         } else {
-            List<Move> ci = node.select();
-            UCTNode child = node.children.get(ci);
+            grave = node.updateGrave(grave);
+            List<Move> ci = node.select(grave);
+            RaveNode child = node.getChildren().get(ci);
             if(child.n() == 0){ //We only ever use the SM once for each state
                 child.state = machine.getNextState(state, ci);
                 if(dag.containsKey(child.state)){
                     DagCounter++;
-                    node.children.replace(ci, dag.get(child.state));
-                    child = node.children.get(ci);
+                    node.getChildren().replace(ci, dag.get(child.state));
+                    child = node.getChildren().get(ci);
                 } else {
                     dag.put(child.state, child);
                 }
             }
             /* This is ugly but its more efficient than checking them all each time */
             int prev = child.size();
-            result = search(child, state);
+            grave = node.updateGrave(grave);
+            result = search(child, grave, state, rave);
+            rave.add(ci);
             node.size(child.size(), prev);
             mast.update(ci, result);
         }
         node.update(result);
+        if(!node.terminal){
+            node.updateRave(rave, result);
+        }
         applyDiscount(result, treeDiscount);
         return result;
     }
     //}}
     //}}
     //MCTS playout phase {{
-    private List<Double> playOut(MachineState state) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
+    private List<Double> playOut(MachineState state, List<List<Move>> rave) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
         lastPlayOutDepth = 0;
-        return depthCharge(state);
+        return depthCharge(state, rave);
     }
 
-    private List<Double> depthCharge(MachineState state) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
+    private List<Double> depthCharge(MachineState state, List<List<Move>> rave) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
         lastPlayOutDepth++;
         List<Double> result;
         if(machine.isTerminal(state)){
             avgPlayOutDepth = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth) / (float)(playOutCount + 1);
             playOutCount++;
             return getGoalsAsDouble(state);
-        } else if(lastPlayOutDepth >= 110){
+        }
+        if(lastPlayOutDepth >= 110){
             avgPlayOutDepth = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth) / (float)(playOutCount + 1);
             playOutCount++;
             return new ArrayList<Double>(Arrays.asList(40.0d, 40.0d));
         }
+
         List<List<Move>> moves = machine.getLegalJointMoves(state);
         List<Move> chosen;
         if(rand.nextFloat() >= epsilon){
@@ -227,26 +241,26 @@ public final class MCTSDAG extends Thread {
             chosen = mast.pickMove(moves);
         }
         state = machine.getNextState(state, chosen);
-        result = depthCharge(state);
+        result = depthCharge(state, rave);
+        rave.add(chosen);
         mast.update(chosen, result);
         applyDiscount(result, chargeDiscount);
         return result;
     }
     //}}
-    //Move managment{{
-
+    //Move managment {{
     /**
      * @return The best move at this point
      */
     public List<Move> selectMove() throws MoveDefinitionException {
         System.out.println("Dag connections made this turn: " + DagCounter);
         DagCounter = 0;
-        Map.Entry<List<Move>, UCTNode> bestMove = null;
+        Map.Entry<List<Move>, RaveNode> bestMove = null;
         if (!silent){
             System.out.println("================================Available moves================================");
             System.out.println("N: " + root.n());
         }
-        for (Map.Entry<List<Move>, UCTNode> entry : root.children.entrySet()){
+        for (Map.Entry<List<Move>, RaveNode> entry : root.getChildren().entrySet()){
             if (!silent){
                 System.out.println("Move: " + entry.getKey() + " " + entry.getValue());
             }
@@ -260,6 +274,7 @@ public final class MCTSDAG extends Thread {
             System.out.println("Selecting: " + bestMove + " With " + bestMove.getValue().n() + " simulations");
             System.out.println("------------------");
             System.out.println("Mast table size: " + mast.size());
+            System.out.println(root.raveToString());
         }
         return bestMove.getKey();
     }
@@ -291,7 +306,7 @@ public final class MCTSDAG extends Thread {
             System.out.println("Max Memory:" + runtime.maxMemory() / mb);
 
             System.out.println();
-            for (Map.Entry<List<Move>, UCTNode> entry: root.children.entrySet()){
+            for (Map.Entry<List<Move>, RaveNode> entry: root.getChildren().entrySet()){
                 if (moves.get(0).equals(entry.getKey().get(0)) &&
                         moves.get(1).equals(entry.getKey().get(1))){
 
@@ -304,8 +319,8 @@ public final class MCTSDAG extends Thread {
         throw new IllegalStateException("A move was selected that was not one of the root node moves");
     }
 
-    //}
-    //Helpers up for dag{
+    //}}
+    //Helpers up for dag {{
     private void markAndSweep(int depth){
         HashSet<MachineState> marked =  new HashSet<>();
         System.out.println("Size of dag before sweep: " + dag.size());
@@ -314,7 +329,7 @@ public final class MCTSDAG extends Thread {
         System.out.println("Size of dag after sweep: " + dag.size());
     }
     private void sweep(HashSet<MachineState> marked){
-        Iterator<Map.Entry<MachineState, UCTNode>> it = dag.entrySet().iterator();
+        Iterator<Map.Entry<MachineState, RaveNode>> it = dag.entrySet().iterator();
         long time = System.currentTimeMillis();
         while(it.hasNext()){
             if(!marked.contains(it.next().getKey())){
@@ -326,12 +341,12 @@ public final class MCTSDAG extends Thread {
         }
     }
 
-    private void mark(UCTNode node, HashSet<MachineState> marked, int depth){
+    private void mark(RaveNode node, HashSet<MachineState> marked, int depth){
         if(node.leaf() || depth == 0){
             return;
         }
         marked.add(node.state);
-        for (UCTNode child : node.children.values()){
+        for (RaveNode child : node.getChildren().values()){
             mark(child, marked, depth - 1);
         }
     }
@@ -355,6 +370,7 @@ public final class MCTSDAG extends Thread {
     }
 
     public void saveDag(){
+        // markAndSweep(Integer.MAX_VALUE);
         File file = new File("data/dag/" + gameName);
         try{
             FileOutputStream fos = new FileOutputStream(file);
@@ -378,6 +394,7 @@ public final class MCTSDAG extends Thread {
         }
     }
 
+
     private List<Double> getGoalsAsDouble(MachineState state)throws GoalDefinitionException{
             List<Double> result = new ArrayList<>();
             for(Integer inte : machine.getGoals(state)){
@@ -396,7 +413,7 @@ public final class MCTSDAG extends Thread {
         String result = "";
         synchronized(root){
             DecimalFormat f = new DecimalFormat("#.##f");
-            for(Map.Entry<List<Move>, UCTNode> entry : root.children.entrySet()){
+            for(Map.Entry<List<Move>, RaveNode> entry : root.getChildren().entrySet()){
                 result += "(";
                 result += "m:" + entry.getKey();
                 result += " n:" + entry.getValue().n();
