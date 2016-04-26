@@ -17,7 +17,7 @@ import org.ggp.base.util.statemachine.Move;
  */
 @SuppressWarnings("serial")
 public abstract class Node implements java.io.Serializable {
-    protected static DecimalFormat f = new DecimalFormat("#######.##E0");
+    protected static DecimalFormat f = new DecimalFormat("##.#E0");
     protected final static double C = 40; //Exploration constant
     protected double[] wins;
     protected long n; //how often this node has been selected
@@ -91,8 +91,7 @@ public abstract class Node implements java.io.Serializable {
         String result;
         if(n > 0){
             result = "(";
-            result += String.format("| N: %d | n:%8d | size:%8d | ", N, n, size);
-            result += String.format("wins:[%10s , %10s])", f.format(wins[0]), f.format(wins[1]));
+            result += String.format("|n:%8d | ", n);
         } else {
             result = "(<LEAF>)";
         }

@@ -23,8 +23,9 @@ import org.ggp.base.util.statemachine.cache.CachedStateMachine;
 import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
-import org.ggp.base.util.statemachine.implementation.propnet.forwardDeadReckon.ForwardDeadReckonPropnetStateMachine;
 import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
+import is.ru.cadia.ggp.propnet.BackwardPropNetStateMachine;
+import is.ru.cadia.ggp.propnet.structure.GGPBasePropNetStructureFactory;
 
 import gamer.MCTS.MCTSRAVE;
 /**
@@ -52,13 +53,13 @@ public class UnityGamer extends StateMachineGamer {
         temp.initialize(getMatch().getGame().getRules());
         String first = roleName.getValue();
 
-        Role[] roles = temp.getRoles();
+        List<Role> roles = temp.getRoles();
         if (first.equals("first")){
-            other = roles[0];
-            return roles[1].getName();
+            other = roles.get(0);
+            return roles.get(1).getName();
         } else {
-            other = roles[1];
-            return roles[0].getName();
+            other = roles.get(1);
+            return roles.get(0).getName();
         }
     }
 
@@ -69,7 +70,7 @@ public class UnityGamer extends StateMachineGamer {
 
     @Override
     public StateMachine getInitialStateMachine() {
-        return new ForwardDeadReckonPropnetStateMachine();
+        return new BackwardPropNetStateMachine(new GGPBasePropNetStructureFactory());
     }
 
     // This is the defaul Sample Panel

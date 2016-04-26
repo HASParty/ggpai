@@ -54,7 +54,7 @@ public final class UnityRequest extends Request {
         // in the gamer to indicate that we're starting a new match.
         LocalGameRepository repo = new LocalGameRepository();
         game = repo.getGame(gameName);
-        Match match = new Match(matchId, -1, startClock, playClock, 0, game);
+        Match match = new Match(matchId, -1, startClock, playClock, game, null);
         gamer.setMatch(match);
         gamer.setRoleName(roleName);
         System.out.println("managed to set gamer variables");

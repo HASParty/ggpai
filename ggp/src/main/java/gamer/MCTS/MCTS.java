@@ -60,7 +60,7 @@ public final class MCTS extends Thread {
         newRoot = null;
         alive = true;
         this.lock = lock;
-        executor  = Executors.newFixedThreadPool(threads);
+        // executor  = Executors.newFixedThreadPool(threads);
     }
 
     @Override
@@ -271,22 +271,6 @@ public final class MCTS extends Thread {
         }
         throw new IllegalStateException("A move was selected that was not one of the root node moves");
     }
-
-
-    // private void printTree(String indent, UCTNode node){
-    //     System.out.println(indent + node);
-    //     for (UCTNode move : node.children){
-    //         printTree(indent + "    ", move);
-    //     }
-    // }
-
-    /**
-     * Pretty prints the tree
-     */
-    // public void printTree(){
-    //     printTree("", root);
-    // }
-    
 
     public String baseEval(){
         String result = "";

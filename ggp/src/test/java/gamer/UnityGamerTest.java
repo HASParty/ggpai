@@ -78,7 +78,7 @@ public class UnityGamerTest extends Assert {
     private void setUp(String role) throws MetaGamingException, InterruptedException{
             g = new UnityGamer();
             g.silent = false;
-            m = new Match("", -1, 1000, 1000, 0, GameRepository.getDefaultRepository().getGame("ticTacToe"));
+            m = new Match("", -1, 1000, 1000, GameRepository.getDefaultRepository().getGame("ticTacToe"), null);
             g.setMatch(m);
             g.setRoleName(GdlPool.getConstant(role));
             g.metaGame(1000);

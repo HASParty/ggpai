@@ -22,8 +22,9 @@ import org.ggp.base.util.statemachine.cache.CachedStateMachine;
 import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
-import org.ggp.base.util.statemachine.implementation.propnet.forwardDeadReckon.ForwardDeadReckonPropnetStateMachine;
 import org.ggp.base.util.statemachine.implementation.prover.ProverStateMachine;
+import is.ru.cadia.ggp.propnet.BackwardPropNetStateMachine;
+import is.ru.cadia.ggp.propnet.structure.GGPBasePropNetStructureFactory;
 
 import gamer.MCTS.MCTS;
 import gamer.MCTS.MCTSDAG;
@@ -33,8 +34,8 @@ import gamer.MCTS.MCTSDAG;
  */
 
 public class BaselineJeffGamer extends StateMachineGamer {
-    private MCTS mcts;
-    // private MCTSDAG mcts;
+    // private MCTS mcts;
+    private MCTSDAG mcts;
     private Role other;
     private Map<Role, Integer> roleMap;
     public ReentrantReadWriteLock lock1= new ReentrantReadWriteLock(true);
@@ -42,8 +43,8 @@ public class BaselineJeffGamer extends StateMachineGamer {
     public void stateMachineMetaGame(long timeout) {
 
         roleMap = getStateMachine().getRoleIndices();
-        // mcts = new MCTSDAG(this, lock1, false, 0.9f, 0);
-        mcts = new MCTS(this, lock1, false);
+        mcts = new MCTSDAG(this, lock1, false, 0.9f);
+        // mcts = new MCTS(this, lock1, false);
         long finishBy = timeout - 1100;
         mcts.start();
         while(System.currentTimeMillis() < finishBy){
@@ -61,7 +62,7 @@ public class BaselineJeffGamer extends StateMachineGamer {
     // This is the default State Machine,
     @Override
     public StateMachine getInitialStateMachine() {
-        return new ForwardDeadReckonPropnetStateMachine();
+        return new BackwardPropNetStateMachine(new GGPBasePropNetStructureFactory());
     }
 
     // This is the defaul Sample Panel
