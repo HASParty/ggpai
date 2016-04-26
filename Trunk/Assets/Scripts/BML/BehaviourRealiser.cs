@@ -244,7 +244,7 @@ public class BehaviourRealiser : MonoBehaviour {
 
                     break;
                 case Behaviour.Lexemes.BodyPose.LEANING_FORWARD:
-                    StartCoroutine(LeanIn(duration, 20));
+                    StartCoroutine(LeanIn(duration, pose.Degree));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

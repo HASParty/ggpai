@@ -247,7 +247,9 @@ namespace Boardgame.Agent {
                                 Behaviour.Lexemes.Mode.LEFT_HAND, (arm) => { graspPiece(from, arm); }, 0, end: 1.5f);
                             Posture leanReach = new Posture("leantowardsPiece", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0, end: 1.5f);
                             Gaze lookReach = new Gaze("glanceAtReach", chunk.owner, from.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 1.25f);
-                            leanReach.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD);
+                            Debug.Log(Vector3.Distance(from.transform.position, transform.position));
+                            leanReach.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD, 
+                                (int)(Vector3.Distance(from.transform.position, transform.position)*10));
                             Place place = new Place("placePiece", chunk.owner, to.gameObject,
                                 Behaviour.Lexemes.Mode.LEFT_HAND, (piece) => { placePiece(piece, to); }, 1.25f, end: 2f);
                             Gaze lookPlace = new Gaze("glanceAtPlace", chunk.owner, to.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 1.25f, end: 2f);
@@ -263,11 +265,10 @@ namespace Boardgame.Agent {
                             //transform expression
                             EmotionFunction f = function as EmotionFunction;
                             FaceEmotion fe = new FaceEmotion("emote " + f.Arousal + " " + f.Valence, chunk.owner, 0f, ((f.Arousal-Config.Neutral)*0.8f)+Config.Neutral, f.Valence);
-                            //TODO: make this bml
                             float lean = Mathf.Clamp((f.Arousal - Config.Neutral) * 50, -20, 30);
-                            
-                            motion.SetLean(lean);
-                            //Debug.Log(lean);
+                            Posture emoLean = new Posture("emoteLean", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0, end: 2f);
+                            emoLean.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD, (int)lean);
+                            curr.AddChunk(emoLean);
                             curr.AddChunk(fe);
                             break;
                     }
