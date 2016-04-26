@@ -111,7 +111,7 @@ public final class MCTSDAG extends Thread {
     @Override
     public void run(){
         int heapCheck = 0;
-        mast.loadData();
+        // mast.loadData();
         //While we are alive we keep on searching
         System.out.println("Using MCTSDAG");
         while(!Thread.currentThread().isInterrupted()){

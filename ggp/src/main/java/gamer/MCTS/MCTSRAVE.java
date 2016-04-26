@@ -1,5 +1,5 @@
 package gamer.MCTS;
-
+// Imports {{
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,9 +32,9 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import gamer.MCTS.MovePick.MAST;
 import gamer.MCTS.MovePick.MovePick;
 import gamer.MCTS.nodes.RaveNode;
+// }}
 
 // Note: The weird comments are for forcing sane folding with marks.
-
 /*
  * A simple MCTS Thread that defines a Monte carlo search algorithm for
  * a tree made up of RaveNode nodes.
@@ -83,7 +83,7 @@ public final class MCTSRAVE extends Thread {
      * @param silent Set to false to make it silent
      *///}}
     public MCTSRAVE(StateMachineGamer gamer, ReentrantReadWriteLock lock,
-            boolean silent, double epsilon, int k){
+                    boolean silent, double epsilon, int k){
         this.epsilon = epsilon; 
         RaveNode.k = k;
         this.silent = silent;
@@ -97,7 +97,7 @@ public final class MCTSRAVE extends Thread {
         dag = new HashMap<>(20000);
         gameName = gamer.getMatch().getGame().getName();
         if(gameName == null){
-            gameName = "Mylla";
+            gameName = "Checkers";
         }
         mast = new MAST(gameName);
         expanding = true;
@@ -112,9 +112,9 @@ public final class MCTSRAVE extends Thread {
     @Override
     public void run(){
         int heapCheck = 0;
-        mast.loadData();
+        // mast.loadData();
         //While we are alive we keep on searching
-        System.out.println("Using MCTSDAG");
+        System.out.println("Using MCTSRAVE");
         while(!Thread.currentThread().isInterrupted()){
             try {
                 if(limit > 0){
@@ -253,28 +253,50 @@ public final class MCTSRAVE extends Thread {
      * @return The best move at this point
      */
     public List<Move> selectMove() throws MoveDefinitionException {
-        System.out.println("Dag connections made this turn: " + DagCounter);
-        DagCounter = 0;
         Map.Entry<List<Move>, RaveNode> bestMove = null;
         if (!silent){
+            int mb = 1024*1024;
+
+            //Getting the runtime reference from system
+            System.out.println("###################### Heap utilization statistics [MB] #######################");
+            //Print used memory
+            System.out.println(String.format("Used Memory:  %d",
+                                            (runtime.totalMemory() - runtime.freeMemory()) / mb));
+            //Print free memory
+            System.out.println(String.format("Free Memory:  %d", runtime.freeMemory() / mb));
+            //Print total available memory
+            System.out.println(String.format("Total Memory: %d", runtime.totalMemory() / mb));
+            //Print Maximum available memory
+            System.out.println(String.format("Max Memory:   %d", runtime.maxMemory() / mb));
+
+            System.out.println();
             System.out.println("================================Available moves================================");
             System.out.println("N: " + root.n());
         }
         for (Map.Entry<List<Move>, RaveNode> entry : root.getChildren().entrySet()){
             if (!silent){
-                System.out.println("Move: " + entry.getKey() + " " + entry.getValue());
+                System.out.println(String.format(" Move: %-40s %-40s", 
+                                                 entry.getKey(),
+                                                 entry.getValue()));
             }
             if (bestMove == null || entry.getValue().n() > bestMove.getValue().n()){
                 bestMove = entry;
             }
         }
-            System.out.println("===============================================================================");
+        System.out.println();
         if (!silent){
-            System.out.println("------------------");
-            System.out.println("Selecting: " + bestMove + " With " + bestMove.getValue().n() + " simulations");
-            System.out.println("------------------");
+            System.out.println("-------------------------------------------------------------------------------");
+            System.out.println(String.format("Selecting: %s\n With %d simulations.",
+                                             bestMove,
+                                             bestMove.getValue().n()));
+            System.out.println("-------------------------------------------------------------------------------");
+
+            System.out.println("--------------------------------Data Structures--------------------------------");
             System.out.println("Mast table size: " + mast.size());
-            System.out.println(root.raveToString());
+            System.out.println("Dag connections made this turn: " + DagCounter);
+            DagCounter = 0;
+            System.out.println();
+            // System.out.println(root.raveToString());
         }
         return bestMove.getKey();
     }
@@ -290,22 +312,6 @@ public final class MCTSRAVE extends Thread {
             System.out.println("Average playout depth: " + avgPlayOutDepth);
         }
         synchronized(root){
-            int mb = 1024*1024;
-
-            //Getting the runtime reference from system
-            System.out.println("##### Heap utilization statistics [MB] #####");
-            //Print used memory
-            System.out.println("Used Memory:"
-                    + (runtime.totalMemory() - runtime.freeMemory()) / mb);
-            //Print free memory
-            System.out.println("Free Memory:"
-                    + runtime.freeMemory() / mb);
-            //Print total available memory
-            System.out.println("Total Memory:" + runtime.totalMemory() / mb);
-            //Print Maximum available memory
-            System.out.println("Max Memory:" + runtime.maxMemory() / mb);
-
-            System.out.println();
             for (Map.Entry<List<Move>, RaveNode> entry: root.getChildren().entrySet()){
                 if (moves.get(0).equals(entry.getKey().get(0)) &&
                         moves.get(1).equals(entry.getKey().get(1))){
