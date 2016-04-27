@@ -311,10 +311,17 @@ public class ActorMotion : MonoBehaviour {
     }
 
     public void SetPose(int left, int right) {
-        int leftPose = left;
-        int rightPose = right;
+        leftPose = left;
+        rightPose = right;
+    }
+
+    public bool IsPose(int left, int right)
+    {
+        return leftPose == left && rightPose == right;
     }
     #endregion
+
+
 
 
 }

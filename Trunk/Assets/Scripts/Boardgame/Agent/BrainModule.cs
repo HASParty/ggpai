@@ -207,14 +207,19 @@ namespace Boardgame.Agent {
                             MoveReaction reaction = this.react(react.MoveToReact[0], react.MyMove ? player : (player == Player.First ? Player.Second : Player.First));
                             Debug.Log(reaction);
                             FaceEmotion faceReact;
+                            Posture poser = new Posture("postureReact", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0f, 2f);
                             switch (reaction) {
                                 case MoveReaction.CONFUSED:
                                     faceReact = new FaceEmotion("ConfusedFace", chunk.owner, 0f, 1.8f*pm.GetArousalConfusedMod(), 0.6f*pm.GetValenceConfusedMod());
+                                    poser.AddPose(Behaviour.Lexemes.BodyPart.RIGHT_ARM, Behaviour.Lexemes.BodyPose.FIST_COVER_MOUTH);
                                     curr.AddChunk(faceReact);
+                                    curr.AddChunk(poser);
                                     break;
                                 case MoveReaction.NEGATIVE:
                                     faceReact = new FaceEmotion("NegativeFace", chunk.owner, 0f, 1.2f * pm.GetArousalNegativeMod(), 0.4f * pm.GetValenceNegativeMod());
+                                    poser.AddPose(Behaviour.Lexemes.BodyPart.ARMS, Behaviour.Lexemes.BodyPose.ARMS_CROSSED);
                                     curr.AddChunk(faceReact);
+                                    curr.AddChunk(poser);
                                     break;
                                 case MoveReaction.POSITIVE:
                                     faceReact = new FaceEmotion("HappyFace", chunk.owner, 0f, 1.4f * pm.GetArousalPositiveMod(), 2.5f * pm.GetValencePositiveMod());
