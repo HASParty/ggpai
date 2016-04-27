@@ -63,7 +63,8 @@ namespace Boardgame.Networking {
         }
 
         public static void StartGame(string game, string matchID, bool first, int startTime, int playTime) {
-            string unityStart = Compose(String.Format("UNITY {4} {1} {0} {2} {3}", game, (first ? "first" : "second"), startTime, playTime, matchID));
+            string unityStart = Compose(String.Format("UNITY {4} {1} {0} {2} {3} ({5} {6} {7} {8} {9} {10})", game, (first ? "first" : "second"), startTime, playTime, matchID,
+                0.9, 100, 20, 0.999, 0.995, 0));
             Write(unityStart, gameConnection.GetStream());
         }
 

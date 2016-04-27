@@ -437,7 +437,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 419182, guid: c4a2fa9640b3be64a8b618845f46cbe1, type: 2}
       propertyPath: m_RootOrder
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 11421282, guid: c4a2fa9640b3be64a8b618845f46cbe1, type: 2}
       propertyPath: Asteroids
@@ -4015,7 +4015,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 436122, guid: 1fff78a672e8c314fbda056e76a895ee, type: 2}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 10848126, guid: 1fff78a672e8c314fbda056e76a895ee, type: 2}
       propertyPath: m_SpotAngle
@@ -4414,6 +4414,7 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -5791,6 +5792,7 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0

@@ -43,6 +43,7 @@ namespace Boardgame.GDL {
         }
 
         public override bool Equals(object obj) {
+            if (obj == null) return false;
             if (obj.GetType().Equals(this.GetType())) {
                 Move other = obj as Move;
                 return other.Type == Type && other.From == From && other.To == To;
