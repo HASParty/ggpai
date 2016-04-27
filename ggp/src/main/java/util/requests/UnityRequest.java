@@ -1,5 +1,8 @@
 package util.requests;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import org.ggp.base.player.event.PlayerTimeEvent;
 import org.ggp.base.player.gamer.Gamer;
 import org.ggp.base.player.gamer.event.GamerNewMatchEvent;
@@ -18,14 +21,17 @@ import gamer.UnityGamer;
 
 public final class UnityRequest extends Request {
     private Game game;
-    private final UnityGamer gamer;
-    private final String matchId;
-    private final String gameName;
-    private final int playClock;
-    private final GdlConstant roleName;
-    private final int startClock;
+    private UnityGamer gamer;
+    private String matchId;
+    private String gameName;
+    private int playClock;
+    private GdlConstant roleName;
+    private int startClock;
+    private ArrayList<Double> controlValues;
 
-    public UnityRequest(Gamer gamer, GdlConstant roleName, String matchId, String gameName, int startClock, int playClock) {
+    public UnityRequest(Gamer gamer, GdlConstant roleName, String matchId,
+                        String gameName, int startClock, int playClock,
+                        List<Double> controlValues) {
         this.gamer = (UnityGamer) gamer;
         this.matchId = matchId;
         this.startClock = startClock;
@@ -33,6 +39,7 @@ public final class UnityRequest extends Request {
         this.gameName = gameName;
         this.roleName = roleName;
         this.game = null;
+        this.controlValues = new ArrayList<>(controlValues);
         System.out.println("Managed to make a UnityRequest");
     }
 
@@ -61,6 +68,7 @@ public final class UnityRequest extends Request {
 
         // Finally, have the gamer begin metagaming.
         try {
+            ((UnityGamer) gamer).setValues(controlValues);
             gamer.metaGame(gamer.getMatch().getStartClock() * 1000 + receptionTime);
             System.out.println("Managed to start metagaming");
         } catch (MetaGamingException e) {

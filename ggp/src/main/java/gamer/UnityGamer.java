@@ -37,12 +37,15 @@ public class UnityGamer extends StateMachineGamer {
     private Role other;
     public boolean silent = false;
     public Map<Role, Integer> roleMap;
+    private ArrayList<Double> cVal; //0:Epsilon, 1:raveThresh, 2:graveThresh, 3:chargeDicount
+                                    //4:treeDicount, 5:limit
     //TODO: Swap this out for synchronizing on the root node
     public ReentrantReadWriteLock lock1= new ReentrantReadWriteLock(true);
     @Override
     public void stateMachineMetaGame(long timeout) {
         roleMap = getStateMachine().getRoleIndices();
-        mcts = new MCTSRAVE(this, lock1, silent, 0.9f, 100);
+        mcts = new MCTSRAVE(this, lock1, silent, cVal.get(0),
+                cVal.get(1), cVal.get(2), cVal.get(3), cVal.get(4), cVal.get(5));
         long finishBy = timeout - 1000;
         mcts.start();
     }
@@ -141,6 +144,11 @@ public class UnityGamer extends StateMachineGamer {
         }
         lock1.writeLock().unlock();
         return null;
+    }
+
+
+    public void setValues(List<Double> controlValues){
+        this.cVal = new ArrayList<>(controlValues);
     }
 
     @Override

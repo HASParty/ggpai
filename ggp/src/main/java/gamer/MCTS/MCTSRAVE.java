@@ -61,7 +61,7 @@ public final class MCTSRAVE extends Thread {
     private int DagCounter = 0;
     private static Runtime runtime = Runtime.getRuntime();
     private static boolean expanding;
-    private static final int limit = 0;
+    private static long limit = 0;
     private int lastPlayOutDepth;
     private int playOutCount;
     private float avgPlayOutDepth;
@@ -83,16 +83,19 @@ public final class MCTSRAVE extends Thread {
      * @param silent Set to false to make it silent
      *///}}
     public MCTSRAVE(StateMachineGamer gamer, ReentrantReadWriteLock lock,
-                    boolean silent, double epsilon, int k){
+                    boolean silent, double epsilon, double k, double grave,
+                    double treeDiscount, double chargeDiscount, double limit){
         this.epsilon = epsilon; 
-        RaveNode.k = k;
+        RaveNode.k = Math.round(k);
+        RaveNode.setGrave(Math.round(grave));
         this.silent = silent;
         this.gamer = gamer;
+        MCTSRAVE.limit = Math.round(limit);
         lastPlayOutDepth = 0;
         playOutCount = 0;
         avgPlayOutDepth = 0;
-        treeDiscount = 0.999f;
-        chargeDiscount = 0.995f;
+        this.treeDiscount = treeDiscount; //0.999f;
+        this.chargeDiscount = chargeDiscount; //0.995f;
 
         dag = new HashMap<>(20000);
         gameName = gamer.getMatch().getGame().getName();

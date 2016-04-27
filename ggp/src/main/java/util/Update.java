@@ -43,9 +43,6 @@ public final class Update extends Thread {
     public void run(){
         System.out.println("Update Listener ready to recieve connections");
         try {
-            // if (in.length() == 0) {
-            //     throw new IOException("Empty message received.");
-            // }
             Socket connection = listener.accept();
             PrintWriter pw = new PrintWriter(connection.getOutputStream(), true);
             BufferedReader inp = new BufferedReader(new InputStreamReader(connection.getInputStream()));

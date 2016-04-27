@@ -20,9 +20,9 @@ import org.ggp.base.util.statemachine.Move;
 public class RaveNode extends Node {
     //Variables {{
     private List<HashMap<Move, double[]>> rave;
-    private static final int graveThresh = 20;
+    private static long graveThresh = 20;
     private HashMap<List<Move>, RaveNode> children;
-    public static int k = 0;
+    public static long k = 0;
     //}}
     /**
      * A tree node carrying the calculated value of the contained state.
@@ -48,6 +48,10 @@ public class RaveNode extends Node {
             }
         }
         
+    }
+
+    public static void setGrave(long graveThresh){
+        RaveNode.graveThresh = graveThresh;
     }
     
     public List<HashMap<Move, double[]>> getMap(){
