@@ -231,6 +231,7 @@ public class BehaviourRealiser : MonoBehaviour {
                 case Behaviour.Lexemes.BodyPose.ARMS_AKIMBO:
                     break;
                 case Behaviour.Lexemes.BodyPose.ARMS_CROSSED:
+                    StartCoroutine(Pose(1, 1, duration));
                     break;
                 case Behaviour.Lexemes.BodyPose.ARMS_NEUTRAL:
                     break;
@@ -241,10 +242,12 @@ public class BehaviourRealiser : MonoBehaviour {
                 case Behaviour.Lexemes.BodyPose.LEGS_NEUTRAL:
                     break;
                 case Behaviour.Lexemes.BodyPose.LEGS_OPEN:
-
                     break;
                 case Behaviour.Lexemes.BodyPose.LEANING_FORWARD:
-                    StartCoroutine(LeanIn(duration, 20));
+                    StartCoroutine(LeanIn(duration, pose.Degree));
+                    break;
+                case Behaviour.Lexemes.BodyPose.FIST_COVER_MOUTH:
+                    StartCoroutine(Pose(0, 2, duration));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -252,6 +255,15 @@ public class BehaviourRealiser : MonoBehaviour {
         }
     }
 
+    IEnumerator Pose(int left, int right, float duration)
+    {
+        _motion.SetPose(left, right);
+        yield return new WaitForSeconds(duration);
+        if (_motion.IsPose(left, right))
+        {
+            _motion.SetPose(0, 0);
+        }
+    }
 
     IEnumerator Schedule(Locomotion chunk) {
         DebugManager.Instance.OnChunkStart(chunk);

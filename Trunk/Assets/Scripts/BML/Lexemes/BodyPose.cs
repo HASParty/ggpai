@@ -11,6 +11,7 @@ namespace Behaviour.Lexemes
 		LEGS_NEUTRAL,
 		LEGS_OPEN,
 		LEANING_FORWARD,
+        FIST_COVER_MOUTH
 	}
 }
 

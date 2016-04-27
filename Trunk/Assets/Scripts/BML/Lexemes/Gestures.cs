@@ -4,7 +4,7 @@ namespace Behaviour.Lexemes
 	public enum Gestures
 	{
 		STROKE,
-		REQUEST,
+		REQUEST
 	}
 }
 

@@ -292,10 +292,12 @@ public class ActorMotion : MonoBehaviour {
 
     #region idling
     bool idling = true;
-    float idleNextShift = 0f;
-    float idleElapsed = 0f;
+    int leftPose = 0;
+    int rightPose = 0;
     void PauseIdling() {
         idling = false;
+        animator.SetInteger("left", 0);
+        animator.SetInteger("right", 0);
     }
 
     void ResumeIdling() {
@@ -303,28 +305,23 @@ public class ActorMotion : MonoBehaviour {
     }
     void Idle() {
         if(idling) {
-            idleElapsed += Time.deltaTime;
-            if(idleElapsed >= idleNextShift) {
-                CalculateNextIdle();
-                PickPose();
-            }
+            animator.SetInteger("left", leftPose);
+            animator.SetInteger("right", rightPose);
         }
     }
 
-    void PickPose() {
-        //tODO: bml
-        int hand = Random.Range(0, 2);
-        animator.SetInteger("left", hand);
-        animator.SetInteger("right", hand);
+    public void SetPose(int left, int right) {
+        leftPose = left;
+        rightPose = right;
     }
 
-    void CalculateNextIdle() {
-        idleElapsed = 0f;
-        idleNextShift = 10f;
+    public bool IsPose(int left, int right)
+    {
+        return leftPose == left && rightPose == right;
     }
-
-
     #endregion
+
+
 
 
 }

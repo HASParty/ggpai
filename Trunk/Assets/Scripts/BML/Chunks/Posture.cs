@@ -5,15 +5,17 @@ namespace Behaviour {
 	public class Pose { 
 		public Lexemes.BodyPart Part { get; private set; }
 		public Lexemes.BodyPose Lexeme { get; private set; }
+        public int Degree { get; private set; }
 
-		public Pose(Lexemes.BodyPart part, Lexemes.BodyPose lexeme) {
+		public Pose(Lexemes.BodyPart part, Lexemes.BodyPose lexeme, int degree) {
 			Part = part;
 			Lexeme = lexeme;
+            Degree = degree;
 		}
 
 		public override string ToString ()
 		{
-			return string.Format ("[{0}, {1}]", Part, Lexeme);
+			return string.Format ("[{0}, {1}, {2}]", Part, Lexeme, Degree);
 		}
 	}
 
@@ -33,8 +35,8 @@ namespace Behaviour {
             Poses = new List<Pose>();
 		}
 
-		public void AddPose(Lexemes.BodyPart part, Lexemes.BodyPose lexeme) {
-			Poses.Add (new Pose(part, lexeme));
+		public void AddPose(Lexemes.BodyPart part, Lexemes.BodyPose lexeme, int degree = 0) {
+			Poses.Add (new Pose(part, lexeme, degree));
 		}
 
 		public override float GetTime(SyncPoints point) {
