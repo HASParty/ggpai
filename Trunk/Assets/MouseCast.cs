@@ -22,8 +22,25 @@ public class MouseCast : MonoBehaviour {
         }
 	}
 
+    public void DefaultMode() {
+        defaultMode = true;
+    }
+
+    public void FreeMode() {
+        defaultMode = false;
+    }
+
+    bool defaultMode = true;
+
+    Ray ray;
 	void FixedUpdate() {
-		Ray ray = Camera.main.ViewportPointToRay (new Vector3 (0.5f, 0.4f, 0f));
+        Ray ray;
+        if (defaultMode) {
+            ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.4f, 0f));
+        } else {
+            if (!Camera.current) return;
+            ray = Camera.current.ScreenPointToRay(Input.mousePosition);
+        }
 		RaycastHit hit;
 		if(Physics.Raycast(ray, out hit, 1.9f)) {			
 			var newCell = hit.collider.gameObject.GetComponent<PhysicalCell>();
