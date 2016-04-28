@@ -1,5 +1,6 @@
 package gamer;
 
+//Imports{{
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +29,14 @@ import is.ru.cadia.ggp.propnet.BackwardPropNetStateMachine;
 import is.ru.cadia.ggp.propnet.structure.GGPBasePropNetStructureFactory;
 
 import gamer.MCTS.MCTSRAVE;
+//}}
+//
 /**
  * UnityGamer is a special snowflake that does not work with a normal GGP server or the kiosk 
  */
 
 public class UnityGamer extends StateMachineGamer {
+    //------------Variables----------------------------------------------------------------------{{
     protected MCTSRAVE mcts;
     private Role other;
     public boolean silent = false;
@@ -41,6 +45,10 @@ public class UnityGamer extends StateMachineGamer {
                                     //4:treeDicount, 5:limit
     //TODO: Swap this out for synchronizing on the root node
     public ReentrantReadWriteLock lock1= new ReentrantReadWriteLock(true);
+    //}}
+    
+    //------------Initialize---------------------------------------------------------------------{{
+    //public void stateMachineMetaGame(long timeout) {{
     @Override
     public void stateMachineMetaGame(long timeout) {
         roleMap = getStateMachine().getRoleIndices();
@@ -48,67 +56,31 @@ public class UnityGamer extends StateMachineGamer {
                 cVal.get(1), cVal.get(2), cVal.get(3), cVal.get(4), cVal.get(5));
         long finishBy = timeout - 1000;
         mcts.start();
-    }
+    }//}}
 
-    @Override
-    public GdlConstant getRoleName(){
-        StateMachine temp = new ProverStateMachine();
-        temp.initialize(getMatch().getGame().getRules());
-        String first = roleName.getValue();
-
-        List<Role> roles = temp.getRoles();
-        if (first.equals("first")){
-            other = roles.get(0);
-            return roles.get(1).getName();
-        } else {
-            other = roles.get(1);
-            return roles.get(0).getName();
-        }
-    }
-
-    @Override
-    public String getName() {
-        return "Unity";
-    }
-
+    //public StateMachine getInitialStateMachine() {{
     @Override
     public StateMachine getInitialStateMachine() {
         return new BackwardPropNetStateMachine(new GGPBasePropNetStructureFactory());
-    }
+    }//}}
+    //}}
 
-    // This is the defaul Sample Panel
-    @Override
-    public DetailPanel getDetailPanel() {
-        return new SimpleDetailPanel();
-    }
+    //------------Move Selection-----------------------------------------------------------------{{
+    //public List<Move> stateMachineSelectMoves(long timeout) throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException{{
+    /**
+     * @param timeout isn't really used at this moment, might remove entirely
+     * @return the current best move according to the MCTS class
+     */
+    public List<Move> stateMachineSelectMoves(long timeout) throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException{
 
-    @Override
-    public void stateMachineStop() {
-        mcts.interrupt();
-        try{
-            mcts.join();
-        } catch (Exception e){}
-        mcts = null;
-        // Sample gamers do no special cleanup when the match ends normally.
-    }
+        StateMachine theMachine = getStateMachine();
+        lock1.writeLock().lock();
+        List<Move> li = mcts.selectMove();
+        lock1.writeLock().unlock();
+        return li;
+    }//}}
 
-    @Override
-    public void stateMachineAbort() {
-        mcts.interrupt();
-        try{
-            mcts.join();
-        } catch (Exception e){}
-        mcts = null;
-        // Sample gamers do no special cleanup when the match ends normally.
-        // Sample gamers do no special cleanup when the match ends abruptly.
-    }
-
-    @Override
-    public void preview(Game g, long timeout) throws GamePreviewException {
-        // Sample gamers do no game previewing.
-    }
-
-
+    //public GdlTerm addMove(){{
     /**
      * Applies the move recieved through a push request
      *
@@ -144,13 +116,9 @@ public class UnityGamer extends StateMachineGamer {
         }
         lock1.writeLock().unlock();
         return null;
-    }
+    }//}}
 
-
-    public void setValues(List<Double> controlValues){
-        this.cVal = new ArrayList<>(controlValues);
-    }
-
+    //public GdlTerm selectMove(long timeout) throws MoveSelectionException {{
     @Override
     /**
      * @return The selected move + ""/Goal
@@ -184,8 +152,72 @@ public class UnityGamer extends StateMachineGamer {
             GamerLogger.logStackTrace("GamePlayer", e);
             throw new MoveSelectionException(e);
         }
-    }
+    }//}}
+    //}}
 
+    //------------End the gamer------------------------------------------------------------------{{
+    //public void stateMachineStop() {{
+    @Override
+    public void stateMachineStop() {
+        mcts.interrupt();
+        try{
+            mcts.join();
+        } catch (Exception e){}
+        mcts = null;
+        // Sample gamers do no special cleanup when the match ends normally.
+    }//}}
+
+    //public void stateMachineAbort() {{
+    @Override
+    public void stateMachineAbort() {
+        mcts.interrupt();
+        try{
+            mcts.join();
+        } catch (Exception e){}
+        mcts = null;
+        // Sample gamers do no special cleanup when the match ends normally.
+        // Sample gamers do no special cleanup when the match ends abruptly.
+    }//}}
+    //}}
+
+    //------------Getters, Setters and helpers---------------------------------------------------{{
+    //public GdlConstant getRoleName(){{
+    @Override
+    public GdlConstant getRoleName(){
+        StateMachine temp = new ProverStateMachine();
+        temp.initialize(getMatch().getGame().getRules());
+        String first = roleName.getValue();
+
+        List<Role> roles = temp.getRoles();
+        if (first.equals("first")){
+            other = roles.get(0);
+            return roles.get(1).getName();
+        } else {
+            other = roles.get(1);
+            return roles.get(0).getName();
+        }
+    }//}}
+
+    //public String getName() {{
+    @Override
+    public String getName() {
+        return "Unity";
+    }//}}
+
+    //public void setValues(List<Double> controlValues){{
+    public void setValues(List<Double> controlValues){
+        this.cVal = new ArrayList<>(controlValues);
+    }//}}
+
+    //public String getEvaluation(){{
+    /**
+     * @return the Evaluation of the players current state
+     */
+    public String getEvaluation(){
+        return "[ Base:(" + mcts.baseEval() + ")]" ;
+    }//}}
+
+    //public List<Move> getLegalMoves(Role role) throws MoveDefinitionException{{
     /**
      * @param role The role you want the moves for 
      * @return Legal moves for the given role
@@ -202,35 +234,31 @@ public class UnityGamer extends StateMachineGamer {
         }
         lock1.writeLock().unlock();
         return res;
-    }
+    }//}}
 
+    //public final Role getOtherRole() {{
     /**
      * @return the role that this gamer is playing as in the game.
      */
     public final Role getOtherRole() {
         return other;
-    }
+    }//}}
+    //}}
 
-    /**
-     * @return the Evaluation of the players current state
-     */
-    public String getEvaluation(){
-        return "[ Base:(" + mcts.baseEval() + ")]" ;
-    }
-
-    /**
-     * @param timeout isn't really used at this moment, might remove entirely
-     * @return the current best move according to the MCTS class
-     */
-    public List<Move> stateMachineSelectMoves(long timeout) throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException{
-
-        StateMachine theMachine = getStateMachine();
-        lock1.writeLock().lock();
-        List<Move> li = mcts.selectMove();
-        lock1.writeLock().unlock();
-        return li;
-    }
-
+    //------------Junk---------------------------------------------------------------------------{{
+    //{{
+    //public DetailPanel getDetailPanel() {{
+    // This is the defaul Sample Panel
+    @Override
+    public DetailPanel getDetailPanel() {
+        return new SimpleDetailPanel();
+    }//}}
+    //public void preview(Game g, long timeout) throws GamePreviewException {{
+    @Override
+    public void preview(Game g, long timeout) throws GamePreviewException {
+        // Sample gamers do no game previewing.
+    }//}}
+    //public Move stateMachineSelectMove(long timeout) throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException{{
     /**
      * Not used in this implementation
      * @return Null
@@ -238,6 +266,7 @@ public class UnityGamer extends StateMachineGamer {
     public Move stateMachineSelectMove(long timeout) throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException{
 
         return null;
-    }
+    }//}}
+    //}}}}
 }
 

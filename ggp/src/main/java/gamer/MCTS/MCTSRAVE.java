@@ -2,23 +2,13 @@ package gamer.MCTS;
 // Imports {{
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.HashSet;
 import java.util.Random;
-import java.io.File;
-import java.io.ObjectOutputStream;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
@@ -40,7 +30,7 @@ import gamer.MCTS.nodes.RaveNode;
  * a tree made up of RaveNode nodes.
  */
 public final class MCTSRAVE extends Thread {
-    //Variables {{
+    //----------------MCTS Variables----------------------{{
     //MCTS Enhancement variables {{
     //MCTS DAG
     private HashMap<MachineState, RaveNode> dag;
@@ -72,16 +62,20 @@ public final class MCTSRAVE extends Thread {
     public boolean silent;
     //}}
     //}}
-    //MCTSDAG(StateMachineGamer, ReadWriteLock, boolean) {{
-    //DocString MCTSDAG {{
+    //public MCTSRAVE(StateMachineGamer gamer, ReentrantReadWriteLock lock,{{
     /**
-     * Simple constructor
+     * Constructor for a MCTS class using GRAVE and MAST 
      *
-     *
-     * @param gamer The gamer using this search
-     * @param lock A lock just to be safe
-     * @param silent Set to false to make it silent
-     *///}}
+     * @param gamer          The gamer using this search
+     * @param lock           A lock just to be safe
+     * @param silent         Set to false to make it silent
+     * @param epsilon        The epsilon greedy value controlling the use of MAST
+     * @param k              The RAVE controll threshold 
+     * @param grave          The GRAVE threshold 
+     * @param treeDiscount   How much we discount return values in the MCTS tree
+     * @param ChargeDiscount How much we discount return values in the depth charge 
+     * @param limit          Sets a simulation limit for the AI
+     */
     public MCTSRAVE(StateMachineGamer gamer, ReentrantReadWriteLock lock,
                     boolean silent, double epsilon, double k, double grave,
                     double treeDiscount, double chargeDiscount, double limit){
@@ -111,7 +105,10 @@ public final class MCTSRAVE extends Thread {
         this.lock = lock;
     }
     //}}
-    //MCTS selection phase {{
+
+
+    //----------------MCTS selection phase----------------{{
+    //public void run(){{
     @Override
     public void run(){
         int heapCheck = 0;
@@ -151,10 +148,9 @@ public final class MCTSRAVE extends Thread {
             }
         }
         // mast.saveData();
-    }
+    }//}}
 
-    //search(RaveNode, MachineState){{
-    //DocString search {{
+    //private List<Double> search(RaveNode node,{{
     /**
      * A recursive MCTS search function that searches through MCM nodes.
      * It only expands one node each run when it hits a new leaf.
@@ -163,7 +159,7 @@ public final class MCTSRAVE extends Thread {
      * @param state The current state entering this node
      *
      * @return The simulated value of this node for each player from one simulation.
-     */ //}}
+     */
     private List<Double> search(RaveNode node,
                                 List<HashMap<Move, double[]>> grave,
                                 MachineState state,
@@ -213,27 +209,31 @@ public final class MCTSRAVE extends Thread {
         }
         applyDiscount(result, treeDiscount);
         return result;
-    }
+    }//}}
     //}}
-    //}}
-    //MCTS playout phase {{
-    private List<Double> playOut(MachineState state, List<List<Move>> rave) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
+
+
+    //----------------MCTS playout phase------------------{{
+    //private List<Double> playOut(MachineState state,{{
+    private List<Double> playOut(MachineState state,
+                                 List<List<Move>> rave) throws GoalDefinitionException,
+                                                               MoveDefinitionException,
+                                                               TransitionDefinitionException {
         lastPlayOutDepth = 0;
         return depthCharge(state, rave);
-    }
+    }//}}
 
-    private List<Double> depthCharge(MachineState state, List<List<Move>> rave) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
+    //private List<Double> depthCharge(MachineState state,{{
+    private List<Double> depthCharge(MachineState state,
+                                     List<List<Move>> rave) throws GoalDefinitionException,
+                                                                   MoveDefinitionException,
+                                                                   TransitionDefinitionException {
         lastPlayOutDepth++;
         List<Double> result;
         if(machine.isTerminal(state)){
             avgPlayOutDepth = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth) / (float)(playOutCount + 1);
             playOutCount++;
             return getGoalsAsDouble(state);
-        }
-        if(lastPlayOutDepth >= 110){
-            avgPlayOutDepth = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth) / (float)(playOutCount + 1);
-            playOutCount++;
-            return new ArrayList<Double>(Arrays.asList(40.0d, 40.0d));
         }
 
         List<List<Move>> moves = machine.getLegalJointMoves(state);
@@ -249,11 +249,14 @@ public final class MCTSRAVE extends Thread {
         mast.update(chosen, result);
         applyDiscount(result, chargeDiscount);
         return result;
-    }
+    }//}}
     //}}
-    //Move managment {{
+
+
+    //----------------MCTS Move managment-----------------{{
+    //public List<Move> selectMove() throws MoveDefinitionException {{
     /**
-     * @return The best move at this point
+     * @return The most simulated move at this point
      */
     public List<Move> selectMove() throws MoveDefinitionException {
         Map.Entry<List<Move>, RaveNode> bestMove = null;
@@ -302,8 +305,9 @@ public final class MCTSRAVE extends Thread {
             // System.out.println(root.raveToString());
         }
         return bestMove.getKey();
-    }
+    } //}} 
 
+    //public void applyMove(List<Move> moves)  {{
     /**
      * Updates the root node to the given moves
      *
@@ -326,17 +330,21 @@ public final class MCTSRAVE extends Thread {
             }
         }
         throw new IllegalStateException("A move was selected that was not one of the root node moves");
-    }
-
+    }//}}
     //}}
-    //Helpers up for dag {{
+
+
+    //----------------MCTS DAG Helpers--------------------{{
+    //private void markAndSweep(int depth){{
     private void markAndSweep(int depth){
         HashSet<MachineState> marked =  new HashSet<>();
         System.out.println("Size of dag before sweep: " + dag.size());
         mark(root, marked, depth);
         sweep(marked);
         System.out.println("Size of dag after sweep: " + dag.size());
-    }
+    }//}}
+
+    //private void sweep(HashSet<MachineState> marked){{
     private void sweep(HashSet<MachineState> marked){
         Iterator<Map.Entry<MachineState, RaveNode>> it = dag.entrySet().iterator();
         long time = System.currentTimeMillis();
@@ -348,8 +356,9 @@ public final class MCTSRAVE extends Thread {
                 }
             }
         }
-    }
+    } //}}
 
+    //private void mark(RaveNode node, HashSet<MachineState> marked, int depth){{
     private void mark(RaveNode node, HashSet<MachineState> marked, int depth){
         if(node.leaf() || depth == 0){
             return;
@@ -358,66 +367,37 @@ public final class MCTSRAVE extends Thread {
         for (RaveNode child : node.getChildren().values()){
             mark(child, marked, depth - 1);
         }
-    }
-
-    @SuppressWarnings("unchecked")
-    public void loadDag(){
-        File file = new File("data/dag/" + gameName);
-        if(!file.isFile()){
-            return;
-        }
-        try{
-            FileInputStream fis = new FileInputStream(file);
-            ObjectInputStream ois = new ObjectInputStream(fis);
-            dag = (HashMap) ois.readObject();
-            fis.close();
-            ois.close();
-        } catch (Exception e){
-            System.out.println("EXCEPTION: " + e.toString());
-            e.printStackTrace();
-        }
-    }
-
-    public void saveDag(){
-        // markAndSweep(Integer.MAX_VALUE);
-        File file = new File("data/dag/" + gameName);
-        try{
-            FileOutputStream fos = new FileOutputStream(file);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(dag);
-            fos.close();
-            oos.close();
-        } catch (Exception e){
-            System.out.println("EXCEPTION: " + e.toString());
-            e.printStackTrace();
-        }
-    }
-
+    }//}}
     //}}
-    //Helper functions {{
+
+
+    //----------------MCTS Helper functions---------------{{
+    //private void checkHeap(){{
     private void checkHeap(){
         if(((runtime.totalMemory() - runtime.freeMemory())/((float)runtime.maxMemory())) >= 0.85f){
             expanding = false;
         } else {
             expanding = true;
         }
-    }
+    } //}}
 
-
+    //private List<Double> getGoalsAsDouble(MachineState state)throws GoalDefinitionException{{
     private List<Double> getGoalsAsDouble(MachineState state)throws GoalDefinitionException{
             List<Double> result = new ArrayList<>();
             for(Integer inte : machine.getGoals(state)){
                 result.add((double)inte);
             }
             return result;
-    }
+    }//}}
 
+    //private void applyDiscount(List<Double> lis, double discount){{
     private void applyDiscount(List<Double> lis, double discount){
         for(int i = 0; i < lis.size(); ++i){
             lis.set(i, lis.get(i) * discount);
         }
-    }
+    }//}}
 
+    //public String baseEval(){{
     public String baseEval(){
         String result = "";
         synchronized(root){
@@ -432,24 +412,24 @@ public final class MCTSRAVE extends Thread {
             }
         }
         return result;
-    }
+    }//}}
 
-
+    //public long size(){{
     /**
      * @return the size of the tree
      */
     public long size(){
         return root.size();
-    }
+    }//}}
 
-
+    //public void shutdown(){{
     /**
      * Breaks the searcher out of his loop
      */
     public void shutdown(){
         dag = new HashMap<>(100000);
         mast = new MAST(this.gamer.getMatch().getGame().getName());
-    }
+    }//}}
     //}}
 }
 

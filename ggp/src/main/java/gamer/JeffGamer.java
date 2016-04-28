@@ -1,5 +1,5 @@
 package gamer;
-
+//Imports{{
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,20 +28,26 @@ import is.ru.cadia.ggp.propnet.structure.GGPBasePropNetStructureFactory;
 
 import gamer.MCTS.MCTS;
 import gamer.MCTS.MCTSRAVE;
+//}}
 
 /**
- * JeffGamer implements a simple MCTS search with UCT
+ * JeffGamer implements a simple MCTS search with UCT, GRAVE and MAST
  */
 
 public class JeffGamer extends StateMachineGamer {
+    //------------Variables----------------------------------------------------------------------{{
     private MCTSRAVE mcts;
     private Role other;
     private Map<Role, Integer> roleMap;
     public ReentrantReadWriteLock lock1= new ReentrantReadWriteLock(true);
+    //}}
+
+    //------------Initialize---------------------------------------------------------------------{{
+    //public void stateMachineMetaGame(long timeout) {{
     @Override
     public void stateMachineMetaGame(long timeout) {
         roleMap = getStateMachine().getRoleIndices();
-        mcts = new MCTSRAVE(this, lock1, false, 0.9f, 100, 20, 0.999f, 0.995f, 0);
+        mcts = new MCTSRAVE(this, lock1, false, 0.9f, 100, 20, 0.998f, 0.99f, 0);
         long finishBy = timeout - 1100;
         mcts.start();
         while(System.currentTimeMillis() < finishBy){
@@ -49,65 +55,28 @@ public class JeffGamer extends StateMachineGamer {
                 Thread.sleep(200);
             } catch(Exception e){}//don't care
         }
-    }
+    } //}}
 
-
-    @Override
-    public String getName() {
-        return "Jeff";
-    }
+    //public StateMachine getInitialStateMachine() {{
     // This is the default State Machine,
     @Override
     public StateMachine getInitialStateMachine() {
         return new BackwardPropNetStateMachine(new GGPBasePropNetStructureFactory());
-    }
-
-    // This is the defaul Sample Panel
-    @Override
-    public DetailPanel getDetailPanel() {
-        return new SimpleDetailPanel();
-    }
-
-    @Override
-    public void stateMachineStop() {
-        mcts.interrupt();
-        try{
-            mcts.join();
-        } catch (Exception e){}
-        mcts = null;
-        // Sample gamers do no special cleanup when the match ends normally.
-    }
-
-    @Override
-    public void stateMachineAbort() {
-        mcts.interrupt();
-        try{
-            mcts.join();
-        } catch (Exception e){}
-        mcts = null;
-        // Sample gamers do no special cleanup when the match ends normally.
-        // Sample gamers do no special cleanup when the match ends abruptly.
-    }
-
-    @Override
-    public void preview(Game g, long timeout) throws GamePreviewException {
-        // Sample gamers do no game previewing.
-    }
-
-
+    } //}}
+    //}}
+    
+    //------------Move Selection-----------------------------------------------------------------{{
+    //public GdlTerm selectMove(long timeout) throws MoveSelectionException {{
     @Override
     public GdlTerm selectMove(long timeout) throws MoveSelectionException {
-        try
-        {
+        try {
             lock1.writeLock().lock();
             stateMachine.doPerMoveWork();
 
             List<GdlTerm> lastMoves = getMatch().getMostRecentMoves();
-            if (lastMoves != null)
-            {
+            if (lastMoves != null) {
                 List<Move> moves = new ArrayList<Move>();
-                for (GdlTerm sentence : lastMoves)
-                {
+                for (GdlTerm sentence : lastMoves) {
                     moves.add(stateMachine.getMoveFromTerm(sentence));
                 }
 
@@ -121,45 +90,17 @@ public class JeffGamer extends StateMachineGamer {
 
             return move.getContents();
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             System.out.println(e.toString());
             GamerLogger.logStackTrace("GamePlayer", e);
             throw new MoveSelectionException(e);
         }
-    }
+    }//}}
 
-
-    //wrapping this because we don't care about interrupted exception
-    private void sleep(int ms){
-        try{
-            Thread.sleep(ms);
-        } catch(Exception e){}//don't care
-
-    }
-
-    /**
-     * Returns the role that this gamer is playing as in the game.
-     */
-    public final Role getOtherRole() {
-        return other;
-    }
-
-
-    public List<Move> getLegalMoves(Role role) throws MoveDefinitionException{
-        if (role.equals(getRole())){
-            return getStateMachine().getLegalMoves(getCurrentState(), getRole());
-        } else if (role.equals(getOtherRole())) {
-            return getStateMachine().getLegalMoves(getCurrentState(), getOtherRole());
-        } else {
-            return null;
-        }
-    }
-
-    public String getEvaluation(){
-        return "[ Base:(" + mcts.baseEval() + ")]" ;
-    }
-    public Move stateMachineSelectMove(long timeout) throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException{
+    //public Move stateMachineSelectMove(long timeout) throws TransitionDefinitionException{{
+    public Move stateMachineSelectMove(long timeout) throws TransitionDefinitionException,
+                                                            MoveDefinitionException,
+                                                            GoalDefinitionException{
 
         StateMachine theMachine = getStateMachine();
         long start = System.currentTimeMillis();
@@ -174,7 +115,88 @@ public class JeffGamer extends StateMachineGamer {
         System.out.println(li.toString());
         lock1.writeLock().unlock();
         return li.get(roleMap.get(getRole()));
-    }
+    } //}} 
+    //}}
+
+    //------------End the gamer------------------------------------------------------------------{{
+    //public void stateMachineStop() {{
+    @Override
+    public void stateMachineStop() {
+        mcts.interrupt();
+        try{
+            mcts.join();
+        } catch (Exception e){}
+        mcts = null;
+        // Sample gamers do no special cleanup when the match ends normally.
+    }//}}
+    //public void stateMachineAbort() {{
+    @Override
+    public void stateMachineAbort() {
+        mcts.interrupt();
+        try{
+            mcts.join();
+        } catch (Exception e){}
+        mcts = null;
+        // Sample gamers do no special cleanup when the match ends normally.
+        // Sample gamers do no special cleanup when the match ends abruptly.
+    } //}}
+    //}}
+
+    //------------Getters, Setters and helpers---------------------------------------------------{{
+    //public String getName() {{
+    @Override
+    public String getName() {
+        return "Jeff";
+    }//}}
+
+    //public final Role getOtherRole() {{
+    /** 
+     * Returns the role that this gamer is playing as in the game.
+     */
+    public final Role getOtherRole() {
+        return other;
+    } //}}
+
+    //public List<Move> getLegalMoves(Role role) throws MoveDefinitionException{{
+    public List<Move> getLegalMoves(Role role) throws MoveDefinitionException{
+        if (role.equals(getRole())){
+            return getStateMachine().getLegalMoves(getCurrentState(), getRole());
+        } else if (role.equals(getOtherRole())) {
+            return getStateMachine().getLegalMoves(getCurrentState(), getOtherRole());
+        } else {
+            return null;
+        }
+    } //}}
+
+    //public String getEvaluation(){{
+    public String getEvaluation(){
+        return "[ Base:(" + mcts.baseEval() + ")]" ;
+    } //}}
+
+    //private void sleep(int ms){ //{{
+    private void sleep(int ms){
+        try{
+            Thread.sleep(ms);
+        } catch(Exception e){}//don't care
+
+    }//}}
+    //}}
+
+    //------------Junk---------------------------------------------------------------------------{{
+    //public void preview(Game g, long timeout) throws GamePreviewException {{
+    @Override
+    public void preview(Game g, long timeout) throws GamePreviewException {
+        // Sample gamers do no game previewing.
+    } //}}
+
+    //public DetailPanel getDetailPanel() {{
+    // This is the defaul Sample Panel
+    @Override
+    public DetailPanel getDetailPanel() {
+        return new SimpleDetailPanel();
+    } //}}
+    //}}
 }
 
-
+// vim: set foldmethod=marker:
+// vim: set foldmarker={{,}}:
