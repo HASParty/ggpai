@@ -175,7 +175,6 @@ public class UnityGamer extends StateMachineGamer {
             mcts.join();
         } catch (Exception e){}
         mcts = null;
-        // Sample gamers do no special cleanup when the match ends normally.
         // Sample gamers do no special cleanup when the match ends abruptly.
     }//}}
     //}}

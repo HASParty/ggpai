@@ -22,6 +22,8 @@ import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
 import gamer.MCTS.MovePick.MAST;
 import gamer.MCTS.MovePick.MovePick;
 import gamer.MCTS.nodes.RaveNode;
+import gamer.JeffGamer;
+import util.QueryBuilder; 
 // }}
 
 // Note: The weird comments are for forcing sane folding with marks.
@@ -29,7 +31,7 @@ import gamer.MCTS.nodes.RaveNode;
  * A simple MCTS Thread that defines a Monte carlo search algorithm for
  * a tree made up of RaveNode nodes.
  */
-public final class MCTSRAVE extends Thread {
+public class MCTSRAVE extends Thread {
     //----------------MCTS Variables----------------------{{
     //MCTS Enhancement variables {{
     //MCTS DAG
@@ -37,6 +39,7 @@ public final class MCTSRAVE extends Thread {
     //MAST
     private MovePick mast;
     private double epsilon;
+    // private GdlSentence pcQuery;
     //}}
     //General MCTS variables{{
     private Random rand = new Random();
@@ -94,8 +97,9 @@ public final class MCTSRAVE extends Thread {
         dag = new HashMap<>(20000);
         gameName = gamer.getMatch().getGame().getName();
         if(gameName == null){
-            gameName = "Checkers";
+            gameName = "Mylla";
         }
+        // pcQuery = QueryBuilder.pieceCount("pieces_on_board");
         mast = new MAST(gameName);
         expanding = true;
         machine = gamer.getStateMachine();
@@ -112,14 +116,13 @@ public final class MCTSRAVE extends Thread {
     @Override
     public void run(){
         int heapCheck = 0;
-        // mast.loadData();
         //While we are alive we keep on searching
         System.out.println("Using MCTSRAVE");
         while(!Thread.currentThread().isInterrupted()){
             try {
                 if(limit > 0){
                     while(root.n() > limit && newRoot == null){
-                        Thread.sleep(5);
+                        Thread.sleep(5); //Not necessary to do this in a more efficient way
                     }
                 }
                 lock.writeLock().lock(); //Making sure the statemachine and tree are in sync
@@ -137,26 +140,21 @@ public final class MCTSRAVE extends Thread {
                 lock.writeLock().unlock();
             } catch (InterruptedException e) {
                 lock.writeLock().unlock();
-                System.out.println("this never seems to happen?");
+                System.out.println("Interrupted");
                 break;
             } catch (Exception e){
                 lock.writeLock().unlock();
                 System.out.println("EXCEPTION: " + e.toString());
                 e.printStackTrace();
-                // Thread.currentThread().interrupt();
                 return;
             }
         }
-        // mast.saveData();
     }//}}
 
     //private List<Double> search(RaveNode node,{{
     /**
      * A recursive MCTS search function that searches through MCM nodes.
      * It only expands one node each run when it hits a new leaf.
-     *
-     * @param node The node we are searching
-     * @param state The current state entering this node
      *
      * @return The simulated value of this node for each player from one simulation.
      */
@@ -177,12 +175,12 @@ public final class MCTSRAVE extends Thread {
             }
             result = new ArrayList<>(node.goals);
         } else if (node.leaf()){
-            if(expanding){
+            if(expanding){ // We don't expand if we have hit a resource limit
                 node.expand(machine.getLegalJointMoves(state));
             }
             result = playOut(state, rave); //We do one playout
         } else {
-            grave = node.updateGrave(grave);
+            grave = node.updateGrave(grave); //We add to our grave values
             List<Move> ci = node.select(grave);
             RaveNode child = node.getChildren().get(ci);
             if(child.n() == 0){ //We only ever use the SM once for each state
@@ -233,6 +231,8 @@ public final class MCTSRAVE extends Thread {
         if(machine.isTerminal(state)){
             avgPlayOutDepth = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth) / (float)(playOutCount + 1);
             playOutCount++;
+            // System.out.println(((JeffGamer)gamer).prover.askAll(pcQuery ,state.getContents()));
+            System.out.println();
             return getGoalsAsDouble(state);
         }
 
@@ -262,21 +262,27 @@ public final class MCTSRAVE extends Thread {
         Map.Entry<List<Move>, RaveNode> bestMove = null;
         if (!silent){
             int mb = 1024*1024;
+            long total = runtime.totalMemory();
+            long free = runtime.freeMemory();
 
             //Getting the runtime reference from system
-            System.out.println("###################### Heap utilization statistics [MB] #######################");
+            System.out.println("###################### " +
+                               "Heap utilization statistics [MB] " +
+                               "#######################");
             //Print used memory
             System.out.println(String.format("Used Memory:  %d",
-                                            (runtime.totalMemory() - runtime.freeMemory()) / mb));
+                                            (total - free) / mb));
             //Print free memory
-            System.out.println(String.format("Free Memory:  %d", runtime.freeMemory() / mb));
+            System.out.println(String.format("Free Memory:  %d", free / mb));
             //Print total available memory
-            System.out.println(String.format("Total Memory: %d", runtime.totalMemory() / mb));
+            System.out.println(String.format("Total Memory: %d", total / mb));
             //Print Maximum available memory
             System.out.println(String.format("Max Memory:   %d", runtime.maxMemory() / mb));
 
             System.out.println();
-            System.out.println("================================Available moves================================");
+            System.out.println("================================"+
+                               "Available moves"+
+                               "================================");
             System.out.println("N: " + root.n());
         }
         for (Map.Entry<List<Move>, RaveNode> entry : root.getChildren().entrySet()){
@@ -291,18 +297,21 @@ public final class MCTSRAVE extends Thread {
         }
         System.out.println();
         if (!silent){
-            System.out.println("-------------------------------------------------------------------------------");
+            System.out.println("------------------------------------------------------------" +
+                               "-------------------");
             System.out.println(String.format("Selecting: %s\n With %d simulations.",
                                              bestMove,
                                              bestMove.getValue().n()));
-            System.out.println("-------------------------------------------------------------------------------");
+            System.out.println("------------------------------------------------------------" +
+                               "-------------------");
 
-            System.out.println("--------------------------------Data Structures--------------------------------");
+            System.out.println("--------------------------------"+
+                               "Data Structures"+
+                               "--------------------------------");
             System.out.println("Mast table size: " + mast.size());
             System.out.println("Dag connections made this turn: " + DagCounter);
             DagCounter = 0;
             System.out.println();
-            // System.out.println(root.raveToString());
         }
         return bestMove.getKey();
     } //}} 
@@ -329,7 +338,8 @@ public final class MCTSRAVE extends Thread {
                 }
             }
         }
-        throw new IllegalStateException("A move was selected that was not one of the root node moves");
+        throw new IllegalStateException("A move was selected that was not" + 
+                                        " one of the root node moves");
     }//}}
     //}}
 

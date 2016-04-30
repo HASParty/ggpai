@@ -11,6 +11,7 @@ import org.ggp.base.player.gamer.exception.GamePreviewException;
 import org.ggp.base.player.gamer.exception.MetaGamingException;
 import org.ggp.base.player.gamer.exception.MoveSelectionException;
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
+import org.ggp.base.util.prover.aima.AimaProver;
 import org.ggp.base.util.game.Game;
 import org.ggp.base.util.gdl.grammar.GdlTerm;
 import org.ggp.base.util.logging.GamerLogger;
@@ -39,6 +40,7 @@ public class JeffGamer extends StateMachineGamer {
     private MCTSRAVE mcts;
     private Role other;
     private Map<Role, Integer> roleMap;
+    public AimaProver prover;
     public ReentrantReadWriteLock lock1= new ReentrantReadWriteLock(true);
     //}}
 
@@ -46,6 +48,7 @@ public class JeffGamer extends StateMachineGamer {
     //public void stateMachineMetaGame(long timeout) {{
     @Override
     public void stateMachineMetaGame(long timeout) {
+        prover = new AimaProver(getMatch().getGame().getRules());
         roleMap = getStateMachine().getRoleIndices();
         mcts = new MCTSRAVE(this, lock1, false, 0.9f, 100, 20, 0.998f, 0.99f, 0);
         long finishBy = timeout - 1100;
