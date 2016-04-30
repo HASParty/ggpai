@@ -33,17 +33,19 @@ namespace Boardgame.Agent {
         /// </summary>
         /// <param name="data">The game state data</param>
         public void CheckGame(GameData data) {
+            if (data.IsDone) return;
             if (data.IsStart && data.LegalMoves.Count == 0) {
                 bm.player = Player.First;
             } else if (data.IsStart) {
                 bm.player = Player.Second;
             }
             var move = data.MovesMade;
-            if (!data.IsStart && bm.player == data.Control && data.MovesMade.Count > 0) {                
+            if (!data.IsStart && bm.player == data.Control && move.Count > 0)
+            {
                 bm.ExecuteMove(move);
                 Debug.Log("Moves:");
                 Debug.Log(Tools.Stringify<GDL.Move>.List(move));
-                OnMoveMade(move, bm.player);                
+                OnMoveMade(move, bm.player);
             }
 
             isMyTurn = !data.IsHumanPlayerTurn;

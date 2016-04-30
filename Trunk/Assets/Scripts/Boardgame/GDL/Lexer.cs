@@ -55,6 +55,7 @@ namespace Boardgame.GDL {
 
         public List<Token> Lex(string sentence) {
             List<Token> tok = new List<Token>();
+            if (sentence == null) return tok;
             var split = sentence.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var w in split) {
                 var word = w.Trim();

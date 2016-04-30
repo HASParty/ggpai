@@ -27,7 +27,7 @@ namespace Boardgame.Configuration {
         public static int SimulationCutoff = 3000;
 
         public static void SetValue(string which, string value) {
-            Debug.Log(which + " " + value);
+            //Debug.Log(which + " " + value);
             value = value.Trim();
             switch (which) {
                 case "GameName":
