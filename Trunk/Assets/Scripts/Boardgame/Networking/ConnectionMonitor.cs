@@ -165,7 +165,7 @@ namespace Boardgame.Networking {
 
         // Update is called once per frame
         void Update() {
-            if (IsConnected()) {
+            if (IsConnected() && !IsOver) {
                 if (Connection.feedConnection.Available > 0 || Connection.gameConnection.Available > 0) ReadOnce();
             }
         }
