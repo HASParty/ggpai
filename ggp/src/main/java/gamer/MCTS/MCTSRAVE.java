@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -43,7 +45,9 @@ public class MCTSRAVE extends Thread {
     private double epsilon;
     private GdlSentence pcQuery;
     //Aggression cache
-    private HashMap<MachineState, ArrayList<Double>> goalCache;
+    // private HashMap<MachineState, ArrayList<Double>> goalCache;
+    // So that we don't have to use the prover as much
+    private Cache<MachineState, ArrayList<Double>> goalCache;
     //}}
     //General MCTS variables{{
     private Random rand = new Random();
@@ -87,7 +91,7 @@ public class MCTSRAVE extends Thread {
                     boolean silent, double epsilon, double k, double grave,
                     double treeDiscount, double chargeDiscount, double limit){
         this.epsilon = epsilon; 
-        goalCache = new HashMap<>();
+        goalCache = CacheBuilder.newBuilder().maximumSize(20000).build();
         RaveNode.k = Math.round(k);
         RaveNode.setGrave(Math.round(grave));
         this.silent = silent;
@@ -175,11 +179,11 @@ public class MCTSRAVE extends Thread {
         }
         if(node.terminal || machine.isTerminal(state)){
             if(node.goals == null){
-                if(goalCache.containsKey(state)){
-                    node.goals = goalCache.get(state);
-                } else {
+                node.goals = goalCache.getIfPresent(state);
+                if(node.goals == null){
                     node.goals = getGoalsAsDouble(state); //Decreasing terminal calls
-                }
+                    goalCache.put(state, new ArrayList<>(node.goals));
+                } 
                 node.terminal = true;
             }
             result = new ArrayList<>(node.goals);
@@ -240,11 +244,13 @@ public class MCTSRAVE extends Thread {
         if(machine.isTerminal(state)){
             avgPlayOutDepth = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth) / (float)(playOutCount + 1);
             playOutCount++;
-            if(goalCache.containsKey(state)){
-                return goalCache.get(state);
+            ArrayList<Double> goals = goalCache.getIfPresent(state);
+
+            if(goals != null){
+                return goals; 
             }
             ArrayList<Integer> counts = getPieceCount(state);
-            ArrayList<Double> goals = getGoalsAsDouble(state);
+            goals = getGoalsAsDouble(state);
             goals.set(0, goals.get(0) - ((9 - counts.get(0)) * 2));
             goals.set(1, goals.get(1) - ((9 - counts.get(1)) * 2));
             goalCache.put(state, goals);

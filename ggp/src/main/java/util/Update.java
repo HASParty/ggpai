@@ -48,7 +48,11 @@ public final class Update extends Thread {
             BufferedReader inp = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             while (listener != null) {
                 // String in = HttpReader.readAsServer(connection);
-                String in =  inp.readLine();
+                String in;
+                do {
+                    in =  inp.readLine();
+                } while(!in.toLowerCase().equals("start"));
+                System.out.println(in);
                 while (listener != null) {
                     String eval = gamer.getEvaluation();
                     pw.println(eval);
@@ -57,6 +61,7 @@ public final class Update extends Thread {
 
                     if(input.toLowerCase().contains("abort")){
                         pw.println("ack");
+                        System.out.println("Breaking out of update loop");
                         break;
                     } else {
                         //Do shit with what we get
