@@ -13,6 +13,13 @@ namespace Boardgame.GDL {
         public static Message BreakMessage(string message) {
             var split = message.Split(new char[] { ':' }, 3, StringSplitOptions.RemoveEmptyEntries);
             Message m;
+            if (split.Length == 1 && message == "done")
+            {
+                m.action = "done";
+                m.legalMoves = null;
+                m.state = null;
+                return m;
+            }
             if (split.Length < 3) throw new Exception("GDL Parser: malformed message: "+message);
             m.action = split[0];
             m.legalMoves = split[1].Substring(1, split[1].Length - 2);

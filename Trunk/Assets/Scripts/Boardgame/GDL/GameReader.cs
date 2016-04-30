@@ -26,7 +26,8 @@ namespace Boardgame.GDL {
         FALSE,
         WIN,
         LOSS,
-        DRAW
+        DRAW,
+        DONE
     }
 
     public class ConsideredMove {
@@ -53,6 +54,11 @@ namespace Boardgame.GDL {
 
         public bool IsStart(string data) {
             return Parser.BreakMessage(data).action.Trim() == "ready";
+        }
+
+        public bool IsDone(string data)
+        {
+            return Parser.BreakMessage(data).action.Trim() == "done";
         }
 
         public bool IsBusy(string data) {

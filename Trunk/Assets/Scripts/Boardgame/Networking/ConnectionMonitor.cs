@@ -99,8 +99,8 @@ namespace Boardgame.Networking {
         void OnDestroy() {
             if (IsConnected()) {
                 Write("ABORT " + Config.MatchID);
-				Connection.Write("stop\n", Connection.feedConnection.GetStream());
-                Disconnect();
+				//Connection.Write("stop\n", Connection.feedConnection.GetStream());
+                //Disconnect();
             }
         }
 
