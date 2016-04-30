@@ -25,6 +25,11 @@ public class MouseCast : MonoBehaviour {
         {
             TestManager.Instance.HidePlayerMode = !TestManager.Instance.HidePlayerMode;
         }
+
+        if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene("Menu");
+        }
 	}
 
     public void DefaultMode() {

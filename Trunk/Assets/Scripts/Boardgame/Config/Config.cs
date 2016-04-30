@@ -10,6 +10,7 @@ namespace Boardgame.Configuration {
         public static string GameName = "mylla";
         public static int StartTime = 60;
         public static int TurnTime = 10;
+        public static int Turns = -1;
 
         public static int Low = 0;
         public static int Neutral = 1;
@@ -36,6 +37,7 @@ namespace Boardgame.Configuration {
                     break;                    
                 case "StartTime":
                 case "TurnTime":
+                case "Turns":
                     SetInt(which, value);
                     break;
                 default:

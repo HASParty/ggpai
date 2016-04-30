@@ -11,6 +11,7 @@ namespace Boardgame.Configuration {
         public string GameName;
         public int StartTime;
         public int TurnTime;
+        public int Turns;
 
         public int Low;
         public int Neutral;
@@ -39,6 +40,7 @@ namespace Boardgame.Configuration {
                 Config.Low = Low;
                 Config.Neutral = Neutral;
                 Config.High = High;
+                Config.Turns = Turns;
                 Config.Extraversion = Extraversion;
                 Config.Agreeableness = Agreeableness;
                 Config.Neuroticism = Neuroticism;
@@ -53,6 +55,7 @@ namespace Boardgame.Configuration {
                 Low = Config.Low;
                 Neutral = Config.Neutral;
                 High = Config.High;
+                Turns = Config.Turns;
                 Extraversion = Config.Extraversion;
                 Agreeableness = Config.Agreeableness;
                 Neuroticism = Config.Neuroticism;
