@@ -68,7 +68,7 @@ public final class UnityRequest extends Request {
 
         // Finally, have the gamer begin metagaming.
         try {
-            ((UnityGamer) gamer).setValues(controlValues);
+            gamer.setValues(controlValues);
             gamer.metaGame(gamer.getMatch().getStartClock() * 1000 + receptionTime);
             System.out.println("Managed to start metagaming");
         } catch (MetaGamingException e) {

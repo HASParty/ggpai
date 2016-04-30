@@ -65,7 +65,7 @@ public final class Update extends Thread {
             }
             connection.close();
         } catch (Exception e) {
-            System.out.println("Well something went wrong");
+            e.printStackTrace();
         }
     }
 

@@ -125,20 +125,24 @@ public class JeffGamer extends StateMachineGamer {
     //public void stateMachineStop() {{
     @Override
     public void stateMachineStop() {
-        mcts.interrupt();
         try{
+            mcts.interrupt();
             mcts.join();
-        } catch (Exception e){}
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         mcts = null;
         // Sample gamers do no special cleanup when the match ends normally.
     }//}}
     //public void stateMachineAbort() {{
     @Override
     public void stateMachineAbort() {
-        mcts.interrupt();
         try{
+            mcts.interrupt();
             mcts.join();
-        } catch (Exception e){}
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         mcts = null;
         // Sample gamers do no special cleanup when the match ends normally.
         // Sample gamers do no special cleanup when the match ends abruptly.
