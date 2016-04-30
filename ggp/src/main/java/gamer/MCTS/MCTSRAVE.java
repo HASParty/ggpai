@@ -42,6 +42,8 @@ public class MCTSRAVE extends Thread {
     private MovePick mast;
     private double epsilon;
     private GdlSentence pcQuery;
+    //Aggression cache
+    private HashMap<MachineState, ArrayList<Double>> goalCache;
     //}}
     //General MCTS variables{{
     private Random rand = new Random();
@@ -85,6 +87,7 @@ public class MCTSRAVE extends Thread {
                     boolean silent, double epsilon, double k, double grave,
                     double treeDiscount, double chargeDiscount, double limit){
         this.epsilon = epsilon; 
+        goalCache = new HashMap<>();
         RaveNode.k = Math.round(k);
         RaveNode.setGrave(Math.round(grave));
         this.silent = silent;
@@ -172,7 +175,11 @@ public class MCTSRAVE extends Thread {
         }
         if(node.terminal || machine.isTerminal(state)){
             if(node.goals == null){
-                node.goals = getGoalsAsDouble(state); //Decreasing terminal calls
+                if(goalCache.containsKey(state)){
+                    node.goals = goalCache.get(state);
+                } else {
+                    node.goals = getGoalsAsDouble(state); //Decreasing terminal calls
+                }
                 node.terminal = true;
             }
             result = new ArrayList<>(node.goals);
@@ -233,8 +240,15 @@ public class MCTSRAVE extends Thread {
         if(machine.isTerminal(state)){
             avgPlayOutDepth = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth) / (float)(playOutCount + 1);
             playOutCount++;
-            // System.out.println(((UnityGamer)gamer).prover.askAll(pcQuery, state.getContents()));
-            return getGoalsAsDouble(state);
+            if(goalCache.containsKey(state)){
+                return goalCache.get(state);
+            }
+            ArrayList<Integer> counts = getPieceCount(state);
+            ArrayList<Double> goals = getGoalsAsDouble(state);
+            goals.set(0, goals.get(0) - ((9 - counts.get(0)) * 2));
+            goals.set(1, goals.get(1) - ((9 - counts.get(1)) * 2));
+            goalCache.put(state, goals);
+            return goals;
         }
 
         List<List<Move>> moves = machine.getLegalJointMoves(state);
@@ -383,6 +397,18 @@ public class MCTSRAVE extends Thread {
 
 
     //----------------MCTS Helper functions---------------{{
+
+    
+    private ArrayList<Integer> getPieceCount(MachineState state){
+        ArrayList<Integer> res = new ArrayList<>();
+        for (GdlSentence s : ((UnityGamer)gamer).prover.askAll(pcQuery, state.getContents())){
+            res.add(Integer.parseInt(s.get(0).toSentence().get(1).toString()));
+        }
+        return res;
+
+        
+    }
+
     //private void checkHeap(){{
     private void checkHeap(){
         if(((runtime.totalMemory() - runtime.freeMemory())/((float)runtime.maxMemory())) >= 0.85f){
@@ -393,8 +419,8 @@ public class MCTSRAVE extends Thread {
     } //}}
 
     //private List<Double> getGoalsAsDouble(MachineState state)throws GoalDefinitionException{{
-    private List<Double> getGoalsAsDouble(MachineState state)throws GoalDefinitionException{
-            List<Double> result = new ArrayList<>();
+    private ArrayList<Double> getGoalsAsDouble(MachineState state)throws GoalDefinitionException{
+            ArrayList<Double> result = new ArrayList<>();
             for(Integer inte : machine.getGoals(state)){
                 result.add((double)inte);
             }
