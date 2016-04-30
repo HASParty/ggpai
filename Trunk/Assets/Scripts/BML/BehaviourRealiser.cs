@@ -97,7 +97,7 @@ public class BehaviourRealiser : MonoBehaviour {
         DebugManager.Instance.OnChunkStart(chunk);
         
         var node = FaceControllerII.GenerateEmotionalExpression(chunk.Arousal, chunk.Valence, 0.75f);
-        //Debug.Log("scheduling emotional expression for " + gameObject.name);
+        //Debug.Log("scheduling emotional expression for " + gameObject.name + chunk.ToString());
         _fc.ScheduleExpression(node);
         yield return null;
     }

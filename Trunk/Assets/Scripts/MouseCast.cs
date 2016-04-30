@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Boardgame;
+using Boardgame.Networking;
 
 public class MouseCast : MonoBehaviour {
 
@@ -27,6 +28,11 @@ public class MouseCast : MonoBehaviour {
         }
 
         if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            ConnectionMonitor.Instance.EndGame();
+        }
+
+        if (ConnectionMonitor.Instance.IsOver)
         {
             UnityEngine.SceneManagement.SceneManager.LoadScene("Menu");
         }

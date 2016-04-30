@@ -23,6 +23,7 @@ namespace Boardgame.Networking {
 
         public Player other = Player.Second;
 
+        public bool IsOver;
 
         public bool IsConnected() {
             return Connection.GameConnectionStatus == Connection.Status.ESTABLISHED && Connection.FeedConnectionStatus == Connection.Status.ESTABLISHED;
@@ -32,6 +33,7 @@ namespace Boardgame.Networking {
             Disconnect();
             if(Connect()) StartGame();
             turnCount = 0;
+            IsOver = false;
             OnGameUpdate.RemoveListener(TurnMonitor);
             OnGameUpdate.AddListener(TurnMonitor);
             BoardgameManager.Instance.OnMakeMove.AddListener(MoveMade);
@@ -71,7 +73,6 @@ namespace Boardgame.Networking {
             Debug.Log(Config.Turns + " " + turnCount);
             if (Config.Turns != -1 && turnCount >= Config.Turns)
             {
-                StopCoroutine(Request());
                 EndGame();
             }
             else if (data.State == GDL.Terminal.FALSE) {
@@ -88,27 +89,28 @@ namespace Boardgame.Networking {
                     }                    
                 }
             } else {
-                //just in case
-                StopCoroutine(Request());
                 EndGame();
             }
         }
 
+        bool endAcked;
         public void EndGame() {
-            if (IsConnected())
-            {
-                Connection.Write("stop\n", Connection.feedConnection.GetStream());
-                Write("ABORT " + Config.MatchID);
-                //Disconnect();
-            }
+            StopCoroutine(Request());
+            Debug.Log("REQUESTING ABORTION");
+            Connection.Write("abort\n", Connection.feedConnection.GetStream());
+            endAcked = false;
+            StartCoroutine(AbortGame());
+        }
+
+        IEnumerator AbortGame()
+        {
+            while(!endAcked) yield return new WaitForEndOfFrame();
+            Write("ABORT " + Config.MatchID);
+            IsOver = true;
         }
 
         void OnDestroy() {
-            if (IsConnected()) {
-                Connection.Write("stop\n", Connection.feedConnection.GetStream());
-                Write("ABORT " + Config.MatchID);				
-                //Disconnect();
-            }
+            //EndGame();
         }
 
         public void Pull() {
@@ -144,8 +146,16 @@ namespace Boardgame.Networking {
         public void ReadOnce() {
             string data;
             if(Connection.ReadLine(Connection.feedConnection, out data)) {
-                OnFeedUpdate.Invoke(new FeedData(data));
-                Connection.Write("ack\n", Connection.feedConnection.GetStream());
+                //Debug.Log(data);
+                if (!data.Contains("ack"))
+                {    
+                    OnFeedUpdate.Invoke(new FeedData(data));
+                    Connection.Write("ack\n", Connection.feedConnection.GetStream());
+                }
+                else
+                {
+                    endAcked = true;
+                }
             }
             if(Connection.gameConnection.Available > 0) {
                 data = Connection.HttpRead(Connection.gameConnection);
