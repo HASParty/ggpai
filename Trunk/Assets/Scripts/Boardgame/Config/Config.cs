@@ -27,6 +27,7 @@ namespace Boardgame.Configuration {
         public static int SimulationCutoff = 3000;
 
         public static void SetValue(string which, string value) {
+            Debug.Log(which + " " + value);
             value = value.Trim();
             switch (which) {
                 case "GameName":
@@ -46,7 +47,7 @@ namespace Boardgame.Configuration {
             }
         }
 
-        private static void SetInt(string which, string value, int min = 5, int max = 120) {
+        private static void SetInt(string which, string value, int min = -1, int max = 120) {
             int intValue;
             if(!Int32.TryParse(value, out intValue)) {
                 Debug.LogError("Integer expected, did not receive integer.");
@@ -59,6 +60,9 @@ namespace Boardgame.Configuration {
                     break;
                 case "TurnTime":
                     TurnTime = intValue;
+                    break;
+                case "Turns":
+                    Turns = intValue;
                     break;
                 case "Extraversion":
                     Extraversion = intValue;
