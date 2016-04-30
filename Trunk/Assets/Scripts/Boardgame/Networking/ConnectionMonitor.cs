@@ -61,8 +61,15 @@ namespace Boardgame.Networking {
             Pull();
         }
 
+        private int turnCount = 0;
         void TurnMonitor(GameData data) {
-            if (data.State == GDL.Terminal.FALSE) {
+            turnCount++;
+            if (turnCount > Config.Turns && Config.Turns != -1)
+            {
+                StopCoroutine(Request());
+                EndGame();
+            }
+            else if (data.State == GDL.Terminal.FALSE) {
                 if (data.IsStart && !data.IsHumanPlayerTurn) {
                     other = data.Control == Player.First ? Player.Second : Player.First;
                     Connection.Write(Connection.Compose("ready"), Connection.feedConnection.GetStream());
@@ -84,7 +91,7 @@ namespace Boardgame.Networking {
 
         public void EndGame() {
             Write("STOP " + Config.MatchID + " ( nil )");
-			Connection.Write("stop\n", Connection.feedConnection.GetStream());
+			//Connection.Write("stop\n", Connection.feedConnection.GetStream());
         }
 
         void OnDestroy() {
