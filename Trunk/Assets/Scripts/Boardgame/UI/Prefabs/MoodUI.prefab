@@ -157,7 +157,7 @@ GameObject:
   - 224: {fileID: 22436654}
   - 222: {fileID: 22200410}
   - 114: {fileID: 11416028}
-  - 114: {fileID: 11451138}
+  - 114: {fileID: 11498958}
   m_Layer: 0
   m_Name: MoodUI
   m_TagString: Untagged
@@ -371,21 +371,6 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
---- !u!114 &11451138
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 184812}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c86d5bc0654bf7049bdb1c28a355dbfd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ArousalBG: {fileID: 22453968}
-  ArousalKnob: {fileID: 22448094}
-  ValenceBG: {fileID: 22417376}
-  ValenceKnob: {fileID: 22478804}
 --- !u!114 &11458414
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -446,6 +431,21 @@ MonoBehaviour:
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
+--- !u!114 &11498958
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 184812}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13567799129d24046b1973606e679fae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ArousalBG: {fileID: 22480484}
+  ArousalKnob: {fileID: 22448094}
+  ValenceBG: {fileID: 22433278}
+  ValenceKnob: {fileID: 22478804}
 --- !u!222 &22200410
 CanvasRenderer:
   m_ObjectHideFlags: 1
@@ -572,8 +572,8 @@ RectTransform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 184812}
-  m_LocalRotation: {x: -0.12525871, y: -0.15220857, z: -0.01945085, w: 0.9801859}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0.019450871, y: -0.9801859, z: -0.12525871, w: -0.15220873}
+  m_LocalPosition: {x: 0, y: 0, z: 3.9899995}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 22409576}
@@ -583,7 +583,7 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -1.5700012, y: 1.8100014}
   m_SizeDelta: {x: 200, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &22441558

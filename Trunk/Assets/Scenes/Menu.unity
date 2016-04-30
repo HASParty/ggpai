@@ -337,10 +337,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 90716393}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec4432516a4297a4bac2c98c12cf3722, type: 3}
+  m_Script: {fileID: 11500000, guid: 02e065962fa0f1d4687b6794a28782ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Which: TurnTime
+  Which: 
   Value: 
 --- !u!1001 &106876264
 Prefab:
@@ -427,7 +427,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11461126, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
       propertyPath: m_Text
-      value: Go
+      value: Test C
       objectReference: {fileID: 0}
     - target: {fileID: 11449366, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
       propertyPath: m_IsOn
@@ -435,11 +435,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11449366, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
       propertyPath: m_Interactable
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 115358, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
       propertyPath: m_Name
-      value: Go
+      value: Test C
       objectReference: {fileID: 0}
     - target: {fileID: 11449366, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
       propertyPath: m_Group
@@ -480,11 +480,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 106876265}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec4432516a4297a4bac2c98c12cf3722, type: 3}
+  m_Script: {fileID: 11500000, guid: 02e065962fa0f1d4687b6794a28782ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Which: GameName
-  Value: go
+  Value: CheckersTestC
 --- !u!1 &306068797
 GameObject:
   m_ObjectHideFlags: 0
@@ -521,6 +521,7 @@ MonoBehaviour:
   Low: 0
   Neutral: 1
   High: 2
+  SimulationCutoff: 0
   Extraversion: 0
   Agreeableness: 0
   Neuroticism: 0
@@ -546,7 +547,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 306068797}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1320f0dc91ec94542b87a60aac944fb2, type: 3}
+  m_Script: {fileID: 11500000, guid: 55e2c2e0b0ed5f84d8cfc8f45a9412cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &311206260
@@ -634,7 +635,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11461126, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
       propertyPath: m_Text
-      value: Checkers
+      value: Test B
       objectReference: {fileID: 0}
     - target: {fileID: 11449366, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
       propertyPath: m_IsOn
@@ -642,7 +643,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11449366, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
       propertyPath: m_Interactable
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11449366, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
       propertyPath: m_Group
@@ -692,11 +693,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 311206262}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec4432516a4297a4bac2c98c12cf3722, type: 3}
+  m_Script: {fileID: 11500000, guid: 02e065962fa0f1d4687b6794a28782ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Which: GameName
-  Value: checkers
+  Value: CheckersTestB
 --- !u!1 &396826197
 GameObject:
   m_ObjectHideFlags: 0
@@ -1029,23 +1030,23 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11426146, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -1087,7 +1088,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 570319772}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec4432516a4297a4bac2c98c12cf3722, type: 3}
+  m_Script: {fileID: 11500000, guid: 02e065962fa0f1d4687b6794a28782ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Which: Conscientiousness
@@ -1187,23 +1188,23 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11426146, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_Value
@@ -1249,7 +1250,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 598125008}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec4432516a4297a4bac2c98c12cf3722, type: 3}
+  m_Script: {fileID: 11500000, guid: 02e065962fa0f1d4687b6794a28782ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Which: Extraversion
@@ -1339,23 +1340,23 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 101260, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_Name
@@ -1401,7 +1402,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 687969907}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec4432516a4297a4bac2c98c12cf3722, type: 3}
+  m_Script: {fileID: 11500000, guid: 02e065962fa0f1d4687b6794a28782ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Which: Agreeableness
@@ -1572,23 +1573,23 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11426146, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -1638,7 +1639,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 845939188}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec4432516a4297a4bac2c98c12cf3722, type: 3}
+  m_Script: {fileID: 11500000, guid: 02e065962fa0f1d4687b6794a28782ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Which: Openness
@@ -1728,7 +1729,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 115358, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
       propertyPath: m_Name
-      value: Mylla
+      value: Test A
       objectReference: {fileID: 0}
     - target: {fileID: 11449366, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
       propertyPath: m_Group
@@ -1754,6 +1755,10 @@ Prefab:
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 11461126, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
+      propertyPath: m_Text
+      value: Test A
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
   m_IsPrefabParent: 0
@@ -1774,11 +1779,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 939144397}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec4432516a4297a4bac2c98c12cf3722, type: 3}
+  m_Script: {fileID: 11500000, guid: 02e065962fa0f1d4687b6794a28782ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Which: GameName
-  Value: mylla
+  Value: CheckersTestA
 --- !u!1 &1127288245
 GameObject:
   m_ObjectHideFlags: 0
@@ -2013,23 +2018,23 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11426146, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -2071,7 +2076,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1159500236}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec4432516a4297a4bac2c98c12cf3722, type: 3}
+  m_Script: {fileID: 11500000, guid: 02e065962fa0f1d4687b6794a28782ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Which: Neuroticism
@@ -2418,10 +2423,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1580149706}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec4432516a4297a4bac2c98c12cf3722, type: 3}
+  m_Script: {fileID: 11500000, guid: 02e065962fa0f1d4687b6794a28782ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Which: StartTime
+  Which: 
   Value: 
 --- !u!1 &1652965160
 GameObject:

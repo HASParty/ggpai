@@ -17,8 +17,13 @@ public class MouseCast : MonoBehaviour {
 			cell.OnSelect();
 		}
 
-        if(Input.GetKeyUp(KeyCode.C)) {
+        if(Input.GetKeyUp(KeyCode.C) || (Input.GetKeyUp(KeyCode.JoystickButton6))) {
             UnityEngine.VR.InputTracking.Recenter();
+        }
+
+        if (Input.GetKeyUp(KeyCode.T))
+        {
+            TestManager.Instance.HidePlayerMode = !TestManager.Instance.HidePlayerMode;
         }
 	}
 
