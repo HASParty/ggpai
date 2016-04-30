@@ -18,11 +18,13 @@ import org.ggp.base.util.statemachine.StateMachine;
 import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.TransitionDefinitionException;
+import org.ggp.base.util.gdl.grammar.GdlSentence;
 
 import gamer.MCTS.MovePick.MAST;
 import gamer.MCTS.MovePick.MovePick;
 import gamer.MCTS.nodes.RaveNode;
 import gamer.JeffGamer;
+import gamer.UnityGamer;
 import util.QueryBuilder; 
 // }}
 
@@ -39,7 +41,7 @@ public class MCTSRAVE extends Thread {
     //MAST
     private MovePick mast;
     private double epsilon;
-    // private GdlSentence pcQuery;
+    private GdlSentence pcQuery;
     //}}
     //General MCTS variables{{
     private Random rand = new Random();
@@ -99,7 +101,7 @@ public class MCTSRAVE extends Thread {
         if(gameName == null){
             gameName = "Mylla";
         }
-        // pcQuery = QueryBuilder.pieceCount("pieces_on_board");
+        pcQuery = QueryBuilder.pieceCount("pieces_on_board");
         mast = new MAST(gameName);
         expanding = true;
         machine = gamer.getStateMachine();
@@ -231,8 +233,7 @@ public class MCTSRAVE extends Thread {
         if(machine.isTerminal(state)){
             avgPlayOutDepth = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth) / (float)(playOutCount + 1);
             playOutCount++;
-            // System.out.println(((JeffGamer)gamer).prover.askAll(pcQuery ,state.getContents()));
-            System.out.println();
+            // System.out.println(((UnityGamer)gamer).prover.askAll(pcQuery, state.getContents()));
             return getGoalsAsDouble(state);
         }
 

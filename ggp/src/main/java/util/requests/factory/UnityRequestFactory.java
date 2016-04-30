@@ -100,17 +100,16 @@ public class UnityRequestFactory extends RequestFactory {
         SymbolAtom arg3 = (SymbolAtom) list.get(3);
         SymbolAtom arg4 = (SymbolAtom) list.get(4);
         SymbolAtom arg5 = (SymbolAtom) list.get(5);
-        SymbolAtom arg6 = (SymbolAtom) list.get(6);
+        SymbolList arg6 = (SymbolList) list.get(6);
 
         String matchId = arg1.getValue();
         GdlConstant role = (GdlConstant) GdlFactory.createTerm(arg2);
         String gameName = arg3.getValue();
         int startClock = Integer.valueOf(arg4.getValue());
         int playClock = Integer.valueOf(arg5.getValue());
-        String contValues = arg6.getValue().trim();
         ArrayList<Double> controlValues = new ArrayList<>();
-        for (String val : contValues.substring(1, contValues.length() - 1).split(" ")){
-            controlValues.add(Double.parseDouble(val));
+        for (int i = 0; i < arg6.size(); ++i){
+            controlValues.add(Double.parseDouble(arg6.get(i).toString()));
         }
 
         // For now, there are only five standard arguments. If there are any

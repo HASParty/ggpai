@@ -20,6 +20,7 @@ import org.ggp.base.util.statemachine.MachineState;
 import org.ggp.base.util.statemachine.Move;
 import org.ggp.base.util.statemachine.Role;
 import org.ggp.base.util.statemachine.StateMachine;
+import org.ggp.base.util.prover.aima.AimaProver;
 import org.ggp.base.util.statemachine.cache.CachedStateMachine;
 import org.ggp.base.util.statemachine.exceptions.GoalDefinitionException;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
@@ -41,6 +42,7 @@ public class UnityGamer extends StateMachineGamer {
     private Role other;
     public boolean silent = false;
     public Map<Role, Integer> roleMap;
+    public AimaProver prover;
     private ArrayList<Double> cVal; //0:Epsilon, 1:raveThresh, 2:graveThresh, 3:chargeDicount
                                     //4:treeDicount, 5:limit
     //TODO: Swap this out for synchronizing on the root node
@@ -51,6 +53,7 @@ public class UnityGamer extends StateMachineGamer {
     //public void stateMachineMetaGame(long timeout) {{
     @Override
     public void stateMachineMetaGame(long timeout) {
+        prover = new AimaProver(getMatch().getGame().getRules());
         roleMap = getStateMachine().getRoleIndices();
         mcts = new MCTSRAVE(this, lock1, silent, cVal.get(0),
                 cVal.get(1), cVal.get(2), cVal.get(3), cVal.get(4), cVal.get(5));
