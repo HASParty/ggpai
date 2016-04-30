@@ -54,7 +54,8 @@ public final class Update extends Thread {
 
                     String input  = inp.readLine();
 
-                    if(input.toLowerCase().contains("stop")){
+                    if(input.toLowerCase().contains("abort")){
+                        pw.println("ack");
                         break;
                     } else {
                         //Do shit with what we get
