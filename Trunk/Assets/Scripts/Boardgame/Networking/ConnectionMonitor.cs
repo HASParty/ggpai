@@ -92,7 +92,7 @@ namespace Boardgame.Networking {
         }
 
         public void EndGame() {
-            Write("STOP " + Config.MatchID + " ( nil )");
+            Write("ABORT " + Config.MatchID);
 			//Connection.Write("stop\n", Connection.feedConnection.GetStream());
         }
 
