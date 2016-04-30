@@ -1784,7 +1784,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Which: GameName
-  Value: CheckersTestA
+  Value: mylla
 --- !u!1 &1127288245
 GameObject:
   m_ObjectHideFlags: 0

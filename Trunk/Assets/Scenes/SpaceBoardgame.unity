@@ -3068,11 +3068,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec2f14891cb394943a6a047a46961728, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Override: 1
+  Override: 0
   MatchID: 1234
   GameName: mylla
   StartTime: 25
   TurnTime: 5
+  Turns: -1
   Low: 0
   Neutral: 1
   High: 2

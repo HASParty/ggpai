@@ -30,6 +30,7 @@ namespace Boardgame.Networking {
 
         void Start() {
             if(Connect()) StartGame();
+            turnCount = 0;
             OnGameUpdate.AddListener(TurnMonitor);
             BoardgameManager.Instance.OnMakeMove.AddListener(MoveMade);
         }
@@ -64,7 +65,8 @@ namespace Boardgame.Networking {
         private int turnCount = 0;
         void TurnMonitor(GameData data) {
             turnCount++;
-            if (turnCount > Config.Turns && Config.Turns != -1)
+            Debug.Log(Config.Turns + " " + turnCount);
+            if (Config.Turns != -1 && turnCount > Config.Turns)
             {
                 StopCoroutine(Request());
                 EndGame();
