@@ -33,7 +33,7 @@ namespace Boardgame.Configuration {
                     break;
                 case "MatchID":
                     MatchID = value;
-                    break;
+                    break;                    
                 case "StartTime":
                 case "TurnTime":
                     SetInt(which, value);

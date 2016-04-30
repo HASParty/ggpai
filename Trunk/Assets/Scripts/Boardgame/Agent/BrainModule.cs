@@ -72,8 +72,7 @@ namespace Boardgame.Agent {
                         return MoveReaction.NEGATIVE;
                     }
                 }
-
-                if(move.Equals(worstMove)) {
+                else {
 
                     if (myUCTavg < foeUCTavg) return MoveReaction.NEGATIVE;
                     //might be amused depending on personality
@@ -207,7 +206,7 @@ namespace Boardgame.Agent {
                             MoveReaction reaction = this.react(react.MoveToReact[0], react.MyMove ? player : (player == Player.First ? Player.Second : Player.First));
                             Debug.Log(reaction);
                             FaceEmotion faceReact;
-                            Posture poser = new Posture("postureReact", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0f, 2f);
+                            Posture poser = new Posture("postureReact", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0f, 8f);
                             switch (reaction) {
                                 case MoveReaction.CONFUSED:
                                     faceReact = new FaceEmotion("ConfusedFace", chunk.owner, 0f, 1.8f*pm.GetArousalConfusedMod(), 0.6f*pm.GetValenceConfusedMod());

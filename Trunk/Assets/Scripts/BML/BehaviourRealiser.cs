@@ -355,7 +355,7 @@ public class BehaviourRealiser : MonoBehaviour {
     /// <param name="duration">Duration.</param>
     /// <param name="amount">Amount.</param>
     IEnumerator LeanIn(float duration = 3f, float amount = 30f) {
-        Debug.Log("Leaning in");
+        //Debug.Log("Leaning in");
         _hl.lean = amount;
         yield return new WaitForSeconds(duration);
         _hl.lean = 0;

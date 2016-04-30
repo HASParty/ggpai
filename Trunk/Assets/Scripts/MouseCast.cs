@@ -17,13 +17,35 @@ public class MouseCast : MonoBehaviour {
 			cell.OnSelect();
 		}
 
-        if(Input.GetKeyUp(KeyCode.C)) {
+        if(Input.GetKeyUp(KeyCode.C) || (Input.GetKeyUp(KeyCode.JoystickButton6))) {
             UnityEngine.VR.InputTracking.Recenter();
+        }
+
+        if (Input.GetKeyUp(KeyCode.T))
+        {
+            TestManager.Instance.HidePlayerMode = !TestManager.Instance.HidePlayerMode;
         }
 	}
 
+    public void DefaultMode() {
+        defaultMode = true;
+    }
+
+    public void FreeMode() {
+        defaultMode = false;
+    }
+
+    bool defaultMode = true;
+
+    Ray ray;
 	void FixedUpdate() {
-		Ray ray = Camera.main.ViewportPointToRay (new Vector3 (0.5f, 0.4f, 0f));
+        Ray ray;
+        if (defaultMode) {
+            ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.4f, 0f));
+        } else {
+            if (!Camera.current) return;
+            ray = Camera.current.ScreenPointToRay(Input.mousePosition);
+        }
 		RaycastHit hit;
 		if(Physics.Raycast(ray, out hit, 1.9f)) {			
 			var newCell = hit.collider.gameObject.GetComponent<PhysicalCell>();

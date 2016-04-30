@@ -41,6 +41,8 @@ namespace Boardgame.Agent {
             var move = data.MovesMade;
             if (!data.IsStart && bm.player == data.Control && data.MovesMade.Count > 0) {                
                 bm.ExecuteMove(move);
+                Debug.Log("Moves:");
+                Debug.Log(Tools.Stringify<GDL.Move>.List(move));
                 OnMoveMade(move, bm.player);                
             }
 
