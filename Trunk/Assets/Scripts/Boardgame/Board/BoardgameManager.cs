@@ -67,13 +67,14 @@ namespace Boardgame {
         }
 
         public void CheckGame(GameData data) {
-            if (data.State == Terminal.FALSE) {
+            if (!data.IsDone && data.State == Terminal.FALSE) {
                 if (data.IsStart) GameStart(data.GameState);
                 SetLegalMoves(data.LegalMoves);
                 if (data.IsHumanPlayerTurn) UIManager.Instance.SetState("Player's turn");
                 else UIManager.Instance.SetState("Opponent's turn");
             } else {
                 Debug.Log(data.State);
+                SetLegalMoves(new List<Move>());
                 UIManager.Instance.SetState(data.State.ToString());
             }
         }
@@ -141,7 +142,6 @@ namespace Boardgame {
                         break;
                     case MoveType.REMOVE:
                         piece = grid.RemovePiece(move.From);
-                        Debug.Log("I PUT IN TRASH "+piece.name+" "+gameScriptable.TrashPile);
                         grid.PlacePiece(piece, gameScriptable.TrashPile);
                         break;
                     case MoveType.MOVE:

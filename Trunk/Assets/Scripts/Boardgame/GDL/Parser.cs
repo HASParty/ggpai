@@ -13,7 +13,7 @@ namespace Boardgame.GDL {
         public static Message BreakMessage(string message) {
             var split = message.Split(new char[] { ':' }, 3, StringSplitOptions.RemoveEmptyEntries);
             Message m;
-            if (split.Length == 1 && message == "done")
+            if (split.Length == 1)
             {
                 m.action = "done";
                 m.legalMoves = null;

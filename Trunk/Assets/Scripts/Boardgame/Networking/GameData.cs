@@ -14,7 +14,7 @@ namespace Boardgame.Networking {
             }
             else if (r.IsDone(data))
             {
-                State = Terminal.DONE;
+                IsDone = true;
             }
             else {                
                 MovesMade = r.GetMove(data);
@@ -31,6 +31,7 @@ namespace Boardgame.Networking {
         public Player Control { get; protected set; }
 
         public readonly bool IsStart = false;
+        public readonly bool IsDone = false;
         public readonly Terminal State;
         public readonly bool IsHumanPlayerTurn = true;
         public readonly bool IsBusy;

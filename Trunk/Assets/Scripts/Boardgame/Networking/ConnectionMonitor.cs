@@ -29,14 +29,17 @@ namespace Boardgame.Networking {
         }
 
         void Start() {
+            Disconnect();
             if(Connect()) StartGame();
             turnCount = 0;
+            OnGameUpdate.RemoveListener(TurnMonitor);
             OnGameUpdate.AddListener(TurnMonitor);
             BoardgameManager.Instance.OnMakeMove.AddListener(MoveMade);
         }
 
         public void MoveMade(List<GDL.Move> moves, Player player) {
             if (player == other) {
+                turnCount++;
                 foreach (var m in moves) {
                     Push(BoardgameManager.Instance.writer.WriteMove(m));
                 }
@@ -64,9 +67,9 @@ namespace Boardgame.Networking {
 
         private int turnCount = 0;
         void TurnMonitor(GameData data) {
-            turnCount++;
+            if (data.IsDone) return;
             Debug.Log(Config.Turns + " " + turnCount);
-            if (Config.Turns != -1 && turnCount > Config.Turns)
+            if (Config.Turns != -1 && turnCount >= Config.Turns)
             {
                 StopCoroutine(Request());
                 EndGame();
@@ -92,14 +95,18 @@ namespace Boardgame.Networking {
         }
 
         public void EndGame() {
-            Write("ABORT " + Config.MatchID);
-			//Connection.Write("stop\n", Connection.feedConnection.GetStream());
+            if (IsConnected())
+            {
+                Connection.Write("stop\n", Connection.feedConnection.GetStream());
+                Write("ABORT " + Config.MatchID);
+                //Disconnect();
+            }
         }
 
         void OnDestroy() {
             if (IsConnected()) {
-                Write("ABORT " + Config.MatchID);
-				//Connection.Write("stop\n", Connection.feedConnection.GetStream());
+                Connection.Write("stop\n", Connection.feedConnection.GetStream());
+                Write("ABORT " + Config.MatchID);				
                 //Disconnect();
             }
         }

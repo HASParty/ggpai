@@ -126,10 +126,10 @@ namespace Boardgame.Networking {
                 gameConnection.Close();
                 GameConnectionStatus = Status.OFF;
             }
-            if (feedConnection != null) {
+            /*if (feedConnection != null) {
                 feedConnection.Close();
                 FeedConnectionStatus = Status.OFF;
-            }
+            }*/
         }
     }
 }
