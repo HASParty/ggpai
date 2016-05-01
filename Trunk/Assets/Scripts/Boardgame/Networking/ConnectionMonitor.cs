@@ -76,8 +76,10 @@ namespace Boardgame.Networking {
                 EndGame();
             }
             else if (data.State == GDL.Terminal.FALSE) {
-                if (data.IsStart && !data.IsHumanPlayerTurn) {
-                    other = data.Control == Player.First ? Player.Second : Player.First;
+                if (data.IsStart) {
+                    if (!data.IsHumanPlayerTurn) {
+                        other = data.Control == Player.First ? Player.Second : Player.First;
+                    }
                     Connection.Write(Connection.Compose("ready"), Connection.feedConnection.GetStream());
                 }
                 if (!data.IsHumanPlayerTurn) {
