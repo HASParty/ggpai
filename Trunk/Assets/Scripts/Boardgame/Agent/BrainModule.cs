@@ -209,7 +209,7 @@ namespace Boardgame.Agent {
                             Posture poser = new Posture("postureReact", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0f, 8f);
                             switch (reaction) {
                                 case MoveReaction.CONFUSED:
-                                    faceReact = new FaceEmotion("ConfusedFace", chunk.owner, 0f, 1.8f*pm.GetArousalConfusedMod(), 0.6f*pm.GetValenceConfusedMod());
+                                    faceReact = new FaceEmotion("ConfusedFace", chunk.owner, 0f, 1.6f*pm.GetArousalConfusedMod(), 0.6f*pm.GetValenceConfusedMod());
                                     poser.AddPose(Behaviour.Lexemes.BodyPart.RIGHT_ARM, Behaviour.Lexemes.BodyPose.FIST_COVER_MOUTH);
                                     curr.AddChunk(faceReact);
                                     curr.AddChunk(poser);

@@ -769,6 +769,7 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -1031,23 +1032,23 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11426146, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -1189,23 +1190,23 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11426146, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_Value
@@ -1341,23 +1342,23 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 101260, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_Name
@@ -1574,23 +1575,23 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11426146, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -2019,23 +2020,23 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11426146, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -2148,7 +2149,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 60
+  m_Text: 20
 --- !u!222 &1325384023
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2452,7 +2453,7 @@ MonoBehaviour:
   m_CaretColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
   m_CustomCaretColor: 0
   m_SelectionColor: {r: 0.65882355, g: 0.80784315, b: 1, a: 0.7529412}
-  m_Text: 60
+  m_Text: 20
   m_CaretBlinkRate: 0.85
   m_CaretWidth: 1
   m_ReadOnly: 0

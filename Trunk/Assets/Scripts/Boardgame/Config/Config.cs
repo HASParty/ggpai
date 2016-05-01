@@ -8,7 +8,7 @@ namespace Boardgame.Configuration {
     public static class Config {
         public static string MatchID = "1234";
         public static string GameName = "mylla";
-        public static int StartTime = 60;
+        public static int StartTime = 20;
         public static int TurnTime = 10;
         public static int Turns = -1;
 
