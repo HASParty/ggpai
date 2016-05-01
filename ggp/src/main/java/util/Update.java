@@ -51,7 +51,8 @@ public final class Update extends Thread {
                 do {
                     in =  inp.readLine();
                 } while(!in.toLowerCase().equals("( ready )"));
-                System.out.println(in);
+                System.out.println("THIS IS THE MESSAGE ->>>>>>>>>>>>>>>>>" + in + 
+                        "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<----- NOTICE ME SENPAI!!!!");
                 while (listener != null) {
                     String eval = gamer.getEvaluation();
                     pw.println(eval);
