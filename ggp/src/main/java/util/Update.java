@@ -60,7 +60,7 @@ public final class Update extends Thread {
                     String input  = inp.readLine();
 
                     if(input.toLowerCase().contains("abort")){
-                        sleep(1);
+                        sleep(200);//Because windows
                         pw.println("ack");
                         System.out.println("Breaking out of update loop");
                         break;
