@@ -47,11 +47,10 @@ public final class Update extends Thread {
             PrintWriter pw = new PrintWriter(connection.getOutputStream(), true);
             BufferedReader inp = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             while (listener != null) {
-                // String in = HttpReader.readAsServer(connection);
                 String in;
                 do {
                     in =  inp.readLine();
-                } while(!in.toLowerCase().equals("start"));
+                } while(!in.toLowerCase().equals("( ready )"));
                 System.out.println(in);
                 while (listener != null) {
                     String eval = gamer.getEvaluation();
