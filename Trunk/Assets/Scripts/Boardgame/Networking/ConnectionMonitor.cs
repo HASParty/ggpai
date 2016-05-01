@@ -80,7 +80,7 @@ namespace Boardgame.Networking {
                     if (!data.IsHumanPlayerTurn) {
                         other = data.Control == Player.First ? Player.Second : Player.First;
                     }
-                    Connection.Write(Connection.Compose("ready"), Connection.feedConnection.GetStream());
+                    Connection.Write("ready\n", Connection.feedConnection.GetStream());
                 }
                 if (!data.IsHumanPlayerTurn) {
                     if (data.IsStart) {
