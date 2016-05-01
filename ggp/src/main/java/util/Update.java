@@ -60,7 +60,9 @@ public final class Update extends Thread {
                     String input  = inp.readLine();
 
                     if(input.toLowerCase().contains("abort")){
-                        pw.println("[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ack]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]");
+                        for (int i = 0; i < 1000000;  ++i){
+                            pw.println("ack\n");
+                        }
                         pw.flush();
                         System.out.println("Breaking out of update loop");
                         break;
