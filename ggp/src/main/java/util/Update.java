@@ -50,7 +50,7 @@ public final class Update extends Thread {
                 String in;
                 do {
                     in =  inp.readLine();
-                } while(!in.toLowerCase().equals("( ready )"));
+                } while(!in.toLowerCase().contains("ready"));
                 System.out.println("THIS IS THE MESSAGE ->>>>>>>>>>>>>>>>>" + in + 
                         "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<----- NOTICE ME SENPAI!!!!");
                 while (listener != null) {
