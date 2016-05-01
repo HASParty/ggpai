@@ -61,8 +61,7 @@ public final class Update extends Thread {
 
                     if(input.toLowerCase().contains("abort")){
                         sleep(1);
-                        pw.println(eval + "ack\r\n");
-                        pw.flush();
+                        pw.println("ack");
                         System.out.println("Breaking out of update loop");
                         break;
                     } else {
