@@ -2,6 +2,8 @@ package gamer.MCTS;
 // Imports {{
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -364,10 +366,11 @@ public class MCTSRAVE extends Thread {
     private void markAndSweep(int depth){
         HashSet<MachineState> marked =  new HashSet<>();
         System.out.println("Size of dag before sweep: " + dag.size());
-        mark(root, marked, depth);
+        long time = System.currentTimeMillis();
+        mark(root, marked, depth, time);
         sweep(marked);
         System.out.println("Size of dag after sweep: " + dag.size());
-    }//}}
+   }//}}
 
     //private void sweep(HashSet<MachineState> marked){{
     private void sweep(HashSet<MachineState> marked){
@@ -384,13 +387,21 @@ public class MCTSRAVE extends Thread {
     } //}}
 
     //private void mark(RaveNode node, HashSet<MachineState> marked, int depth){{
-    private void mark(RaveNode node, HashSet<MachineState> marked, int depth){
+    private void mark(RaveNode node, HashSet<MachineState> marked, int depth, long time){
         if(node.leaf() || depth == 0){
             return;
         }
-        marked.add(node.state);
-        for (RaveNode child : node.getChildren().values()){
-            mark(child, marked, depth - 1);
+        Deque<RaveNode> queue = new LinkedList<>();
+        queue.add(node);
+        while(queue.size() > 0){
+            if((System.currentTimeMillis() - time) > 800){
+                break;
+            }
+            RaveNode child = queue.poll();
+            marked.add(child.state);
+            for (RaveNode n : child.getChildren().values()){
+                queue.add(n);
+            }
         }
     }//}}
     //}}
