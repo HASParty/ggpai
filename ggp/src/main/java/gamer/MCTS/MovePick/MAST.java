@@ -13,7 +13,7 @@ import java.io.ObjectInputStream;
 import org.ggp.base.util.statemachine.Move;
 
 public class MAST extends MovePick{
-    private HashMap<Move, List<Double>> mast;
+    private HashMap<Move, List<Double>> mast; //TODO split this on roles.
     private Random rand;
     public MAST(String gameName){
         super(gameName);

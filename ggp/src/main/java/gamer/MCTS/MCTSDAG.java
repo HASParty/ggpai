@@ -77,7 +77,7 @@ public final class MCTSDAG extends Thread {
     //}}
     //MCTSDAG(StateMachineGamer, ReadWriteLock, boolean) {{
     //DocString MCTSDAG {{
-    /** 
+    /**
      * Simple constructor
      *
      * @param gamer The gamer using this search
@@ -86,7 +86,7 @@ public final class MCTSDAG extends Thread {
      */ //}}
     public MCTSDAG(StateMachineGamer gamer, ReentrantReadWriteLock lock, //{{
             boolean silent, double epsilon){
-        this.epsilon = epsilon; 
+        this.epsilon = epsilon;
         this.silent = silent;
         this.gamer = gamer;
         lastPlayOutDepth = 0;

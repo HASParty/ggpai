@@ -22,7 +22,7 @@ public class RaveNode extends Node {
     private List<HashMap<Move, double[]>> rave;
     private static long graveThresh = 20;
     private HashMap<List<Move>, RaveNode> children;
-    public static long k = 0; 
+    public static long k = 0;
     //}}
     //public RaveNode(List<Move> move){{
     /**
@@ -51,7 +51,7 @@ public class RaveNode extends Node {
                 rave.get(i).put(move.get(i), new double[]{0.0d, 0.0d});
             }
         }
-        
+
     }//}}
 
     //public List<Move> select(List<HashMap<Move, double[]>> grave){{
@@ -86,7 +86,7 @@ public class RaveNode extends Node {
                 return move;
             }
         }
-        return null; 
+        return null;
     } //}}
 
     //public void updateRave(List<List<Move>> jointMoves, List<Double> result){{
@@ -128,7 +128,7 @@ public class RaveNode extends Node {
     public static void setGrave(long graveThresh){
         RaveNode.graveThresh = graveThresh;
     }//}}
-    
+
     //public List<HashMap<Move, double[]>> getMap(){{
     public List<HashMap<Move, double[]>> getMap(){
         return rave;

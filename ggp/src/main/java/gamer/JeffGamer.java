@@ -28,6 +28,7 @@ import is.ru.cadia.ggp.propnet.BackwardPropNetStateMachine;
 import is.ru.cadia.ggp.propnet.structure.GGPBasePropNetStructureFactory;
 
 import gamer.MCTS.MCTS;
+import gamer.MCTS.MCTSControlValues;
 import gamer.MCTS.MCTSRAVE;
 //}}
 
@@ -40,6 +41,7 @@ public class JeffGamer extends StateMachineGamer {
     private MCTSRAVE mcts;
     private Role other;
     private Map<Role, Integer> roleMap;
+    private MCTSControlValues values;
     public AimaProver prover;
     public ReentrantReadWriteLock lock1= new ReentrantReadWriteLock(true);
     //}}
@@ -50,7 +52,10 @@ public class JeffGamer extends StateMachineGamer {
     public void stateMachineMetaGame(long timeout) {
         prover = new AimaProver(getMatch().getGame().getRules());
         roleMap = getStateMachine().getRoleIndices();
-        mcts = new MCTSRAVE(this, lock1, false, 0.9f, 100, 20, 0.998f, 0.99f, 0);
+
+
+        values = new MCTSControlValues();
+        mcts = new MCTSRAVE(this, lock1, false, values);
         long finishBy = timeout - 1100;
         mcts.start();
         while(System.currentTimeMillis() < finishBy){
@@ -67,7 +72,7 @@ public class JeffGamer extends StateMachineGamer {
         return new BackwardPropNetStateMachine(new GGPBasePropNetStructureFactory());
     } //}}
     //}}
-    
+
     //------------Move Selection-----------------------------------------------------------------{{
     //public GdlTerm selectMove(long timeout) throws MoveSelectionException {{
     @Override
@@ -103,8 +108,7 @@ public class JeffGamer extends StateMachineGamer {
     //public Move stateMachineSelectMove(long timeout) throws TransitionDefinitionException{{
     public Move stateMachineSelectMove(long timeout) throws TransitionDefinitionException,
                                                             MoveDefinitionException,
-                                                            GoalDefinitionException{
-
+                                                            GoalDefinitionException {
         StateMachine theMachine = getStateMachine();
         long start = System.currentTimeMillis();
         long finishBy = timeout - 1100;
@@ -118,7 +122,7 @@ public class JeffGamer extends StateMachineGamer {
         System.out.println(li.toString());
         lock1.writeLock().unlock();
         return li.get(roleMap.get(getRole()));
-    } //}} 
+    } //}}
     //}}
 
     //------------End the gamer------------------------------------------------------------------{{
@@ -157,7 +161,7 @@ public class JeffGamer extends StateMachineGamer {
     }//}}
 
     //public final Role getOtherRole() {{
-    /** 
+    /**
      * Returns the role that this gamer is playing as in the game.
      */
     public final Role getOtherRole() {

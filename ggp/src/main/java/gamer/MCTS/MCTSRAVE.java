@@ -29,7 +29,7 @@ import gamer.MCTS.MovePick.MovePick;
 import gamer.MCTS.nodes.RaveNode;
 import gamer.JeffGamer;
 import gamer.UnityGamer;
-import util.QueryBuilder; 
+import util.QueryBuilder;
 // }}
 
 // Note: The weird comments are for forcing sane folding with marks.
@@ -44,7 +44,6 @@ public class MCTSRAVE extends Thread {
     private HashMap<MachineState, RaveNode> dag;
     //MAST
     private MovePick mast;
-    private double epsilon;
     private GdlSentence pcQuery;
     //Aggression cache
     private Cache<MachineState, ArrayList<Double>> goalCache;
@@ -52,70 +51,72 @@ public class MCTSRAVE extends Thread {
     //General MCTS variables{{
     private Random rand = new Random();
     private ReentrantReadWriteLock lock;
-    private static boolean alive;
     protected RaveNode root;
     protected StateMachine machine;
     protected StateMachineGamer gamer;
     public List<Move> newRoot;
     //}}
     //Extra info/control variables {{
+    private MCTSControlValues values;
     private int DagCounter = 0;
     private static Runtime runtime = Runtime.getRuntime();
     private static boolean expanding;
-    private static long limit = 0;
     private int lastPlayOutDepth;
     private int playOutCount;
     private float avgPlayOutDepth;
-    private double treeDiscount;
-    private double chargeDiscount;
     private String gameName;
+    private ArrayList<Integer> maxCounts;
 
     public boolean silent;
     //}}
     //}}
     //public MCTSRAVE(StateMachineGamer gamer, ReentrantReadWriteLock lock,{{
     /**
-     * Constructor for a MCTS class using GRAVE and MAST 
+     * Constructor for a MCTS class using GRAVE and MAST
      *
      * @param gamer          The gamer using this search
      * @param lock           A lock just to be safe
      * @param silent         Set to false to make it silent
      * @param epsilon        The epsilon greedy value controlling the use of MAST
-     * @param k              The RAVE controll threshold 
-     * @param grave          The GRAVE threshold 
+     * @param k              The RAVE controll threshold
+     * @param grave          The GRAVE threshold
      * @param treeDiscount   How much we discount return values in the MCTS tree
-     * @param ChargeDiscount How much we discount return values in the depth charge 
+     * @param ChargeDiscount How much we discount return values in the depth charge
      * @param limit          Sets a simulation limit for the AI
      */
     public MCTSRAVE(StateMachineGamer gamer, ReentrantReadWriteLock lock,
-                    boolean silent, double epsilon, double k, double grave,
-                    double treeDiscount, double chargeDiscount, double limit){
-        this.epsilon = epsilon; 
-        goalCache = CacheBuilder.newBuilder().maximumSize(40000).build();
-        RaveNode.k = Math.round(k);
-        RaveNode.setGrave(Math.round(grave));
-        this.silent = silent;
+                    boolean silent, MCTSControlValues values){
+        this.maxCounts = new ArrayList<>();
+        maxCounts.add(0);
+        maxCounts.add(0);
+        this.values = values;
         this.gamer = gamer;
-        MCTSRAVE.limit = Math.round(limit);
-        lastPlayOutDepth = 0;
-        playOutCount = 0;
-        avgPlayOutDepth = 0;
-        this.treeDiscount = treeDiscount; //0.999f;
-        this.chargeDiscount = chargeDiscount; //0.995f;
+        this.lock = lock;
+        this.machine = gamer.getStateMachine();
+        this.newRoot = null;
+        this.root = new RaveNode(null);
+        expanding = true;
 
-        dag = new HashMap<>(40000);
-        gameName = gamer.getMatch().getGame().getName();
+        this.lastPlayOutDepth = 0;
+        this.playOutCount = 0;
+        this.avgPlayOutDepth = 0;
+
+        RaveNode.k = Math.round(values.rave);
+        RaveNode.setGrave(Math.round(values.grave));
+
+        this.gameName = gamer.getMatch().getGame().getName();
         if(gameName == null){
             gameName = "Mylla";
+        } else {
+            System.out.println(gameName);
         }
-        pcQuery = QueryBuilder.pieceCount("pieces_on_board");
-        mast = new MAST(gameName);
-        expanding = true;
-        machine = gamer.getStateMachine();
-        root = new RaveNode(null);
-        newRoot = null;
-        alive = true;
-        this.lock = lock;
+        this.dag = new HashMap<>(40000);
+        this.mast = new MAST(gameName);
+        this.pcQuery = QueryBuilder.pieceCount("pieces_on_board");
+        this.goalCache = CacheBuilder.newBuilder().maximumSize(40000).build();
+
+        //Debug
+        this.silent = silent;
     }
     //}}
 
@@ -128,8 +129,8 @@ public class MCTSRAVE extends Thread {
         System.out.println("Using MCTSRAVE");
         while(!Thread.currentThread().isInterrupted()){
             try {
-                if(limit > 0){
-                    while(root.n() > limit && newRoot == null){
+                if(values.limit > 0){
+                    while(root.n() > values.limit && newRoot == null){
                         Thread.sleep(5); //Not necessary to do this in a more efficient way
                     }
                 }
@@ -144,7 +145,7 @@ public class MCTSRAVE extends Thread {
                     checkHeap();
                 }
                 heapCheck++;
-                search(root, null, gamer.getCurrentState(), new ArrayList<List<Move>>());
+                search(root, null, gamer.getCurrentState(), new ArrayList<List<Move>>(), 0);
                 lock.writeLock().unlock();
             } catch (InterruptedException e) {
                 lock.writeLock().unlock();
@@ -169,9 +170,10 @@ public class MCTSRAVE extends Thread {
     private List<Double> search(RaveNode node,
                                 List<HashMap<Move, double[]>> grave,
                                 MachineState state,
-                                List<List<Move>> rave) throws MoveDefinitionException,
-                                                              TransitionDefinitionException,
-                                                              GoalDefinitionException{
+                                List<List<Move>> rave,
+                                int depth) throws MoveDefinitionException,
+                                                  TransitionDefinitionException,
+                                                  GoalDefinitionException{
         List<Double> result;
         if(!node.equals(root)){ //If we aren't at the root we change states
             state = node.state;
@@ -182,12 +184,12 @@ public class MCTSRAVE extends Thread {
                 if(node.goals == null){
                     node.goals = getGoalsAsDouble(state); //Decreasing terminal calls
                     goalCache.put(state, new ArrayList<>(node.goals));
-                } 
+                }
                 node.terminal = true;
             }
             result = new ArrayList<>(node.goals);
         } else if (node.leaf()){
-            if(expanding){ // We don't expand if we have hit a resource limit
+            if(expanding && (depth < values.horizon)){ // We don't expand if we have hit a resource limit
                 node.expand(machine.getLegalJointMoves(state));
             }
             result = playOut(state, rave); //We do one playout
@@ -208,7 +210,7 @@ public class MCTSRAVE extends Thread {
             /* This is ugly but its more efficient than checking them all each time */
             int prev = child.size();
             grave = node.updateGrave(grave);
-            result = search(child, grave, state, rave);
+            result = search(child, grave, state, rave, depth + 1);
             rave.add(ci);
             node.size(child.size(), prev);
             mast.update(ci, result);
@@ -217,7 +219,7 @@ public class MCTSRAVE extends Thread {
         if(!node.terminal){
             node.updateRave(rave, result);
         }
-        applyDiscount(result, treeDiscount);
+        applyDiscount(result, values.treeDiscount);
         return result;
     }//}}
     //}}
@@ -240,24 +242,27 @@ public class MCTSRAVE extends Thread {
         lastPlayOutDepth++;
         List<Double> result;
         if(machine.isTerminal(state)){
-            avgPlayOutDepth = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth) / (float)(playOutCount + 1);
-            playOutCount++;
+            updateAverageDepth();
             ArrayList<Double> goals = goalCache.getIfPresent(state);
-
             if(goals != null){
-                return goals; 
+                return goals;
             }
-            ArrayList<Integer> counts = getPieceCount(state);
             goals = getGoalsAsDouble(state);
-            goals.set(0, Math.max(goals.get(0) - ((9 - counts.get(0))), 0.0));
-            goals.set(1, Math.max(goals.get(1) - ((9 - counts.get(1))), 0.0));
+            applyPersonalityBias(goals, state);
             goalCache.put(state, goals);
+            return goals;
+        } else if (lastPlayOutDepth > values.chargeDepth){  //If we hit our depth limit
+            updateAverageDepth();
+            ArrayList<Double> goals = new ArrayList<>();
+            goals.add(40.0);
+            goals.add(40.0); //We create a default value
+            applyPersonalityBias(goals, state); //And apply bias to it
             return goals;
         }
 
         List<List<Move>> moves = machine.getLegalJointMoves(state);
         List<Move> chosen;
-        if(rand.nextFloat() >= epsilon){
+        if(rand.nextFloat() >= values.epsilon){
             chosen = moves.get(rand.nextInt(moves.size()));
         } else {
             chosen = mast.pickMove(moves);
@@ -266,98 +271,8 @@ public class MCTSRAVE extends Thread {
         result = depthCharge(state, rave);
         rave.add(chosen);
         mast.update(chosen, result);
-        applyDiscount(result, chargeDiscount);
+        applyDiscount(result, values.chargeDiscount);
         return result;
-    }//}}
-    //}}
-
-    //----------------MCTS Move managment-----------------{{
-    //public List<Move> selectMove() throws MoveDefinitionException {{
-    /**
-     * @return The most simulated move at this point
-     */
-    public List<Move> selectMove() throws MoveDefinitionException {
-        Map.Entry<List<Move>, RaveNode> bestMove = null;
-        if (!silent){
-            int mb = 1024*1024;
-            long total = runtime.totalMemory();
-            long free = runtime.freeMemory();
-
-            //Getting the runtime reference from system
-            System.out.println("###################### " +
-                               "Heap utilization statistics [MB] " +
-                               "#######################");
-            //Print used memory
-            System.out.println(String.format("Used Memory:  %d",
-                                            (total - free) / mb));
-            //Print free memory
-            System.out.println(String.format("Free Memory:  %d", free / mb));
-            //Print total available memory
-            System.out.println(String.format("Total Memory: %d", total / mb));
-            //Print Maximum available memory
-            System.out.println(String.format("Max Memory:   %d", runtime.maxMemory() / mb));
-
-            System.out.println();
-            System.out.println("================================"+
-                               "Available moves"+
-                               "================================");
-            System.out.println("N: " + root.n());
-        }
-        for (Map.Entry<List<Move>, RaveNode> entry : root.getChildren().entrySet()){
-            if (!silent){
-                System.out.println(String.format(" Move: %-40s %-40s", 
-                                                 entry.getKey(),
-                                                 entry.getValue()));
-            }
-            if (bestMove == null || entry.getValue().n() > bestMove.getValue().n()){
-                bestMove = entry;
-            }
-        }
-        System.out.println();
-        if (!silent){
-            System.out.println("------------------------------------------------------------" +
-                               "-------------------");
-            System.out.println(String.format("Selecting: %s\n With %d simulations.",
-                                             bestMove,
-                                             bestMove.getValue().n()));
-            System.out.println("------------------------------------------------------------" +
-                               "-------------------");
-
-            System.out.println("--------------------------------"+
-                               "Data Structures"+
-                               "--------------------------------");
-            System.out.println("Mast table size: " + mast.size());
-            System.out.println("Dag connections made this turn: " + DagCounter);
-            DagCounter = 0;
-            System.out.println();
-        }
-        return bestMove.getKey();
-    } //}} 
-
-    //public void applyMove(List<Move> moves)  {{
-    /**
-     * Updates the root node to the given moves
-     *
-     * @param moves The moves that need to be made
-     */
-    public void applyMove(List<Move> moves)  {
-        if (!silent){
-            System.out.println("The applied move !: " + moves.toString());
-            System.out.println("Average playout depth: " + avgPlayOutDepth);
-        }
-        synchronized(root){
-            for (Map.Entry<List<Move>, RaveNode> entry: root.getChildren().entrySet()){
-                if (moves.get(0).equals(entry.getKey().get(0)) &&
-                        moves.get(1).equals(entry.getKey().get(1))){
-
-                    markAndSweep(Integer.MAX_VALUE);
-                    root = entry.getValue();
-                    return;
-                }
-            }
-        }
-        throw new IllegalStateException("A move was selected that was not" + 
-                                        " one of the root node moves");
     }//}}
     //}}
 
@@ -410,14 +325,131 @@ public class MCTSRAVE extends Thread {
     //private ArrayList<Integer> getPieceCount(MachineState state){{
     private ArrayList<Integer> getPieceCount(MachineState state){
         ArrayList<Integer> res = new ArrayList<>();
-        for (GdlSentence s : ((UnityGamer)gamer).prover.askAll(pcQuery, state.getContents())){
+        for (GdlSentence s : ((JeffGamer)gamer).prover.askAll(pcQuery, state.getContents())){
             res.add(Integer.parseInt(s.get(0).toSentence().get(1).toString()));
         }
         return res;
     } //}}
+
+    //private void applyPersonalityBias(ArrayList<Double> goals, MachineState state){{
+    private void applyPersonalityBias(ArrayList<Double> goals, MachineState state){
+        ArrayList<Integer> counts = getPieceCount(state);
+        maxCounts.set(0, Math.max(maxCounts.get(0), counts.get(0)));
+        maxCounts.set(1, Math.max(maxCounts.get(1), counts.get(1)));
+        // Defensiveness
+        goals.set(0,
+                  Math.max(goals.get(0) - ((maxCounts.get(0) - counts.get(0)) * values.defensiveness.get(0)),
+                         0.0));
+        goals.set(1,
+                  Math.max(goals.get(1) - ((maxCounts.get(1) - counts.get(1)) * values.defensiveness.get(1)),
+                           0.0));
+        // Aggression
+        goals.set(0,
+                  Math.min(goals.get(0) + ((maxCounts.get(1) - counts.get(1)) * values.aggression.get(0)),
+                           100.0));
+        goals.set(1,
+                  Math.min(goals.get(1) + ((maxCounts.get(0) - counts.get(0)) * values.aggression.get(1)),
+                           100.0));
+    }//}}
+    //}}
+
+    //----------------MCTS Move managment-----------------{{
+    //public List<Move> selectMove() throws MoveDefinitionException {{
+    /**
+     * @return The most simulated move at this point
+     */
+    public List<Move> selectMove() throws MoveDefinitionException {
+        Map.Entry<List<Move>, RaveNode> bestMove = null;
+        if (!silent){
+            int mb = 1024*1024;
+            long total = runtime.totalMemory();
+            long free = runtime.freeMemory();
+
+            //Getting the runtime reference from system
+            System.out.println("###################### " +
+                               "Heap utilization statistics [MB] " +
+                               "#######################");
+            //Print used memory
+            System.out.println(String.format("Used Memory:  %d",
+                                            (total - free) / mb));
+            //Print free memory
+            System.out.println(String.format("Free Memory:  %d", free / mb));
+            //Print total available memory
+            System.out.println(String.format("Total Memory: %d", total / mb));
+            //Print Maximum available memory
+            System.out.println(String.format("Max Memory:   %d", runtime.maxMemory() / mb));
+
+            System.out.println();
+            System.out.println("================================"+
+                               "Available moves"+
+                               "================================");
+            System.out.println("N: " + root.n());
+        }
+        for (Map.Entry<List<Move>, RaveNode> entry : root.getChildren().entrySet()){
+            if (!silent){
+                System.out.println(String.format(" Move: %-40s %-40s",
+                                                 entry.getKey(),
+                                                 entry.getValue()));
+            }
+            if (bestMove == null || entry.getValue().n() > bestMove.getValue().n()){
+                bestMove = entry;
+            }
+        }
+        System.out.println();
+        if (!silent){
+            System.out.println("------------------------------------------------------------" +
+                               "-------------------");
+            System.out.println(String.format("Selecting: %s\n With %d simulations.",
+                                             bestMove,
+                                             bestMove.getValue().n()));
+            System.out.println("------------------------------------------------------------" +
+                               "-------------------");
+
+            System.out.println("--------------------------------"+
+                               "Data Structures"+
+                               "--------------------------------");
+            System.out.println("Mast table size: " + mast.size());
+            System.out.println("Dag connections made this turn: " + DagCounter);
+            DagCounter = 0;
+            System.out.println();
+        }
+        return bestMove.getKey();
+    } //}}
+
+    //public void applyMove(List<Move> moves)  {{
+    /**
+     * Updates the root node to the given moves
+     *
+     * @param moves The moves that need to be made
+     */
+    public void applyMove(List<Move> moves)  {
+        if (!silent){
+            System.out.println("The applied move !: " + moves.toString());
+            System.out.println("Average playout depth: " + avgPlayOutDepth);
+        }
+        synchronized(root){
+            for (Map.Entry<List<Move>, RaveNode> entry: root.getChildren().entrySet()){
+                if (moves.get(0).equals(entry.getKey().get(0)) &&
+                        moves.get(1).equals(entry.getKey().get(1))){
+
+                    markAndSweep(Integer.MAX_VALUE);
+                    root = entry.getValue();
+                    return;
+                }
+            }
+        }
+        throw new IllegalStateException("A move was selected that was not" +
+                                        " one of the root node moves");
+    }//}}
     //}}
 
     //----------------MCTS Helper functions---------------{{
+
+    private void updateAverageDepth(){
+        float rebuild = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth);
+        avgPlayOutDepth = rebuild / (float)(playOutCount + 1);
+        playOutCount++;
+    }
 
     //private void checkHeap(){{
     private void checkHeap(){

@@ -30,16 +30,18 @@ import is.ru.cadia.ggp.propnet.BackwardPropNetStateMachine;
 import is.ru.cadia.ggp.propnet.structure.GGPBasePropNetStructureFactory;
 
 import gamer.MCTS.MCTSRAVE;
+import gamer.MCTS.MCTSControlValues;
 //}}
 //
 /**
- * UnityGamer is a special snowflake that does not work with a normal GGP server or the kiosk 
+ * UnityGamer is a special snowflake that does not work with a normal GGP server or the kiosk
  */
 
 public class UnityGamer extends StateMachineGamer {
     //------------Variables----------------------------------------------------------------------{{
     protected MCTSRAVE mcts;
     private Role other;
+    private MCTSControlValues values;
     public boolean silent = false;
     public Map<Role, Integer> roleMap;
     public AimaProver prover;
@@ -48,15 +50,18 @@ public class UnityGamer extends StateMachineGamer {
     //TODO: Swap this out for synchronizing on the root node
     public ReentrantReadWriteLock lock1= new ReentrantReadWriteLock(true);
     //}}
-    
+
     //------------Initialize---------------------------------------------------------------------{{
     //public void stateMachineMetaGame(long timeout) {{
     @Override
     public void stateMachineMetaGame(long timeout) {
         prover = new AimaProver(getMatch().getGame().getRules());
         roleMap = getStateMachine().getRoleIndices();
-        mcts = new MCTSRAVE(this, lock1, silent, cVal.get(0),
-                cVal.get(1), cVal.get(2), cVal.get(3), cVal.get(4), cVal.get(5));
+        values = new MCTSControlValues();
+        values.setAll(cVal);
+        mcts = new MCTSRAVE(this, lock1, false, values);
+        // mcts = new MCTSRAVE(this, lock1, silent, cVal.get(0),
+        //         cVal.get(1), cVal.get(2), cVal.get(3), cVal.get(4), cVal.get(5));
         long finishBy = timeout - 1000;
         mcts.start();
     }//}}
@@ -148,7 +153,7 @@ public class UnityGamer extends StateMachineGamer {
                 }
             }
         lock1.writeLock().unlock();
-            return move.get(roleMap.get(getRole())).getContents(); 
+            return move.get(roleMap.get(getRole())).getContents();
         }
         catch (Exception e) {
             System.out.println(e.toString());
@@ -221,7 +226,7 @@ public class UnityGamer extends StateMachineGamer {
 
     //public List<Move> getLegalMoves(Role role) throws MoveDefinitionException{{
     /**
-     * @param role The role you want the moves for 
+     * @param role The role you want the moves for
      * @return Legal moves for the given role
      */
     public List<Move> getLegalMoves(Role role) throws MoveDefinitionException{
