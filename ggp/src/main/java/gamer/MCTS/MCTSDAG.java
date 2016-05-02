@@ -93,7 +93,7 @@ public final class MCTSDAG extends Thread {
         treeDiscount = 0.999f;
         chargeDiscount = 0.995f;
 
-        dag = new HashMap<>(20000);
+        dag = new HashMap<>(40000);
         gameName = gamer.getMatch().getGame().getName();
         if(gameName == null){
             gameName = "Mylla";
@@ -304,8 +304,8 @@ public final class MCTSDAG extends Thread {
         throw new IllegalStateException("A move was selected that was not one of the root node moves");
     }
 
-    //}
-    //Helpers up for dag{
+    //}}
+    //Helpers up for dag{{
     private void markAndSweep(int depth){
         HashSet<MachineState> marked =  new HashSet<>();
         System.out.println("Size of dag before sweep: " + dag.size());
@@ -320,6 +320,7 @@ public final class MCTSDAG extends Thread {
             if(!marked.contains(it.next().getKey())){
                 it.remove();
                 if((System.currentTimeMillis() - time) > 100){
+                    System.out.println("Breaking out after " + (System.currentTimeMillis() - time));
                     break;
                 }
             }

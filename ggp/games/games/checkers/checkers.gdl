@@ -11,6 +11,9 @@
 (opponent black white)
 (opponent white black)
 
+(init (pieces_on_board white 12))
+(init (pieces_on_board black 12))
+
 (init (lastToMove black)) ; white starts
 (init (cell a 2 white pawn))
 (init (cell b 1 white pawn))
@@ -203,10 +206,28 @@
     (true (cell ?x1 ?y1 black ?type))
     (distinct ?y3 1))
 
+(<= (next (pieces_on_board ?p ?n2))
+    (does ?p2 (capture ?x ?y ?x1 ?y2))
+    (distinct ?p ?p2)
+    (true (pieces_on_board ?p ?n))
+    (succ ?n2 ?n))
+
+(<= (next (pieces_on_board ?p ?n))
+    (control ?p)
+    (true (pieces_on_board ?p ?n)))
+  
+
+(<= (next (pieces_on_board ?p ?n))
+    (does ?p2 (move ?x ?y ?x1 ?y2))
+    (true (pieces_on_board ?p ?n)))
+
 ; Terminality and goal values
 ; If the player with control has no legal moves, they lose.
 (<= (anyLegalMove ?player)
     (legal2 ?player ?move))
+; (<= (loser ?player)
+;     (control ?player)
+;     (true (pieces_on_board ?player 0)))
 (<= (loser ?player)
     (control ?player)
     (not (anyLegalMove ?player)))
@@ -333,6 +354,9 @@
 
 ; Bases and inputs
 (<= (base (lastToMove ?player))
+    (role ?player))
+(<= (base (pieces_on_board ?player ?n))
+    (succ ?n ?n2)
     (role ?player))
 (<= (base (cell ?x ?y ?player king))
     (role ?player)

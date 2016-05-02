@@ -75,6 +75,11 @@ task kiosk(type: JavaExec) {
     jvmArgs = playerJvmArgs
 }
 
+task server(type: JavaExec) {
+    main = 'org.ggp.base.apps.server.Server'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
 task player(type: JavaExec) {
     main = 'org.ggp.base.apps.player.Player'
     classpath = sourceSets.main.runtimeClasspath
