@@ -141,7 +141,7 @@ namespace Boardgame {
                 UIManager.Instance.HideLegalCells();
                 return;
             }
-            var cid = "";
+            var cid = " ";
             if (currentPiece != null && currentPiece.HasPiece()) {
                 cid = currentPiece.id;
             } else if(selectedPiece != null) {
