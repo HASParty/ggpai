@@ -11,6 +11,7 @@ namespace Boardgame.GDL {
         PIECE,
         CELL,
         PLACE,
+        CAPTURE,
         MOVE,
         REMOVE,
         CONSTANT,
@@ -42,15 +43,17 @@ namespace Boardgame.GDL {
         string removeID;
         string handID;
         string controlID;
+        string captureID;
 
-        public Lexer(string cellID, string placeID, string moveID = "", string removeID = "",
-            string handID = "", string controlID = "") {
+        public Lexer(string cellID, string placeID = "", string moveID = "", string removeID = "",
+            string handID = "", string controlID = "", string captureID = "") {
             this.cellID = cellID;
             this.placeID = placeID;
             this.moveID = moveID;
             this.removeID = removeID;
             this.handID = handID;
             this.controlID = controlID;
+            this.captureID = captureID;
         }
 
         public List<Token> Lex(string sentence) {
@@ -72,6 +75,8 @@ namespace Boardgame.GDL {
                     token.type = TokenType.MOVE;
                 } else if (word == removeID) {
                     token.type = TokenType.REMOVE;
+                } else if (word == captureID) {
+                    token.type = TokenType.CAPTURE;
                 } else if (word == "true") {
                     token.type = TokenType.TRUE;
                 } else if (word == handID) {

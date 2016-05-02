@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Boardgame.GDL {
-    public class MyllaReader : GameReader {
-        public MyllaReader() {
-            lexer = new Lexer("pit", "place", "move", "remove", "heap", "control");
+    public class CheckersReader : GameReader {
+        public CheckersReader() {
+            lexer = new Lexer("cell", moveID: "move", controlID: "control", captureID: "capture");
         }
 
         public override State GetBoardState(string message) {
             State state;
             state.Control = Player.First;
+            Debug.Log(message);
 
             var list = new List<Cell>();
             string lexify = Parser.BreakMessage(message).state;
@@ -26,24 +27,9 @@ namespace Boardgame.GDL {
                     id += " " + token.Current.value;
                     Advance(ref token);
                     type = token.Current.value;
+                    Advance(ref token);
+                    type += " " + token.Current.value;
                     list.Add(new Cell(id, type));
-                } else if (token.Current.type == TokenType.HAND) {
-                    string who;
-                    int count;
-                    Advance(ref token);
-                    who = token.Current.value;
-                    Advance(ref token);
-                    if (!Int32.TryParse(token.Current.value, out count)) {
-                        throw new Exception("INVALID GDL, expected int");
-                    }
-                    switch (who) {
-                        case "white":
-                            list.Add(new Cell("white heap", "white", count));
-                            break;
-                        case "black":
-                            list.Add(new Cell("black heap", "black", count));
-                            break;
-                    }
                 } else if (token.Current.type == TokenType.CONTROL) {
                     Advance(ref token);
                     switch (token.Current.value) {
@@ -67,10 +53,9 @@ namespace Boardgame.GDL {
         }
 
         protected override Move ParseSingleMove(ref List<Token>.Enumerator token) {
-            string cellID;
+            string cellID, toID;
             switch (token.Current.type) {
                 case TokenType.MOVE:
-                    string toID;
                     Advance(ref token);
                     cellID = token.Current.value;
                     Advance(ref token);
@@ -80,18 +65,16 @@ namespace Boardgame.GDL {
                     Advance(ref token);
                     toID += " " + token.Current.value;
                     return new Move(cellID, toID);
-                case TokenType.PLACE:
+                case TokenType.CAPTURE:
                     Advance(ref token);
                     cellID = token.Current.value;
                     Advance(ref token);
                     cellID += " " + token.Current.value;
-                    return new Move(MoveType.PLACE, cellID);
-                case TokenType.REMOVE:
                     Advance(ref token);
-                    cellID = token.Current.value;
+                    toID = token.Current.value;
                     Advance(ref token);
-                    cellID += " " + token.Current.value;
-                    return new Move(MoveType.REMOVE, cellID);
+                    toID += " " + token.Current.value;
+                    return new Move(MoveType.CAPTURE, cellID, toID);
             }
 
             return null;

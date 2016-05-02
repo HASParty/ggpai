@@ -69,8 +69,8 @@ namespace Boardgame.Networking {
 
         private int turnCount = 0;
         void TurnMonitor(GameData data) {
-            if (data.IsDone) return;
-            Debug.Log(Config.Turns + " " + turnCount);
+            if (data.IsDone || waitingToEnd) return;
+            //Debug.Log(Config.Turns + " " + turnCount);
             if (Config.Turns != -1 && turnCount >= Config.Turns)
             {
                 EndGame();
@@ -96,11 +96,13 @@ namespace Boardgame.Networking {
         }
 
         bool endAcked;
+        bool waitingToEnd = false;
         public void EndGame() {
-            StopCoroutine(Request());
+            StopAllCoroutines();
             Debug.Log("REQUESTING ABORTION");
-            Connection.Write("abort\n", Connection.feedConnection.GetStream());
             endAcked = false;
+            waitingToEnd = true;
+            Connection.Write("abort\n", Connection.feedConnection.GetStream());            
             StartCoroutine(AbortGame());
         }
 
@@ -108,7 +110,9 @@ namespace Boardgame.Networking {
         {
             while(!endAcked) yield return new WaitForEndOfFrame();
             Write("ABORT " + Config.MatchID);
+            waitingToEnd = false;
             IsOver = true;
+            Debug.Log("It's over.");
         }
 
         void OnDestroy() {

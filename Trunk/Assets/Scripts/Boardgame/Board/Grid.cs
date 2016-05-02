@@ -58,6 +58,10 @@ namespace Boardgame {
             return all;
         }
 
+        public void Clear(string cellID) {
+            pcells[cellID].Clear();
+        }
+
         public GameObject RemovePiece(string cellID) {
             if (pcells.ContainsKey(cellID)) {
                 return pcells[cellID].RemovePiece();

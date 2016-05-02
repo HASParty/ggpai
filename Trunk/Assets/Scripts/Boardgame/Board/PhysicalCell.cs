@@ -61,7 +61,19 @@ namespace Boardgame {
             return piece.Count > 0;
         }
 
+        public void Clear() {
+            while(piece.Count > 0) {
+                GameObject ret = piece[piece.Count - 1];
+                piece.RemoveAt(piece.Count - 1);
+                Destroy(ret);
+            }
+        }
+
         public GameObject RemovePiece() {
+            if(piece.Count == 0) {
+                Debug.LogWarning("No piece to remove at "+id);
+                return null;
+            }
             GameObject ret = piece[piece.Count-1];
             piece.RemoveAt(piece.Count - 1);
             if (isPile) {

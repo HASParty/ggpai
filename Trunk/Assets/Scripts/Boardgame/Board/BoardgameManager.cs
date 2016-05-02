@@ -69,9 +69,14 @@ namespace Boardgame {
         public void CheckGame(GameData data) {
             if (!data.IsDone && data.State == Terminal.FALSE) {
                 if (data.IsStart) GameStart(data.GameState);
+                else {
+                    SetState(data.GameState);
+                    if (data.LegalMoves.Count == 0 && data.MovesMade.Count == 0) SyncState();
+                }
                 SetLegalMoves(data.LegalMoves);
-                if (data.IsHumanPlayerTurn) UIManager.Instance.SetState("Player's turn");
-                else UIManager.Instance.SetState("Opponent's turn");
+                if (data.IsHumanPlayerTurn) {
+                    UIManager.Instance.SetState("Player's turn");
+                } else UIManager.Instance.SetState("Opponent's turn");
             } else {
                 Debug.Log(data.State);
                 SetLegalMoves(new List<Move>());
@@ -79,11 +84,28 @@ namespace Boardgame {
             }
         }
 
-        public void GameStart(State state) {
+        State state;
+        void SetState(State state) {
+            this.state = state;
+        }
+
+        public void SyncState() {
+            if (state.Cells == null) return;
+            Debug.Log("synchronising");
+            //TODO: make not disgusting
+            //UPDATE: I made it more disgusting, in a way
+            foreach (var cell in grid.GetAllCells()) {
+                if (grid.IsPile(cell.id)) continue;
+                grid.Clear(cell.id);
+            }
+            GameStart(state, true);      
+        }
+
+        public void GameStart(State state, bool skipPiles = false) {
             grid.SetPile(gameScriptable.TrashPile);
             foreach(GDL.Cell cell in state.Cells) {
                 if (piecePrefabs.ContainsKey(cell.Type)) {
-                    if (cell.Count > 0) {
+                    if (!skipPiles && cell.Count > 0) {
                         grid.SetPile(cell.ID);
                         for (int i = 0; i < cell.Count; i++) {
                             GameObject p = Instantiate(piecePrefabs[cell.Type]);
@@ -100,20 +122,31 @@ namespace Boardgame {
 
         List<string> placeableIDs = new List<string>();
         List<string> removeableIDs = new List<string>();
-        Dictionary<string, List<string>> moveableIDS = new Dictionary<string, List<string>>();
+        Dictionary<string, List<string>> moveableIDs = new Dictionary<string, List<string>>();
+        Dictionary<string, List<string>> captureableIDs = new Dictionary<string, List<string>>();
         public void SetLegalMoves(List<Move> moves) {
             placeableIDs.Clear();
             removeableIDs.Clear();
-            moveableIDS.Clear();
+            moveableIDs.Clear();
+            captureableIDs.Clear();
             foreach(Move m in moves) {
                 switch(m.Type) {
-                    case MoveType.MOVE:
-                        if(moveableIDS.ContainsKey(m.From)) {
-                            moveableIDS[m.From].Add(m.To);
+                    case MoveType.CAPTURE:
+                        if (captureableIDs.ContainsKey(m.From)) {
+                            captureableIDs[m.From].Add(m.To);
                         } else {
                             List<string> vals = new List<string>();
                             vals.Add(m.To);
-                            moveableIDS.Add(m.From, vals);
+                            captureableIDs.Add(m.From, vals);
+                        }
+                        break;
+                    case MoveType.MOVE:
+                        if(moveableIDs.ContainsKey(m.From)) {
+                            moveableIDs[m.From].Add(m.To);
+                        } else {
+                            List<string> vals = new List<string>();
+                            vals.Add(m.To);
+                            moveableIDs.Add(m.From, vals);
                         }
                         break;
                     case MoveType.REMOVE:
@@ -144,6 +177,7 @@ namespace Boardgame {
                         piece = grid.RemovePiece(move.From);
                         grid.PlacePiece(piece, gameScriptable.TrashPile);
                         break;
+                    case MoveType.CAPTURE:
                     case MoveType.MOVE:
                         piece = grid.RemovePiece(move.From);
                         grid.PlacePiece(piece, move.To);
@@ -165,6 +199,7 @@ namespace Boardgame {
                     from = grid.GetPhysicalCell(move.From);
                     to = grid.GetPhysicalCell(gameScriptable.TrashPile);
                     break;
+                case MoveType.CAPTURE:
                 case MoveType.MOVE:
                     from = grid.GetPhysicalCell(move.From);
                     to = grid.GetPhysicalCell(move.To);
@@ -183,7 +218,8 @@ namespace Boardgame {
         public bool CanSelectCell(PhysicalCell cell, PhysicalCell selected) {
             if (selected == null) return false;
             if (grid.IsPile(selected.id) && placeableIDs.Contains(cell.id)) return true;
-            if (moveableIDS.ContainsKey(selected.id) && moveableIDS[selected.id].Contains(cell.id)) return true;
+            if (moveableIDs.ContainsKey(selected.id) && moveableIDs[selected.id].Contains(cell.id)) return true;
+            if (captureableIDs.ContainsKey(selected.id) && captureableIDs[selected.id].Contains(cell.id)) return true;
             return false;
         } 
 
@@ -191,7 +227,7 @@ namespace Boardgame {
             string pile = player == Player.First ? gameScriptable.FirstPile : gameScriptable.SecondPile;
             if (placeableIDs.Count > 0 && cell.id == pile) return true;
             if (removeableIDs.Contains(cell.id)) return true;
-            if (moveableIDS.ContainsKey(cell.id)) return true;
+            if (moveableIDs.ContainsKey(cell.id) || captureableIDs.ContainsKey(cell.id)) return true;
             return false;
         }
 
@@ -199,18 +235,24 @@ namespace Boardgame {
             string pile = player == Player.First ? gameScriptable.FirstPile : gameScriptable.SecondPile;
             if (cellID == pile) {
                 return placeableIDs;
-            } else if (cellID == "") {
+            } else if (cellID.Trim() == "") {
                 List<string> legals = new List<string>();
                 legals.AddRange(removeableIDs);
-                legals.AddRange(moveableIDS.Keys);
+                legals.AddRange(moveableIDs.Keys);
+                legals.AddRange(captureableIDs.Keys);
                 if (placeableIDs.Count > 0) {
                     legals.Add(pile);
                 }
                 return legals;
-            } else if (moveableIDS.ContainsKey(cellID)) {
+            } else if (moveableIDs.ContainsKey(cellID)) {
                 List<string> legals = new List<string>();
-                legals.AddRange(moveableIDS[cellID]);
-                legals.AddRange(moveableIDS.Keys);
+                legals.AddRange(moveableIDs[cellID]);
+                legals.AddRange(moveableIDs.Keys);
+                return legals;
+            } else if (captureableIDs.ContainsKey(cellID)) {
+                List<string> legals = new List<string>();
+                legals.AddRange(captureableIDs[cellID]);
+                legals.AddRange(captureableIDs.Keys);
                 return legals;
             }
             return new List<string>();
@@ -222,15 +264,15 @@ namespace Boardgame {
 
         //player makes move
         public bool MakeMove(string cellFromID, string cellToID, Player player) {
-            //TODO: characters physically move pieces
-            //TODO: update game state
             Move move;
             string pile = player == Player.First ? gameScriptable.FirstPile : gameScriptable.SecondPile;
             if (cellFromID == pile) {
                 move = new Move(MoveType.PLACE, cellToID);
             } else if (cellToID == null) {
                 move = new Move(MoveType.REMOVE, cellFromID);
-            } else {  
+            } else if(captureableIDs.ContainsKey(cellFromID) && captureableIDs[cellFromID].Contains(cellToID)) {  
+                move = new Move(MoveType.CAPTURE, cellFromID, cellToID);
+            } else {
                 move = new Move(cellFromID, cellToID);
             }
 

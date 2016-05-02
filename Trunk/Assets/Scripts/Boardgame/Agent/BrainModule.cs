@@ -244,6 +244,7 @@ namespace Boardgame.Agent {
                             break;
                         case FMLFunction.FunctionType.BOARDGAME_MAKE_MOVE:
                             MakeMoveFunction move = function as MakeMoveFunction;
+                            Debug.Log(Tools.Stringify<Move>.List(move.MoveToMake));
                             BoardgameManager.Instance.MoveMade(move.MoveToMake, player);
                             PhysicalCell from, to;
                             BoardgameManager.Instance.GetMoveFromTo(move.MoveToMake[0], player, out from, out to);
@@ -255,7 +256,7 @@ namespace Boardgame.Agent {
                             leanReach.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD, 
                                 (int)(Vector3.Distance(from.transform.position, transform.position)*10));
                             Place place = new Place("placePiece", chunk.owner, to.gameObject,
-                                Behaviour.Lexemes.Mode.LEFT_HAND, (piece) => { placePiece(piece, to); }, 1.25f, end: 2f);
+                                Behaviour.Lexemes.Mode.LEFT_HAND, (piece) => { placePiece(piece, to); BoardgameManager.Instance.SyncState(); }, 1.25f, end: 2f);
                             Gaze lookPlace = new Gaze("glanceAtPlace", chunk.owner, to.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 1.25f, end: 2f);
                             Gaze glance = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 2f, end: 1.25f);
                             curr.AddChunk(glance);

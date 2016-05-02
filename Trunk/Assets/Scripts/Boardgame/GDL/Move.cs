@@ -7,12 +7,19 @@ namespace Boardgame.GDL {
     public enum MoveType {
         MOVE,
         PLACE,
-        REMOVE
+        REMOVE,
+        CAPTURE
     }
 
     public class Move {
         public Move(string from, string to) {
             Type = MoveType.MOVE;
+            From = from;
+            To = to;
+        }
+
+        public Move(MoveType type, string from, string to) {
+            Type = type;
             From = from;
             To = to;
         }
@@ -36,7 +43,7 @@ namespace Boardgame.GDL {
         }
 
         public override string ToString() {
-            if(Type != MoveType.MOVE) {
+            if(Type != MoveType.MOVE && Type != MoveType.CAPTURE) {
                 return string.Format("( {0}: {1} )", Type, From);
             }
             return string.Format("( {0}: {1} -> {2} )", Type, From, To);
