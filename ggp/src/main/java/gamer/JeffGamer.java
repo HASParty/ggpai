@@ -107,7 +107,7 @@ public class JeffGamer extends StateMachineGamer {
 
         StateMachine theMachine = getStateMachine();
         long start = System.currentTimeMillis();
-        long finishBy = timeout - 1500;
+        long finishBy = timeout - 1100;
         int me = roleMap.get(getRole());
         lock1.writeLock().unlock();
         while (System.currentTimeMillis() < finishBy){

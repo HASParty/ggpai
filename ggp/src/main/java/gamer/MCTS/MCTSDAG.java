@@ -2,6 +2,8 @@ package gamer.MCTS;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -309,7 +311,8 @@ public final class MCTSDAG extends Thread {
     private void markAndSweep(int depth){
         HashSet<MachineState> marked =  new HashSet<>();
         System.out.println("Size of dag before sweep: " + dag.size());
-        mark(root, marked, depth);
+        long time = System.currentTimeMillis();
+        mark(root, marked, depth, time);
         sweep(marked);
         System.out.println("Size of dag after sweep: " + dag.size());
     }
@@ -327,13 +330,21 @@ public final class MCTSDAG extends Thread {
         }
     }
 
-    private void mark(UCTNode node, HashSet<MachineState> marked, int depth){
+    private void mark(UCTNode node, HashSet<MachineState> marked, int depth, long time){
         if(node.leaf() || depth == 0){
             return;
         }
-        marked.add(node.state);
-        for (UCTNode child : node.children.values()){
-            mark(child, marked, depth - 1);
+        Deque<UCTNode> queue = new LinkedList<>();
+        queue.add(node);
+        while(queue.size() > 0){
+            if((System.currentTimeMillis() - time) > 800){
+                break;
+            }
+            UCTNode child = queue.poll();
+            marked.add(child.state);
+            for (UCTNode n : child.children.values()){
+                queue.add(n);
+            }
         }
     }
 
