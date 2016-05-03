@@ -261,7 +261,8 @@ public final class MCTSDAG extends Thread {
             System.out.println("------------------");
             System.out.println("Selecting: " + bestMove + " With " + bestMove.getValue().n() + " simulations");
             System.out.println("------------------");
-            System.out.println("Mast table size: " + mast.size());
+            System.out.println(String.format("Mast tables size: [%d, %d]",  mast.size(0),
+                                                                            mast.size(1)));
         }
         return bestMove.getKey();
     }

@@ -13,11 +13,13 @@ import java.io.ObjectInputStream;
 import org.ggp.base.util.statemachine.Move;
 
 public class MAST extends MovePick{
-    private HashMap<Move, List<Double>> mast; //TODO split this on roles.
+    private ArrayList<HashMap<Move, List<Double>>> mast; //TODO split this on roles.
     private Random rand;
     public MAST(String gameName){
         super(gameName);
-        mast = new HashMap<>();
+        mast = new ArrayList<>();
+        mast.add(new HashMap<>());
+        mast.add(new HashMap<>());
         rand = new Random();
 
     }
@@ -28,8 +30,8 @@ public class MAST extends MovePick{
         for (List<Move> moves : list){
             for (int i = 0; i < moves.size(); ++i){
                 double mastValue;
-                if (mast.containsKey(moves.get(i))){
-                    mastValue = mast.get(moves.get(i)).get(0);
+                if (mast.get(i).containsKey(moves.get(i))){
+                    mastValue = mast.get(i).get(moves.get(i)).get(0);
                     mastValue += rand.nextFloat() * 5;
                 } else {
                     mastValue = rand.nextInt(30000);  //Arbitrary random value
@@ -58,8 +60,8 @@ public class MAST extends MovePick{
         for(int i = 0; i < newValue.size(); i++){
             Move move = moves.get(i);
             List<Double> newList;
-            if(mast.containsKey(move)){
-                newList = mast.get(move);
+            if(mast.get(i).containsKey(move)){
+                newList = mast.get(i).get(move);
                 int oldCount = (int)Math.round(newList.get(1));
                 int newCount = oldCount + 1;
                 newList.set(0, ((newList.get(0) * oldCount) + newValue.get(i))/newCount);
@@ -68,13 +70,13 @@ public class MAST extends MovePick{
                 newList = new ArrayList<>();
                 newList.add(newValue.get(i));
                 newList.add(1.0d);
-                mast.put(move, newList);
+                mast.get(i).put(move, newList);
             }
         }
     }
     @Override
-    public int size(){
-        return mast.size();
+    public int size(int which){
+        return mast.get(which).size();
     }
 
     @SuppressWarnings("unchecked")
@@ -87,7 +89,7 @@ public class MAST extends MovePick{
         try{
             FileInputStream fis = new FileInputStream(file);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            mast = (HashMap) ois.readObject();
+            mast = (ArrayList) ois.readObject();
             fis.close();
             ois.close();
         } catch (Exception e){

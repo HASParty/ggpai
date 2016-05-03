@@ -9,7 +9,7 @@ public abstract class MovePick{
     }
     public abstract List<Move> pickMove(List<List<Move>> list);
     public abstract void update(List<Move> moves, List<Double> newValue);
-    public abstract int size();
+    public abstract int size(int which);
     public abstract void loadData();
     public abstract void saveData();
 
