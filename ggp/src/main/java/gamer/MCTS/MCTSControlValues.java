@@ -6,6 +6,7 @@ public class MCTSControlValues{
     public long rave;
     public long grave;
     public long limit;
+    public double randErr;
     public double treeDiscount;
     public double chargeDiscount;
     public double epsilon;
@@ -18,6 +19,7 @@ public class MCTSControlValues{
     public MCTSControlValues(){
         rave = 500;
         grave = 20;
+        randErr = 0;
         epsilon = 0.9f;
         treeDiscount = 0.998f;
         chargeDiscount = 0.99f;
@@ -78,6 +80,10 @@ public class MCTSControlValues{
         this.horizon = Math.round(horizon);
     }
 
+    public void setRandErr(double randErr){
+        this.randErr = randErr;
+    }
+
 
     public void setAll(ArrayList<Double> values){
         setEpsilon(values.get(0));
@@ -91,6 +97,7 @@ public class MCTSControlValues{
             setDefensiveness(values.subList(8,10));
             setChargeDepth(values.get(10));
             setHorizon(values.get(11));
+            setRandErr(values.get(12));
         }
     }
 }

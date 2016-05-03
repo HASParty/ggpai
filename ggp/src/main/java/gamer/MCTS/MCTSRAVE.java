@@ -328,7 +328,7 @@ public class MCTSRAVE extends Thread {
     //private ArrayList<Integer> getPieceCount(MachineState state){{
     private ArrayList<Integer> getPieceCount(MachineState state){
         ArrayList<Integer> res = new ArrayList<>();
-        for (GdlSentence s : ((JeffGamer)gamer).prover.askAll(pcQuery, state.getContents())){
+        for (GdlSentence s : ((UnityGamer)gamer).prover.askAll(pcQuery, state.getContents())){
             res.add(Integer.parseInt(s.get(0).toSentence().get(1).toString()));
         }
         return res;
@@ -388,14 +388,27 @@ public class MCTSRAVE extends Thread {
                                "================================");
             System.out.println("N: " + root.n());
         }
+        boolean whoops = false;
+        if(rand.nextFloat() <= values.randErr){
+            System.out.println("Whoops, selecting a random move");
+            whoops = true;
+
+        }
         for (Map.Entry<List<Move>, RaveNode> entry : root.getChildren().entrySet()){
             if (!silent){
                 System.out.println(String.format(" Move: %-40s %-40s",
-                                                 entry.getKey(),
-                                                 entry.getValue()));
+                            entry.getKey(),
+                            entry.getValue()));
             }
-            if (bestMove == null || entry.getValue().n() > bestMove.getValue().n()){
-                bestMove = entry;
+            if (whoops){
+                if (bestMove == null || entry.getValue().n() < bestMove.getValue().n()){
+                    bestMove = entry;
+                }
+
+            } else {
+                if (bestMove == null || entry.getValue().n() > bestMove.getValue().n()){
+                    bestMove = entry;
+                }
             }
         }
         System.out.println();
