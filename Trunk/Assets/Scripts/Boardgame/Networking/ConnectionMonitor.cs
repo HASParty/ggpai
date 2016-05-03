@@ -5,6 +5,38 @@ using UnityEngine;
 using Boardgame.Configuration;
 
 namespace Boardgame.Networking {
+    public class GGPSettings {
+        public GGPSettings(float e, float r, float g, float cd, float td, int l, float fa, float sa, float fd, float sd, int cdp, float h, float rnd) {
+            Epsilon = e;
+            Rave = r;
+            Grave = g;
+            ChargeDiscount = cd;
+            TreeDiscount = td;
+            Limit = l;
+            FirstAggression = fa;
+            SecondAggression = sa;
+            FirstDefensiveness = fd;
+            SecondDefensiveness = sd;
+            ChargeDepth = cdp;
+            Horizon = h;
+            RandomError = rnd;
+        }
+
+        public float Epsilon;
+        public float Rave;
+        public float Grave;
+        public float ChargeDiscount;
+        public float TreeDiscount;
+        public int   Limit;
+        public float FirstAggression;
+        public float SecondAggression;
+        public float FirstDefensiveness;
+        public float SecondDefensiveness;
+        public int ChargeDepth;
+        public float Horizon;
+        public float RandomError;
+    }
+
     public class ConnectionMonitor : Singleton<ConnectionMonitor> {
         public string GameConnectionStatus { get { return Connection.GameConnectionStatus.ToString(); } }
         public string FeedConnectionStatus { get { return Connection.FeedConnectionStatus.ToString(); } }
@@ -156,7 +188,6 @@ namespace Boardgame.Networking {
                 if (!data.Contains("ack"))
                 {    
                     OnFeedUpdate.Invoke(new FeedData(data));
-                    Connection.Write("ack\n", Connection.feedConnection.GetStream());
                 }
                 else
                 {
@@ -167,6 +198,14 @@ namespace Boardgame.Networking {
                 data = Connection.HttpRead(Connection.gameConnection);
                 OnGameUpdate.Invoke(new GameData(data));
             }
+        }
+
+        public void WriteFeed(GGPSettings g) {
+            string send = string.Format("( update {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12} )",
+                g.Epsilon, g.Rave, g.Grave, g.ChargeDiscount, g.TreeDiscount, g.Limit, g.FirstAggression, g.SecondAggression, g.FirstDefensiveness,
+                g.SecondDefensiveness, g.ChargeDepth, g.Horizon, g.RandomError);
+            Debug.Log(send);
+            Connection.Write(send, Connection.feedConnection.GetStream());
         }
 
         // Update is called once per frame

@@ -26,6 +26,24 @@ namespace Boardgame.Configuration {
 
         public static int SimulationCutoff = 3000;
 
+
+        //ggp defaults
+        public static Networking.GGPSettings GGP = new Networking.GGPSettings(
+            r: 100,
+            g: 20,
+            rnd: 0,
+            e: 0.9f,
+            td: 0.999f,
+            cd: 0.995f,
+            l: 0,
+            fa: 0.5f,
+            sa: 0.5f,
+            fd: 0.5f,
+            sd: 0.5f,
+            h: 10000,
+            cdp: 10000
+        );
+
         public static void SetValue(string which, string value) {
             //Debug.Log(which + " " + value);
             value = value.Trim();

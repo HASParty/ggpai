@@ -244,7 +244,7 @@ namespace Boardgame.Agent {
                             break;
                         case FMLFunction.FunctionType.BOARDGAME_MAKE_MOVE:
                             MakeMoveFunction move = function as MakeMoveFunction;
-                            Debug.Log(Tools.Stringify<Move>.List(move.MoveToMake));
+                            //Debug.Log(Tools.Stringify<Move>.List(move.MoveToMake));
                             BoardgameManager.Instance.MoveMade(move.MoveToMake, player);
                             PhysicalCell from, to;
                             BoardgameManager.Instance.GetMoveFromTo(move.MoveToMake[0], player, out from, out to);

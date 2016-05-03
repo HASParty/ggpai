@@ -62,6 +62,9 @@ namespace Boardgame.Agent {
             if(data.MaxSimulation > Config.SimulationCutoff && isMyTurn) {
 				ConnectionMonitor.Instance.ModifyRequestTime(0.33f);
             }
+
+            //generate ggp thingy in brain, use results here
+            ConnectionMonitor.Instance.WriteFeed(Config.GGP);
         }
 
         /// <summary>
