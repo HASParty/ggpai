@@ -108,16 +108,6 @@ public class RaveNode extends Node {
     //}}
 
     //----------Getters and Setters--------------------------------------------------------------{{
-    //public double QValue(int win, RaveNode node){{
-    /**
-     * @return The new UCT value of the move
-     */
-    public double QValue(int win, RaveNode node){
-        if(node.n == 0){
-            return Integer.MAX_VALUE;
-        }
-        return (node.wins[win] / node.n) + (C * Math.sqrt(Math.log(n)/node.n));
-    } //}}
 
     //public HashMap<List<Move>, RaveNode> getChildren(){{
     public HashMap<List<Move>, RaveNode> getChildren(){
@@ -185,6 +175,17 @@ public class RaveNode extends Node {
             raveValue = rave.get(win).get(move.get(win))[0];
         }
         return beta * raveValue + (1-beta)*QValue;
+    } //}}
+
+    //public double QValue(int win, RaveNode node){{
+    /**
+     * @return The new UCT value of the move
+     */
+    public double QValue(int win, RaveNode node){
+        if(node.n == 0){
+            return Integer.MAX_VALUE;
+        }
+        return (node.wins[win] / node.n) + (C * Math.sqrt(Math.log(n)/node.n));
     } //}}
 
     //public String raveToString(){{

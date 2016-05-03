@@ -16,20 +16,24 @@ public class MCTSControlValues{
     public boolean changed;
 
     public MCTSControlValues(){
-        rave = 100;
+        rave = 500;
         grave = 20;
         epsilon = 0.9f;
         treeDiscount = 0.998f;
         chargeDiscount = 0.99f;
         limit = 0;
         defensiveness = new ArrayList<>();
-        defensiveness.add(0.5);
-        defensiveness.add(0.5);
+        defensiveness.add(0.2);
+        defensiveness.add(0.2);
         aggression = new ArrayList<>();
-        aggression.add(0.1);
-        aggression.add(0.1);
+        aggression.add(0.05);
+        aggression.add(0.05);
         horizon = Integer.MAX_VALUE;
         chargeDepth = Integer.MAX_VALUE;
+    }
+
+    public MCTSControlValues(ArrayList<Double> values){
+        setAll(values);
     }
 
     public void setRave(double rave){
@@ -66,6 +70,15 @@ public class MCTSControlValues{
         this.defensiveness = new ArrayList<>(defensiveness);
     }
 
+    public void setChargeDepth(double depth){
+        this.chargeDepth = Math.round(depth);
+    }
+
+    public void setHorizon(double horizon){
+        this.horizon = Math.round(horizon);
+    }
+
+
     public void setAll(ArrayList<Double> values){
         setEpsilon(values.get(0));
         setRave(values.get(1));
@@ -76,8 +89,8 @@ public class MCTSControlValues{
         if (values.size() > 6){
             setAggression(values.subList(6,8));
             setDefensiveness(values.subList(8,10));
-            chargeDepth = Math.round(values.get(10));
-            horizon = Math.round(values.get(11));
+            setChargeDepth(values.get(10));
+            setHorizon(values.get(11));
         }
     }
 }

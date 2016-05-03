@@ -216,6 +216,11 @@ public class UnityGamer extends StateMachineGamer {
         this.cVal = new ArrayList<>(controlValues);
     }//}}
 
+   //public void updateValues(ArrayList<Double> controlValues){{
+   public void updateValues(ArrayList<Double> controlValues){
+       values.setAll(controlValues);
+   } //}}
+
     //public String getEvaluation(){{
     /**
      * @return the Evaluation of the players current state

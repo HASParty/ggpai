@@ -92,8 +92,8 @@ public final class MCTSDAG extends Thread {
         lastPlayOutDepth = 0;
         playOutCount = 0;
         avgPlayOutDepth = 0;
-        treeDiscount = 0.999f;
-        chargeDiscount = 0.995f;
+        treeDiscount = 0.998f;
+        chargeDiscount = 0.99f;
 
         dag = new HashMap<>(40000);
         gameName = gamer.getMatch().getGame().getName();
@@ -216,7 +216,7 @@ public final class MCTSDAG extends Thread {
             avgPlayOutDepth = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth) / (float)(playOutCount + 1);
             playOutCount++;
             return getGoalsAsDouble(state);
-        } else if(lastPlayOutDepth >= 110){
+        } else if(lastPlayOutDepth >= 210){
             avgPlayOutDepth = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth) / (float)(playOutCount + 1);
             playOutCount++;
             return new ArrayList<Double>(Arrays.asList(40.0d, 40.0d));

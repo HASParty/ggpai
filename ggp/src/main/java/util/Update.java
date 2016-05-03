@@ -1,5 +1,6 @@
 package util;
 
+import java.util.ArrayList;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -8,8 +9,11 @@ import java.net.Socket;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import org.ggp.base.util.http.HttpReader;
-import org.ggp.base.util.http.HttpWriter;
+import org.ggp.base.util.symbol.factory.exceptions.SymbolFormatException;
+import org.ggp.base.util.symbol.factory.SymbolFactory;
+import org.ggp.base.util.symbol.grammar.Symbol;
+import org.ggp.base.util.symbol.grammar.SymbolAtom;
+import org.ggp.base.util.symbol.grammar.SymbolList;
 
 import gamer.UnityGamer;
 
@@ -51,7 +55,7 @@ public final class Update extends Thread {
                 do {
                     in =  inp.readLine();
                 } while(!in.toLowerCase().contains("ready"));
-                System.out.println("THIS IS THE MESSAGE ->>>>>>>>>>>>>>>>>" + in + 
+                System.out.println("THIS IS THE MESSAGE ->>>>>>>>>>>>>>>>>" + in +
                         "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<----- NOTICE ME SENPAI!!!!");
                 while (listener != null) {
                     String eval = gamer.getEvaluation();
@@ -64,8 +68,8 @@ public final class Update extends Thread {
                         pw.println("ack");
                         System.out.println("Breaking out of update loop");
                         break;
-                    } else {
-                        //Do shit with what we get
+                    } else if (input.toLowerCase().contains("update")) {
+                        updateGamer(input);
                     }
 
                     sleep(200);
@@ -75,6 +79,15 @@ public final class Update extends Thread {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void updateGamer(String input) throws SymbolFormatException {
+        SymbolList list = (SymbolList) SymbolFactory.create(input);
+        ArrayList<Double> controlValues = new ArrayList<>();
+        for (int i = 1; i < list.size(); ++i){
+            controlValues.add(Double.parseDouble(list.get(i).toString()));
+        }
+        gamer.updateValues(controlValues);
     }
 
     public void shutdown() {
