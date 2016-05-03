@@ -8,6 +8,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.Random;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
@@ -33,6 +34,7 @@ public final class MCTS extends Thread {
     private ExecutorService executor;
     private ReentrantReadWriteLock lock;
     private static boolean alive;
+    private Random rand = new Random();
     private static boolean expanding;
     protected StateMachineGamer gamer;
     protected StateMachine machine;
@@ -60,7 +62,6 @@ public final class MCTS extends Thread {
         newRoot = null;
         alive = true;
         this.lock = lock;
-        // executor  = Executors.newFixedThreadPool(threads);
     }
 
     @Override
@@ -78,9 +79,6 @@ public final class MCTS extends Thread {
                 if (newRoot != null){
                     applyMove(newRoot); //Move to our new root
                     newRoot = null;
-                    if (debug){
-                        // printTree(); //Print our new tree
-                    }
                     accum = 0;
                     count = 0;
                 }
@@ -159,55 +157,25 @@ public final class MCTS extends Thread {
      */
     private List<Double> playOut(MachineState state) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
         int[] depth = new int[1];
-        state = machine.performDepthCharge(state, depth);
+        List<Double> res = depthCharge(state, depth);
         accum += depth[0];
         count++;
-        return getGoalsAsDouble(state);
-        // List<Future<List<Integer>>> list = new ArrayList<Future<List<Integer>>>();
-        // for (int i = 0; i < threads; i++){
-        //     Callable<List<Integer>> worker = new Play(state, machine);
-        //     Future<List<Integer>> future = executor.submit(worker);
-        //     list.add(future);
-        // }
-        // int sum[] = new int[] {0,0};
-        // try {
-        //     for (Future<List<Integer>> f : list){
-        //         sum[0] += f.get().get(0);
-        //         sum[1] += f.get().get(1);
-        //     }
-        // } catch (Exception e) {
-        //     e.printStackTrace();
-        //     return null;
-        // }
-        // List<Integer> res =  new ArrayList<Integer>();
-        // res.add(sum[0]);
-        // res.add(sum[1]);
-        // return res;
+        return res;
     }
 
-    // public static class Play implements Callable<List<Integer>>{
-    //     private MachineState state;
-    //     private final StateMachine machine;
-    //     public List<Integer> goals;
-    //
-    //     Play(MachineState state, StateMachine machine){
-    //         this.state = state;
-    //         this.machine = machine;
-    //     }
-    //
-    //     @Override
-    //     public List<Integer> call(){
-    //         try {
-    //             state = machine.performDepthCharge(state, new int[1]);
-    //             return machine.getGoals(state);
-    //
-    //         } catch (Exception e) {
-    //             e.printStackTrace();
-    //         }
-    //         return null;
-    //     }
-    //     
-    // }
+    private List<Double> depthCharge(MachineState state, int depth[]) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
+        List<Double> result;
+        if(machine.isTerminal(state)){
+            return getGoalsAsDouble(state);
+        } 
+        List<List<Move>> moves = machine.getLegalJointMoves(state);
+        List<Move> chosen;
+        chosen = moves.get(rand.nextInt(moves.size()));
+        state = machine.getNextState(state, chosen);
+        depth[0] += 1;
+        result = depthCharge(state, depth);
+        return result;
+    }
 
 
     /**
