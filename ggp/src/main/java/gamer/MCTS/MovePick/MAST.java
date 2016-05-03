@@ -13,8 +13,10 @@ import java.io.ObjectInputStream;
 import org.ggp.base.util.statemachine.Move;
 
 public class MAST extends MovePick{
-    private ArrayList<HashMap<Move, List<Double>>> mast; //TODO split this on roles.
+    private ArrayList<HashMap<Move, List<Double>>> mast;
     private Random rand;
+
+    //public MAST(String gameName){{
     public MAST(String gameName){
         super(gameName);
         mast = new ArrayList<>();
@@ -22,7 +24,9 @@ public class MAST extends MovePick{
         mast.add(new HashMap<>());
         rand = new Random();
 
-    }
+    }//}}
+
+    //public List<Move> pickMove(List<List<Move>> list){{
     @Override
     public List<Move> pickMove(List<List<Move>> list){
         Move[] bestMoves = new Move[list.get(0).size()];
@@ -54,7 +58,9 @@ public class MAST extends MovePick{
             }
         }
         return null; //Something got fucked up
-    }
+    }//}}
+
+    //public void update(List<Move> moves, List<Double> newValue){{
     @Override
     public void update(List<Move> moves, List<Double> newValue){
         for(int i = 0; i < newValue.size(); i++){
@@ -73,12 +79,15 @@ public class MAST extends MovePick{
                 mast.get(i).put(move, newList);
             }
         }
-    }
+    }//}}
+
+    //public int size(int which){{
     @Override
     public int size(int which){
         return mast.get(which).size();
-    }
+    }//}}
 
+    //public void loadData(){{
     @SuppressWarnings("unchecked")
     @Override
     public void loadData(){
@@ -96,8 +105,9 @@ public class MAST extends MovePick{
             System.out.println("EXCEPTION: " + e.toString());
             e.printStackTrace();
         }
-    }
+    }//}}
 
+    //public void saveData(){{
     @Override
     public void saveData(){
         File file = new File("data/mast/" + gameName);
@@ -111,5 +121,5 @@ public class MAST extends MovePick{
             System.out.println("EXCEPTION: " + e.toString());
             e.printStackTrace();
         }
-    }
+    }//}}
 }

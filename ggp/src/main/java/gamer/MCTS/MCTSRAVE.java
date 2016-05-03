@@ -44,6 +44,7 @@ public class MCTSRAVE extends Thread {
     private HashMap<MachineState, RaveNode> dag;
     //MAST
     private MovePick mast;
+    private int counter = 0;
     private GdlSentence pcQuery;
     //Aggression cache
     private Cache<MachineState, ArrayList<Double>> goalCache;
@@ -246,6 +247,8 @@ public class MCTSRAVE extends Thread {
             ArrayList<Double> goals = goalCache.getIfPresent(state);
             if(goals != null){
                 return goals;
+            } else {
+                counter++;
             }
             goals = getGoalsAsDouble(state);
             applyPersonalityBias(goals, state);
@@ -408,7 +411,8 @@ public class MCTSRAVE extends Thread {
             System.out.println("--------------------------------"+
                                "Data Structures"+
                                "--------------------------------");
-            System.out.println("Mast table size: " + mast.size());
+            System.out.println(String.format("Mast tables size: [%d, %d]",  mast.size(0),
+                                                                            mast.size(1)));
             System.out.println("Dag connections made this turn: " + DagCounter);
             DagCounter = 0;
             System.out.println();
@@ -426,6 +430,7 @@ public class MCTSRAVE extends Thread {
         if (!silent){
             System.out.println("The applied move !: " + moves.toString());
             System.out.println("Average playout depth: " + avgPlayOutDepth);
+            System.out.println("Counter: " + counter);
         }
         synchronized(root){
             for (Map.Entry<List<Move>, RaveNode> entry: root.getChildren().entrySet()){
@@ -445,11 +450,12 @@ public class MCTSRAVE extends Thread {
 
     //----------------MCTS Helper functions---------------{{
 
+    //private void updateAverageDepth(){{
     private void updateAverageDepth(){
         float rebuild = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth);
         avgPlayOutDepth = rebuild / (float)(playOutCount + 1);
         playOutCount++;
-    }
+    }//}}
 
     //private void checkHeap(){{
     private void checkHeap(){
