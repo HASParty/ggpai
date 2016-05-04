@@ -131,20 +131,20 @@ public class RaveNode extends Node {
 
     //public List<HashMap<Move, double[]>> updateGrave(List<HashMap<Move, double[]>> grave){{
     public List<HashMap<Move, double[]>> updateGrave(List<HashMap<Move, double[]>> grave){
-        boolean fresh = false;
+        boolean fresh = false; // If there is no grave we need to make it
         if (grave == null) fresh = true;
         if (fresh) grave = new ArrayList<HashMap<Move, double[]>>();
         for (int i = 0; i < rave.size(); i++){
             if(fresh) grave.add(new HashMap<>());
+            HashMap<Move, double[]> currGrave = grave.get(i);
             for (Map.Entry<Move, double[]> entry : rave.get(i).entrySet()){
                 double[] value = entry.getValue();
-                if(value[1] < graveThresh){
-                    continue;
-                }
-                Move move = entry.getKey();
-                double[] curr = grave.get(i).putIfAbsent(move, value);
-                if (curr != null){
-                    grave.get(i).replace(move, value);
+                //We only add a grave value if its above the the threshold
+                if(value[1] >= graveThresh){
+                    Move move = entry.getKey();
+                    if (currGrave.putIfAbsent(move, value) != null){
+                        currGrave.replace(move, value);
+                    }
                 }
             }
         }
