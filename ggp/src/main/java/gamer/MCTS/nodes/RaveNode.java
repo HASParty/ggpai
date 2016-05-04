@@ -56,9 +56,9 @@ public class RaveNode extends Node {
 
     //public List<Move> select(List<HashMap<Move, double[]>> grave){{
     /**
-     * Sorts the moves and returns the first one.
+     * Selects the child move that has the highest value
      *
-     * Keep moving, nothing to see here
+     * @param grave The rave values passed down by the ancestors to be used until the threshold is met
      *
      * @return the child node with the highest UCT value
      */
@@ -70,6 +70,9 @@ public class RaveNode extends Node {
         for (Map.Entry<List<Move>, RaveNode> entry : children.entrySet()){
             double value = calcValue(0, entry, grave.get(0));
             double value2 = calcValue(1, entry, grave.get(1));
+            // This method of selecting the best move only works because this is made
+            // only to work with turn taking games without both players moving in the same turn
+            // This will NOT work if that assumption is broken
             if (value > best){
                 best = value;
                 bestMove = entry;
@@ -81,23 +84,25 @@ public class RaveNode extends Node {
             if (best == best2 && best == Integer.MAX_VALUE) break;
         }
         int i = 0;
-        for (List<Move> move : children.keySet()){
-            if(bestMove.getKey().get(0).equals(move.get(0)) && bestMove2.getKey().get(1).equals(move.get(1))){
-                return move;
-            }
-        }
-        return null;
+        //Again this only works because we are assuming there are always only two players
+        ArrayList<Move> result = new ArrayList<>();
+        result.add(bestMove.getKey().get(0));
+        result.add(bestMove2.getKey().get(1));
+        return result;
     } //}}
 
     //public void updateRave(List<List<Move>> jointMoves, List<Double> result){{
     public void updateRave(List<List<Move>> jointMoves, List<Double> result){
+        //A hashset to keep track of which rave values have already been updated
         ArrayList<HashSet<Move>> done = new ArrayList<HashSet<Move>>();
         for (int i = 0; i < rave.size(); ++i) done.add(new HashSet<>());
+
         for (List<Move> jointMove: jointMoves){
             for (int i = 0; i < jointMove.size(); i++){
                 Move m = jointMove.get(i);
-                if(!done.get(i).contains(m) && rave.get(i).containsKey(m)){
-                    double[] val = rave.get(i).get(m);
+                HashMap<Move, double[]> playerRave = rave.get(i);
+                if(!done.get(i).contains(m) && playerRave.containsKey(m)){
+                    double[] val = playerRave.get(m);
                     val[0] = ((val[0] * val[1]) + result.get(i))/(val[1]+1);
                     val[1]++;
                     done.get(i).add(m);
@@ -126,31 +131,20 @@ public class RaveNode extends Node {
 
     //public List<HashMap<Move, double[]>> updateGrave(List<HashMap<Move, double[]>> grave){{
     public List<HashMap<Move, double[]>> updateGrave(List<HashMap<Move, double[]>> grave){
-        if (grave == null){
-            grave = new ArrayList<HashMap<Move, double[]>>();
-            for(int i = 0; i < rave.size(); i++){
-                grave.add(new HashMap<>());
-                for (Map.Entry<Move, double[]> entry : rave.get(i).entrySet()){
-                    double[] value = entry.getValue();
-                    if(value[1] < graveThresh){
-                        continue;
-                    }
-                    Move move = entry.getKey();
-                    grave.get(i).put(move, value);
+        boolean fresh = false;
+        if (grave == null) fresh = true;
+        if (fresh) grave = new ArrayList<HashMap<Move, double[]>>();
+        for (int i = -1; i < rave.size(); i++){
+            if(fresh) grave.add(new HashMap<>());
+            for (Map.Entry<Move, double[]> entry : rave.get(i).entrySet()){
+                double[] value = entry.getValue();
+                if(value[1] < graveThresh){
+                    continue;
                 }
-            }
-        } else {
-            for(int i = 0; i < rave.size(); i++){
-                for (Map.Entry<Move, double[]> entry : rave.get(i).entrySet()){
-                    double[] value = entry.getValue();
-                    if(value[1] < graveThresh){
-                        continue;
-                    }
-                    Move move = entry.getKey();
-                    double[] curr = grave.get(i).putIfAbsent(move, value);
-                    if (curr != null){
-                        grave.get(i).replace(move, value);
-                    }
+                Move move = entry.getKey();
+                double[] curr = grave.get(i).putIfAbsent(move, value);
+                if (curr != null){
+                    grave.get(i).replace(move, value);
                 }
             }
         }
