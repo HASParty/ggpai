@@ -3080,7 +3080,7 @@ MonoBehaviour:
   High: 2
   SimulationCutoff: 3000
   Extraversion: 1
-  Agreeableness: 2
+  Agreeableness: 1
   Neuroticism: 1
   Conscientiousness: 1
   Openness: 1
@@ -5230,23 +5230,16 @@ Transform:
 --- !u!114 &2039804514
 MonoBehaviour:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 11438560, guid: cf1588a9c50a18f42a027f345e39c054,
-    type: 2}
+  m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2039804512}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 487c00bdb97d8c44a8ab867a79578340, type: 3}
+  m_Script: {fileID: 11500000, guid: d098ce1e7b56eae49bbc04ce96f38eb3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 0
-  actorName: 
-  gender: 0
-  extraversion: 0
-  agreeableness: 2
-  neuroticism: 0
-  conscientiousness: 0
-  openness: 0
+  valenceDecay: 0.05
+  arousalDecay: 0.05
 --- !u!114 &2039804515
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5284,63 +5277,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf3949aca2aa0ea44801160cae403590, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mood:
-    valence: 0
-    arousal: 0
-  restingArousal: 0
-  restingValence: 0
-  arousalBaseDecayRate: 0.01
-  valenceBaseDecayRate: 0.008
   Low: 0
   Neutral: 0
   High: 0
   agreeableness:
     value: 1
     baseMoodMod:
-      High:
-        Positive: 1.2
-        Negative: 0.97
-        Surprising: 1.05
-        Expected: 1
-      Low:
-        Positive: 0.97
-        Negative: 1.2
-        Surprising: 1
-        Expected: 1
-    moodDecayAddSub:
-      High:
-        Positive: 0
-        Negative: 0.001
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0.001
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-    negativeReactionMod:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-    positiveReactionMod:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-    confusedReactionMod:
       High:
         Positive: 0
         Negative: 0
@@ -5353,11 +5295,11 @@ MonoBehaviour:
         Expected: 0
     interpolation:
       High:
-        valence: 0.4
         arousal: 0.1
+        valence: 0.4
       Low:
-        valence: -0.6
         arousal: 0
+        valence: -0.6
   conscientiousness:
     value: 1
     baseMoodMod:
@@ -5371,57 +5313,13 @@ MonoBehaviour:
         Negative: 0
         Surprising: 0
         Expected: 0
-    moodDecayAddSub:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-    negativeReactionMod:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-    positiveReactionMod:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-    confusedReactionMod:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
     interpolation:
       High:
-        valence: 0
         arousal: 0
+        valence: 0
       Low:
-        valence: 0
         arousal: 0
+        valence: 0
   extraversion:
     value: 1
     baseMoodMod:
@@ -5435,57 +5333,13 @@ MonoBehaviour:
         Negative: 0
         Surprising: 0
         Expected: 0
-    moodDecayAddSub:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-    negativeReactionMod:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-    positiveReactionMod:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-    confusedReactionMod:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
     interpolation:
       High:
-        valence: 0
         arousal: 0
+        valence: 0
       Low:
-        valence: 0
         arousal: 0
+        valence: 0
   neuroticism:
     value: 1
     baseMoodMod:
@@ -5499,57 +5353,13 @@ MonoBehaviour:
         Negative: 0
         Surprising: 0
         Expected: 0
-    moodDecayAddSub:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-    negativeReactionMod:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-    positiveReactionMod:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-    confusedReactionMod:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
     interpolation:
       High:
-        valence: 0
         arousal: 0
+        valence: 0
       Low:
-        valence: 0
         arousal: 0
+        valence: 0
   openness:
     value: 1
     baseMoodMod:
@@ -5563,58 +5373,13 @@ MonoBehaviour:
         Negative: 0
         Surprising: 0
         Expected: 0
-    moodDecayAddSub:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-    negativeReactionMod:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-    positiveReactionMod:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-    confusedReactionMod:
-      High:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
-      Low:
-        Positive: 0
-        Negative: 0
-        Surprising: 0
-        Expected: 0
     interpolation:
       High:
-        valence: 0
         arousal: 0
+        valence: 0
       Low:
-        valence: 0
         arousal: 0
-  identikit: {fileID: 2039804514}
+        valence: 0
 --- !u!1 &2041931607
 GameObject:
   m_ObjectHideFlags: 0

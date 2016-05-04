@@ -12,7 +12,7 @@ public class DebugManager : MonoBehaviour {
     public Canvas canvas;
 	//etc
 	BMLScheduleDebugger bmlDebug;
-    UIMoodViewer mood;
+    UIAgentStateViewer mood;
     
     //List<GameObject> hiddenCache = new List<GameObject> ();
 
@@ -69,7 +69,7 @@ public class DebugManager : MonoBehaviour {
 		bmlDebug.GetComponent<RectTransform> ().localScale = scale;
         bmlDebug.transform.position = BMLDebugPosition.position;
         bmlDebug.transform.rotation = BMLDebugPosition.rotation;
-        mood = Instantiate(MoodDebuggerPrefab).GetComponent<UIMoodViewer>();
+        mood = Instantiate(MoodDebuggerPrefab).GetComponent<UIAgentStateViewer>();
         mood.transform.SetParent(canvas.transform);
         mood.GetComponent<RectTransform>().localScale = scale;
         mood.transform.position = MoodDebugPosition.position;

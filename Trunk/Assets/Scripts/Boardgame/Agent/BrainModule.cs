@@ -19,6 +19,7 @@ namespace Boardgame.Agent {
     public class BrainModule : MonoBehaviour {
         private PersonalityModule pm;
         private InputModule im;
+        private Mood mood;
         private BehaviourRealiser behave;
         private ActorMotion motion;
         private Participant me;
@@ -35,6 +36,7 @@ namespace Boardgame.Agent {
             me = new Participant();
             me.identikit = GetComponent<Identikit>();
             motion = transform.parent.GetComponentInChildren<ActorMotion>();
+            mood = GetComponent<Mood>();
         }
 
 
@@ -62,47 +64,11 @@ namespace Boardgame.Agent {
 
             Debug.Log("Getting reaction");
 
-            if(player == who) {
-                if (move.Equals(bestMove)) {
-                    if (myUCTavg > foeUCTavg) {
-                        //depending on personality might be neut
-                        return MoveReaction.POSITIVE;
-                    } else { 
-                        //depending on personality might be neutral
-                        return MoveReaction.NEGATIVE;
-                    }
-                }
-                else {
-
-                    if (myUCTavg < foeUCTavg) return MoveReaction.NEGATIVE;
-                    //might be amused depending on personality
-                    return MoveReaction.CONFUSED;
-                }
-            } else {
-                if (move.Equals(bestMove)) {
-                    if (myUCTavg > foeUCTavg) {
-                        return MoveReaction.NEUTRAL;
-                    } else {
-                        //depending on personality might be neutral
-                        return MoveReaction.NEGATIVE;
-                    }
-                }
-
-                if (move.Equals(worstMove)) {
-                    if (myUCTavg < foeUCTavg) return MoveReaction.CONFUSED;
-                    //might be amused depending on personality
-                    return MoveReaction.POSITIVE;
-                }
-            }
-
             return MoveReaction.NEUTRAL;
         }
         #endregion
 
         #region React to general game state
-        private float myUCTavg = 0;
-        private int its = 0;
-        private float foeUCTavg = 0;
 
         /// <summary>
         /// Evaluates the state of the game via data fed by the GGP AI.
@@ -112,79 +78,19 @@ namespace Boardgame.Agent {
         /// <param name="isMyTurn">whether it is the agent's turn or not</param>
         public void EvaluateConfidence(Networking.FeedData d, bool isMyTurn) {
             float myUCT, foeUCT, uctDiff, valence, arousal;
-            float mySwing, foeSwing;
             valence = 0;
             arousal = 0;
             if(player == Player.First) {
-                myUCT = d.FirstUCT;
-                foeUCT = d.SecondUCT;
+                myUCT = d.Moves[d.Best].FirstUCT;
+                foeUCT = d.Moves[d.Best].SecondUCT;
             } else {
-                myUCT = d.SecondUCT;
-                foeUCT = d.FirstUCT;
+                myUCT = d.Moves[d.Best].SecondUCT;
+                foeUCT = d.Moves[d.Best].FirstUCT;
             }
 
-            bestMove = d.Best;
-            worstMove = d.Worst;
-            forWho = isMyTurn ? player : (player == Player.First ? Player.Second : Player.First);
-
-            uctDiff = myUCT - foeUCT;
-            var last = myUCTavg;
-            myUCTavg = myUCTavg * Config.UCTDecay + myUCT * (1 - Config.UCTDecay);
-            foeUCTavg = foeUCTavg * Config.UCTDecay + foeUCT * (1 - Config.UCTDecay);
-            //we need a stable average before we try to detect swings...
-            if (its > 50) {
-                arousal += Mathf.Abs(last - myUCTavg)/5;
-            }
-
-            //not sure this matters
-            //if (isMyTurn) {
-                //this is a promising move for me which I'm disproportionately simulating
-                if (d.SimulationStdDev >= 2.5) {
-                    if (myUCT > foeUCT) {
-                        //Debug.Log("likes");
-                        if (pm.GetArousal() < Config.Neutral) arousal += 15;
-                        valence += 0.2f;
-                        arousal += 0.3f;
-                    } else { //my best move isn't even in my favour
-                        //Debug.Log("no no no");
-                        if (pm.GetArousal() < Config.Neutral) arousal += 15;
-                        valence -= 0.2f;
-                        arousal += 0.3f;
-                    }
-                } else if (d.SimulationStdDev < 2.5f && d.SimulationStdDev >= 2f) {
-                    if (myUCT > foeUCT) {
-                       // Debug.Log("thinks is pretty decent");
-                        valence += 0.1f;
-                        arousal += 0.1f;
-                    } else { //my best move isn't even in my favour
-                      //  Debug.Log("ehhhh");
-                        valence -= 0.1f;
-                        arousal += 0.12f;
-                    }
-                } else if (d.SimulationStdDev < 2f) { 
-                    //moves are pretty even for me, in my favour, so I'm feeling calm
-                    if (myUCT > foeUCT) {
-                       // Debug.Log("chillax");
-                        if (pm.GetArousal() > Config.Neutral) arousal -= 15;
-                        arousal -= 0.2f;
-                        valence += 0.1f;
-                    } else {
-                        //pretty uniformly bad for me eh
-                      //  Debug.Log("sadness...");
-                        if (pm.GetArousal() > Config.Neutral) arousal -= 15;
-                        arousal -= 0.2f;
-                        valence -= 0.1f;
-                    }
-                }
-           // }
-
-            //game unique weights here affecting the factors?
-            //differences in how much confidence bounds vary between games
-            valence += uctDiff * 0.05f;
+            
         
-            pm.Evaluate(valence, arousal);
-
-            its++;
+            mood.Evaluate(valence, arousal);
 
         }
 
@@ -209,19 +115,19 @@ namespace Boardgame.Agent {
                             Posture poser = new Posture("postureReact", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0f, 8f);
                             switch (reaction) {
                                 case MoveReaction.CONFUSED:
-                                    faceReact = new FaceEmotion("ConfusedFace", chunk.owner, 0f, 1.6f*pm.GetArousalConfusedMod(), 0.6f*pm.GetValenceConfusedMod());
+                                    faceReact = new FaceEmotion("ConfusedFace", chunk.owner, 0f, 1.6f, 0.6f);
                                     poser.AddPose(Behaviour.Lexemes.BodyPart.RIGHT_ARM, Behaviour.Lexemes.BodyPose.FIST_COVER_MOUTH);
                                     curr.AddChunk(faceReact);
                                     curr.AddChunk(poser);
                                     break;
                                 case MoveReaction.NEGATIVE:
-                                    faceReact = new FaceEmotion("NegativeFace", chunk.owner, 0f, 1.2f * pm.GetArousalNegativeMod(), 0.4f * pm.GetValenceNegativeMod());
+                                    faceReact = new FaceEmotion("NegativeFace", chunk.owner, 0f, 1.2f, 0.4f);
                                     poser.AddPose(Behaviour.Lexemes.BodyPart.ARMS, Behaviour.Lexemes.BodyPose.ARMS_CROSSED);
                                     curr.AddChunk(faceReact);
                                     curr.AddChunk(poser);
                                     break;
                                 case MoveReaction.POSITIVE:
-                                    faceReact = new FaceEmotion("HappyFace", chunk.owner, 0f, 1.4f * pm.GetArousalPositiveMod(), 2.5f * pm.GetValencePositiveMod());
+                                    faceReact = new FaceEmotion("HappyFace", chunk.owner, 0f, 1.4f, 2.5f);
                                     curr.AddChunk(faceReact);
                                     break;
                             }
@@ -388,7 +294,7 @@ namespace Boardgame.Agent {
         /// <returns>emotion function with data from current mood</returns>
         private MentalChunk getEmotion() {
             MentalChunk chunk = new MentalChunk();
-            chunk.AddFunction(new EmotionFunction(pm.GetArousal(), pm.GetValence()));
+            chunk.AddFunction(new EmotionFunction(mood.GetArousal(), mood.GetValence()));
             chunk.owner = me;
             return chunk;
         }

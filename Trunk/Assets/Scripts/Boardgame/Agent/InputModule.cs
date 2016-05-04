@@ -59,7 +59,7 @@ namespace Boardgame.Agent {
         public void CheckStatus(FeedData data) {
             bm.EvaluateConfidence(data, isMyTurn);
             bm.ConsiderMove(data.Best);
-            if(data.MaxSimulation > Config.SimulationCutoff && isMyTurn) {
+            if(data.TotalSimulations > Config.SimulationCutoff && isMyTurn) {
 				ConnectionMonitor.Instance.ModifyRequestTime(0.33f);
             }
 
