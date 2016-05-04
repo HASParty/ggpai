@@ -328,7 +328,7 @@ public class MCTSRAVE extends Thread {
     private ArrayList<Integer> getPieceCount(MachineState state){
         ArrayList<Integer> res = new ArrayList<>();
         for (GdlSentence query : pcQuery){
-            GdlSentence answer = ((JeffGamer)gamer).prover.askOne(query, state.getContents());
+            GdlSentence answer = ((UnityGamer)gamer).prover.askOne(query, state.getContents());
             res.add(Integer.parseInt(answer.get(0).toSentence().get(1).toString()));
         }
         return res;
