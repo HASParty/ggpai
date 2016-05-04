@@ -64,7 +64,7 @@ public class UnityPlayer extends GamePlayer {
                 String out = request.process(System.currentTimeMillis());
 
                 HttpWriter.writeAsServer(connection, out);
-                System.out.println("Out string:\n" + out);
+                // System.out.println("Out string:\n" + out);
 
                 connection.close();
                 GamerLogger.log("GamePlayer", "[Sent at " +
