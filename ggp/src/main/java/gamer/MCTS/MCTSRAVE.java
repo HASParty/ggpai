@@ -45,7 +45,7 @@ public class MCTSRAVE extends Thread {
     //MAST
     private MovePick mast;
     private int counter = 0;
-    private GdlSentence pcQuery;
+    private ArrayList<GdlSentence> pcQuery;
     //Aggression cache
     private Cache<MachineState, ArrayList<Double>> goalCache;
     //}}
@@ -114,7 +114,7 @@ public class MCTSRAVE extends Thread {
         }
         this.dag = new HashMap<>(40000);
         this.mast = new MAST(gameName);
-        this.pcQuery = QueryBuilder.pieceCount("pieces_on_board");
+        this.pcQuery = QueryBuilder.pieceCount("pieces_on_board", machine.getRoles());
         this.goalCache = CacheBuilder.newBuilder().maximumSize(40000).build();
 
         //Debug
@@ -327,8 +327,9 @@ public class MCTSRAVE extends Thread {
     //private ArrayList<Integer> getPieceCount(MachineState state){{
     private ArrayList<Integer> getPieceCount(MachineState state){
         ArrayList<Integer> res = new ArrayList<>();
-        for (GdlSentence s : ((UnityGamer)gamer).prover.askAll(pcQuery, state.getContents())){
-            res.add(Integer.parseInt(s.get(0).toSentence().get(1).toString()));
+        for (GdlSentence query : pcQuery){
+            GdlSentence answer = ((JeffGamer)gamer).prover.askOne(query, state.getContents());
+            res.add(Integer.parseInt(answer.get(0).toSentence().get(1).toString()));
         }
         return res;
     } //}}
