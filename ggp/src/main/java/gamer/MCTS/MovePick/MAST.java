@@ -2,6 +2,7 @@ package gamer.MCTS.MovePick;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ import java.io.ObjectInputStream;
 import org.ggp.base.util.statemachine.Move;
 
 public class MAST extends MovePick{
-    private ArrayList<HashMap<Move, List<Double>>> mast;
+    private ArrayList<HashMap<Move, double[]>> mast;
     private Random rand;
 
     //public MAST(String gameName){{
@@ -35,8 +36,8 @@ public class MAST extends MovePick{
             for (int i = 0; i < moves.size(); ++i){
                 double mastValue;
                 if (mast.get(i).containsKey(moves.get(i))){
-                    mastValue = mast.get(i).get(moves.get(i)).get(0);
-                    mastValue += rand.nextFloat() * 5;
+                    mastValue = mast.get(i).get(moves.get(i))[0];
+                    mastValue += rand.nextFloat() * 1;
                 } else {
                     mastValue = rand.nextInt(30000);  //Arbitrary random value
                 }
@@ -46,18 +47,18 @@ public class MAST extends MovePick{
                 }
             }
         }
-        for(List<Move> moves : list){
-            boolean best = true;
-            for (int i = 0; i < moves.size(); ++i){
-                if(!moves.get(i).equals(bestMoves[i])){
-                    best = false;
-                }
-            }
-            if(best){
-                return moves;
-            }
-        }
-        return null; //Something got fucked up
+        // for(List<Move> moves : list){
+        //     boolean best = true;
+        //     for (int i = 0; i < moves.size(); ++i){
+        //         if(!moves.get(i).equals(bestMoves[i])){
+        //             best = false;
+        //         }
+        //     }
+        //     if(best){
+        //         return moves;
+        //     }
+        // }
+        return new ArrayList<>(Arrays.asList(bestMoves));
     }//}}
 
     //public void update(List<Move> moves, List<Double> newValue){{
@@ -65,17 +66,17 @@ public class MAST extends MovePick{
     public void update(List<Move> moves, List<Double> newValue){
         for(int i = 0; i < newValue.size(); i++){
             Move move = moves.get(i);
-            List<Double> newList;
+            double[] newList;
             if(mast.get(i).containsKey(move)){
                 newList = mast.get(i).get(move);
-                int oldCount = (int)Math.round(newList.get(1));
+                int oldCount = (int)Math.round(newList[1]);
                 int newCount = oldCount + 1;
-                newList.set(0, ((newList.get(0) * oldCount) + newValue.get(i))/newCount);
-                newList.set(1, (double)newCount);
+                newList[0] = ((newList[0] * oldCount) + newValue.get(i))/newCount;
+                newList[1] = (double)newCount;
             } else {
-                newList = new ArrayList<>();
-                newList.add(newValue.get(i));
-                newList.add(1.0d);
+                newList = new double[2];
+                newList[0] = newValue.get(i);
+                newList[1] = 1.0d;
                 mast.get(i).put(move, newList);
             }
         }
