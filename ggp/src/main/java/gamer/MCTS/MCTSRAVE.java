@@ -96,6 +96,7 @@ public class MCTSRAVE extends Thread {
         this.machine = gamer.getStateMachine();
         this.newRoot = null;
         this.root = new RaveNode(null);
+        this.root.state = gamer.getCurrentState();
         expanding = true;
 
         this.lastPlayOutDepth = 0;
@@ -146,10 +147,12 @@ public class MCTSRAVE extends Thread {
                     checkHeap();
                 }
                 heapCheck++;
-                search(root, null, gamer.getCurrentState(), new ArrayList<List<Move>>(), 0);
+                search(root, null, new ArrayList<List<Move>>(), 0);
                 lock.writeLock().unlock();
             } catch (InterruptedException e) {
-                lock.writeLock().unlock();
+                if (lock.writeLock().isHeldByCurrentThread()){
+                    lock.writeLock().unlock();
+                }
                 System.out.println("Interrupted");
                 break;
             } catch (Exception e){
@@ -170,15 +173,12 @@ public class MCTSRAVE extends Thread {
      */
     private List<Double> search(RaveNode node,
                                 List<HashMap<Move, double[]>> grave,
-                                MachineState state,
                                 List<List<Move>> rave,
                                 int depth) throws MoveDefinitionException,
                                                   TransitionDefinitionException,
                                                   GoalDefinitionException{
         List<Double> result;
-        if(!node.equals(root)){ //If we aren't at the root we change states
-            state = node.state;
-        }
+        MachineState state = node.state;
         if(node.terminal || machine.isTerminal(state)){
             if(node.goals == null){
                 node.goals = goalCache.getIfPresent(state);
@@ -197,24 +197,23 @@ public class MCTSRAVE extends Thread {
         } else {
             grave = node.updateGrave(grave); //We add to our grave values
             List<Move> ci = node.select(grave);
-            RaveNode child = node.getChildren().get(ci);
+            HashMap<List<Move>, RaveNode> children = node.getChildren();
+            RaveNode child =  children.get(ci);
             if(child.n() == 0){ //We only ever use the SM once for each state
                 child.state = machine.getNextState(state, ci);
-                if(dag.containsKey(child.state)){
+                // Put the node into the dag if its absent
+                RaveNode dagNode = dag.putIfAbsent(child.state, child);
+                if(dagNode != null){
+                    // Otherwise we replace the child with the stored node
                     DagCounter++;
-                    node.getChildren().replace(ci, dag.get(child.state));
-                    child = node.getChildren().get(ci);
-                } else {
-                    dag.put(child.state, child);
+                    children.replace(ci, dagNode);
+                    child = children.get(ci);
                 }
             }
-            /* This is ugly but its more efficient than checking them all each time */
-            int prev = child.size();
-            grave = node.updateGrave(grave);
-            result = search(child, grave, state, rave, depth + 1);
-            rave.add(ci);
-            node.size(child.size(), prev);
-            mast.update(ci, result);
+            grave = node.updateGrave(grave); // We update our grave values on the way down.
+            result = search(child, grave, rave, depth + 1);
+            rave.add(ci); // We build our rave list on the way up.
+            mast.update(ci, result); // We update our mast values on the way up.
         }
         node.update(result);
         if(!node.terminal){
@@ -257,8 +256,8 @@ public class MCTSRAVE extends Thread {
         } else if (lastPlayOutDepth > values.chargeDepth){  //If we hit our depth limit
             updateAverageDepth();
             ArrayList<Double> goals = new ArrayList<>();
-            goals.add(40.0);
-            goals.add(40.0); //We create a default value
+            goals.add(values.chargeDefaults.get(0));
+            goals.add(values.chargeDefaults.get(1)); //We create a default value
             applyPersonalityBias(goals, state); //And apply bias to it
             return goals;
         }
@@ -337,22 +336,24 @@ public class MCTSRAVE extends Thread {
     //private void applyPersonalityBias(ArrayList<Double> goals, MachineState state){{
     private void applyPersonalityBias(ArrayList<Double> goals, MachineState state){
         ArrayList<Integer> counts = getPieceCount(state);
-        maxCounts.set(0, Math.max(maxCounts.get(0), counts.get(0)));
-        maxCounts.set(1, Math.max(maxCounts.get(1), counts.get(1)));
-        // Defensiveness
-        goals.set(0,
-                  Math.max(goals.get(0) - ((maxCounts.get(0) - counts.get(0)) * values.defensiveness.get(0)),
-                         0.0));
-        goals.set(1,
-                  Math.max(goals.get(1) - ((maxCounts.get(1) - counts.get(1)) * values.defensiveness.get(1)),
-                           0.0));
-        // Aggression
-        goals.set(0,
-                  Math.min(goals.get(0) + ((maxCounts.get(1) - counts.get(1)) * values.aggression.get(0)),
-                           100.0));
-        goals.set(1,
-                  Math.min(goals.get(1) + ((maxCounts.get(0) - counts.get(0)) * values.aggression.get(1)),
-                           100.0));
+        if (counts.size() >= 2){
+            maxCounts.set(0, Math.max(maxCounts.get(0), counts.get(0)));
+            maxCounts.set(1, Math.max(maxCounts.get(1), counts.get(1)));
+            // Defensiveness
+            goals.set(0,
+                      Math.max(goals.get(0) - ((maxCounts.get(0) - counts.get(0)) * values.defensiveness.get(0)),
+                             0.0));
+            goals.set(1,
+                      Math.max(goals.get(1) - ((maxCounts.get(1) - counts.get(1)) * values.defensiveness.get(1)),
+                               0.0));
+            // Aggression
+            goals.set(0,
+                      Math.min(goals.get(0) + ((maxCounts.get(1) - counts.get(1)) * values.aggression.get(0)),
+                               100.0));
+            goals.set(1,
+                      Math.min(goals.get(1) + ((maxCounts.get(0) - counts.get(0)) * values.aggression.get(1)),
+                               100.0));
+        }
     }//}}
     //}}
 
@@ -462,7 +463,6 @@ public class MCTSRAVE extends Thread {
     //}}
 
     //----------------MCTS Helper functions---------------{{
-
     //private void updateAverageDepth(){{
     private void updateAverageDepth(){
         float rebuild = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth);

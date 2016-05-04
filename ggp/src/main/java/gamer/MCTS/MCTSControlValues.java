@@ -12,24 +12,30 @@ public class MCTSControlValues{
     public double epsilon;
     public long chargeDepth;
     public long horizon;
+    public long explorationFactor;
     public ArrayList<Double> defensiveness;
     public ArrayList<Double> aggression;
+    public ArrayList<Double> chargeDefaults;
     public boolean changed;
 
     public MCTSControlValues(){
-        rave = 500;
+        explorationFactor = 40;
+        rave = 100;
         grave = 20;
         randErr = 0;
         epsilon = 0.9f;
-        treeDiscount = 0.998f;
-        chargeDiscount = 0.99f;
-        limit = 0;
+        treeDiscount = 0.999f;
+        chargeDiscount = 0.995f;
+        limit = 3000;
         defensiveness = new ArrayList<>();
-        defensiveness.add(0.2);
-        defensiveness.add(0.2);
+        defensiveness.add(0.00);
+        defensiveness.add(0.00);
         aggression = new ArrayList<>();
-        aggression.add(0.05);
-        aggression.add(0.05);
+        aggression.add(0.00);
+        aggression.add(0.00);
+        chargeDefaults = new ArrayList<>();
+        chargeDefaults.add(40.00);
+        chargeDefaults.add(40.00);
         horizon = Integer.MAX_VALUE;
         chargeDepth = Integer.MAX_VALUE;
     }
@@ -71,9 +77,17 @@ public class MCTSControlValues{
     public void setDefensiveness(List<Double> defensiveness){
         this.defensiveness = new ArrayList<>(defensiveness);
     }
+    public void setChargeDefaults(List<Double> chargeDefaults){
+        this.chargeDefaults = new ArrayList<>(chargeDefaults);
+    }
 
     public void setChargeDepth(double depth){
         this.chargeDepth = Math.round(depth);
+    }
+
+    public void setExplorationFactor(double explorationFactor){
+        this.explorationFactor = Math.round(explorationFactor);
+        changed = true;
     }
 
     public void setHorizon(double horizon){
@@ -98,6 +112,7 @@ public class MCTSControlValues{
             setChargeDepth(values.get(10));
             setHorizon(values.get(11));
             setRandErr(values.get(12));
+            setChargeDefaults(values.subList(13, 15));
         }
     }
 }

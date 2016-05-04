@@ -18,7 +18,7 @@ import org.ggp.base.util.statemachine.Move;
 @SuppressWarnings("serial")
 public abstract class Node implements java.io.Serializable {
     protected static DecimalFormat f = new DecimalFormat("##.#E0");
-    protected final static double C = 40; //Exploration constant
+    protected static double C = 40; //Exploration constant
     protected double[] wins;
     protected long n; //how often this node has been selected
     protected int size;
@@ -82,6 +82,11 @@ public abstract class Node implements java.io.Serializable {
     public long n(){
         return n;
     }
+
+    public void setExplorationFactor(long C){
+        this.C = C;
+    }
+
     public double w(int i){
         return wins[i];
     }

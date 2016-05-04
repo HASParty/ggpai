@@ -35,29 +35,19 @@ public class MAST extends MovePick{
         for (List<Move> moves : list){
             for (int i = 0; i < moves.size(); ++i){
                 double mastValue;
-                if (mast.get(i).containsKey(moves.get(i))){
-                    mastValue = mast.get(i).get(moves.get(i))[0];
+                Move m = moves.get(i);
+                if (mast.get(i).containsKey(m)){
+                    mastValue = mast.get(i).get(m)[0];
                     mastValue += rand.nextFloat() * 1;
                 } else {
                     mastValue = rand.nextInt(30000);  //Arbitrary random value
                 }
                 if((bestMoves[i] == null) || (bestValue[i] > mastValue)){
-                    bestMoves[i] = moves.get(i);
+                    bestMoves[i] = m;
                     bestValue[i] = mastValue;
                 }
             }
         }
-        // for(List<Move> moves : list){
-        //     boolean best = true;
-        //     for (int i = 0; i < moves.size(); ++i){
-        //         if(!moves.get(i).equals(bestMoves[i])){
-        //             best = false;
-        //         }
-        //     }
-        //     if(best){
-        //         return moves;
-        //     }
-        // }
         return new ArrayList<>(Arrays.asList(bestMoves));
     }//}}
 
