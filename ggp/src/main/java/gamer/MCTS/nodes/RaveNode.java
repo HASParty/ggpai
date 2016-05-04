@@ -134,7 +134,7 @@ public class RaveNode extends Node {
         boolean fresh = false;
         if (grave == null) fresh = true;
         if (fresh) grave = new ArrayList<HashMap<Move, double[]>>();
-        for (int i = -1; i < rave.size(); i++){
+        for (int i = 0; i < rave.size(); i++){
             if(fresh) grave.add(new HashMap<>());
             for (Map.Entry<Move, double[]> entry : rave.get(i).entrySet()){
                 double[] value = entry.getValue();
