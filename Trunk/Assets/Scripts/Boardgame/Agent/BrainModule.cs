@@ -42,15 +42,10 @@ namespace Boardgame.Agent {
 
         #region React to move
         private Move bestMove;
-        private Move worstMove;
+        private Dictionary<Move, Networking.FeedData.FMove> moves;
+        private float averageSims;
         private Player forWho; //making sure the data is in sync
-        private enum MoveReaction {
-            CONFUSED,
-            POSITIVE,
-            NEGATIVE,
-            NEUTRAL
-        }
-        
+        private bool surprised = false;
         /// <summary>
         /// Using the data currently stored, attempt to work out whether the
         /// move was a "surprise" and such for the AI
@@ -58,18 +53,28 @@ namespace Boardgame.Agent {
         /// <param name="move">The move in question</param>
         /// <param name="who">The player who made it</param>
         /// <returns>The agent's reaction</returns>
-        private MoveReaction react(Move move, Player who) {
-            //our timing was bad :( be neutral to be safe
-            if (who != forWho) return MoveReaction.NEUTRAL;
+        private void react(Move move, Player who) {
+            if(!moves.ContainsKey(move)) return;
+            var m = moves[move];
+            if (m.Who != who) return;
 
-            Debug.Log("Getting reaction");
-
-            return MoveReaction.NEUTRAL;
+            if ((m.Simulations < averageSims && who != player) || (who == player && move != bestMove))
+            {
+                Debug.Log("SURPRISED");
+                surprised = true;
+            }
+            
         }
         #endregion
 
         #region React to general game state
 
+        public float confidence = 0;
+        private int disproportionateFavour = 0;
+        private int opponentDisproportionateFavour = 0;
+        private int weightedUCTOverFoe = 0;
+        private int weightedUCTUnderFoe = 0;
+        private int highSimCount = 0;
         /// <summary>
         /// Evaluates the state of the game via data fed by the GGP AI.
         /// Adjusts mood accordingly.
@@ -77,21 +82,66 @@ namespace Boardgame.Agent {
         /// <param name="d">The data</param>
         /// <param name="isMyTurn">whether it is the agent's turn or not</param>
         public void EvaluateConfidence(Networking.FeedData d, bool isMyTurn) {
-            float myUCT, foeUCT, uctDiff, valence, arousal;
+            bestMove = d.Best;
+            averageSims = (float)d.AverageSimulations;
+            moves = d.Moves;
+            float myUCT, foeUCT, myWUCT, foeWUCT, valence, arousal;
+            float previousConfidence = confidence;
             valence = 0;
             arousal = 0;
             if(player == Player.First) {
                 myUCT = d.Moves[d.Best].FirstUCT;
                 foeUCT = d.Moves[d.Best].SecondUCT;
+                myWUCT = d.FirstWeightedUCT;
+                foeWUCT = d.SecondWeightedUCT;
             } else {
                 myUCT = d.Moves[d.Best].SecondUCT;
                 foeUCT = d.Moves[d.Best].FirstUCT;
+                myWUCT = d.SecondWeightedUCT;
+                foeWUCT = d.FirstWeightedUCT;
             }
 
-            
-        
+            //increment counters for various states
+            //best move is by far most simulated and is advantageous for me
+            count(d.SimulationStdDev > 2.5f && myUCT > foeUCT, ref disproportionateFavour);
+            count(d.SimulationStdDev > 2.5f && myUCT < foeUCT, ref opponentDisproportionateFavour);
+            //my total weighted uct is greater than my foe's
+            count(myWUCT > foeWUCT, ref weightedUCTOverFoe);
+            count(myWUCT < foeWUCT, ref weightedUCTUnderFoe);
+            //sim count high
+            count(Config.SimulationCutoff < d.TotalSimulations / 2, ref highSimCount);
+
+            //only start affecting confidence if these have been true for a few iterations
+            //and stop affecting confidence when it has been true for a generous while
+            if (stabilised(disproportionateFavour)) confidence += 0.2f;
+            if (stabilised(weightedUCTOverFoe)) confidence += 0.2f;
+            if (stabilised(weightedUCTUnderFoe)) confidence -= 0.2f;
+            if (stabilised(opponentDisproportionateFavour)) confidence -= 0.2f;
+            if (stabilised(highSimCount)) confidence += 0.2f;
+
+            //we dropping
+            if (confidence < previousConfidence)
+            {
+                valence -= 0.2f;
+                arousal += 0.1f;
+            }
+            else
+            {
+                valence += 0.2f;
+                arousal -= 0.1f;
+            }
+
             mood.Evaluate(valence, arousal);
 
+        }
+
+        private bool stabilised(int val)
+        {
+            return val > 5 && val < 50;
+        }
+        private void count(bool truthy, ref int val) {
+            if (truthy) val++;
+            else val = 0;
         }
 
         #endregion
@@ -109,27 +159,15 @@ namespace Boardgame.Agent {
                     switch(function.Function) {
                         case FMLFunction.FunctionType.BOARDGAME_REACT_MOVE:
                             ReactMoveFunction react = function as ReactMoveFunction;
-                            MoveReaction reaction = this.react(react.MoveToReact[0], react.MyMove ? player : (player == Player.First ? Player.Second : Player.First));
-                            Debug.Log(reaction);
+                            this.react(react.MoveToReact[0], react.MyMove ? player : (player == Player.First ? Player.Second : Player.First));
                             FaceEmotion faceReact;
                             Posture poser = new Posture("postureReact", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0f, 8f);
-                            switch (reaction) {
-                                case MoveReaction.CONFUSED:
-                                    faceReact = new FaceEmotion("ConfusedFace", chunk.owner, 0f, 1.6f, 0.6f);
-                                    poser.AddPose(Behaviour.Lexemes.BodyPart.RIGHT_ARM, Behaviour.Lexemes.BodyPose.FIST_COVER_MOUTH);
-                                    curr.AddChunk(faceReact);
-                                    curr.AddChunk(poser);
-                                    break;
-                                case MoveReaction.NEGATIVE:
-                                    faceReact = new FaceEmotion("NegativeFace", chunk.owner, 0f, 1.2f, 0.4f);
-                                    poser.AddPose(Behaviour.Lexemes.BodyPart.ARMS, Behaviour.Lexemes.BodyPose.ARMS_CROSSED);
-                                    curr.AddChunk(faceReact);
-                                    curr.AddChunk(poser);
-                                    break;
-                                case MoveReaction.POSITIVE:
-                                    faceReact = new FaceEmotion("HappyFace", chunk.owner, 0f, 1.4f, 2.5f);
-                                    curr.AddChunk(faceReact);
-                                    break;
+                            if (surprised)
+                            {
+                                faceReact = new FaceEmotion("ConfusedFace", chunk.owner, 0f, 1.6f, 0.6f);
+                                poser.AddPose(Behaviour.Lexemes.BodyPart.RIGHT_ARM, Behaviour.Lexemes.BodyPose.FIST_COVER_MOUTH);
+                                curr.AddChunk(faceReact);
+                                curr.AddChunk(poser);
                             }
                             break;
                         case FMLFunction.FunctionType.BOARDGAME_CONSIDER_MOVE:
@@ -160,7 +198,7 @@ namespace Boardgame.Agent {
                             Gaze lookReach = new Gaze("glanceAtReach", chunk.owner, from.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 1.25f);
                             Debug.Log(Vector3.Distance(from.transform.position, transform.position));
                             leanReach.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD, 
-                                (int)(Vector3.Distance(from.transform.position, transform.position)*10));
+                                (int)(Vector3.Distance(from.transform.position, transform.position)*20));
                             Place place = new Place("placePiece", chunk.owner, to.gameObject,
                                 Behaviour.Lexemes.Mode.LEFT_HAND, (piece) => { placePiece(piece, to); BoardgameManager.Instance.SyncState(); }, 1.25f, end: 2f);
                             Gaze lookPlace = new Gaze("glanceAtPlace", chunk.owner, to.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 1.25f, end: 2f);
