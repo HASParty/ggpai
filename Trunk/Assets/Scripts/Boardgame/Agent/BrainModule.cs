@@ -117,30 +117,44 @@ namespace Boardgame.Agent {
 
             //only start affecting confidence if these have been true for a few iterations
             //and stop affecting confidence when it has been true for a generous while
-            if (stabilised(disproportionateFavour)) confidence += 0.2f;
-            if (stabilised(weightedUCTOverFoe)) confidence += 0.2f;
-            if (stabilised(weightedUCTUnderFoe)) confidence -= 0.2f;
-            if (stabilised(opponentDisproportionateFavour)) confidence -= 0.2f;
-            if (stabilised(highSimCount)) confidence += 0.2f;
+            if (stabilised(disproportionateFavour)) confidence += 1f*weight(disproportionateFavour);
+            if (stabilised(weightedUCTOverFoe)) confidence += 1f*weight(weightedUCTOverFoe);
+            if (stabilised(weightedUCTUnderFoe)) confidence -= 1f*weight(weightedUCTUnderFoe);
+            if (stabilised(opponentDisproportionateFavour)) confidence -= 1f*weight(opponentDisproportionateFavour);
+            if (stabilised(highSimCount)) confidence += 1f*weight(highSimCount);
 
             count(confidence > previousConfidence, ref confidentCount);
             count(confidence < previousConfidence, ref notConfidentCount);
 
+
+            float diff = Mathf.Abs(confidence - previousConfidence);
+            if(diff > 0.7f) {
+                arousal += 1f;
+            }
+
+            if(stabilised(highSimCount)) {
+                arousal -= 2f*weight(highSimCount);
+            }
+
             if (stabilised(notConfidentCount))
             {
                 //Debug.Log("DROP");
-                valence -= 1f;
-                arousal += 1f;
+                valence -= 3f*weight(notConfidentCount);
+                arousal += 2f*weight(notConfidentCount);
             }
             else if(stabilised(confidentCount))
             {
                 //Debug.Log("INCR");
-                valence += 1f;
-                arousal -= 1f;
+                valence += 3f*weight(confidentCount);
+                arousal -= 2f*weight(confidentCount);
             }
 
             mood.Evaluate(valence, arousal);
 
+        }
+
+        private float weight(int val) {
+            return (float)(100-val) / 100f;
         }
 
         private bool stabilised(int val)
@@ -148,6 +162,10 @@ namespace Boardgame.Agent {
             return val > 5 && val < 100;
         }
         private void count(bool truthy, ref int val) {
+            if (val > 500) {
+                val = 0;
+                return;
+            }
             if (truthy) val = val+1;
             else val = 0;
         }
