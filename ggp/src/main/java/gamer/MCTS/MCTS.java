@@ -126,7 +126,6 @@ public final class MCTS extends Thread {
                 node.goals = getGoalsAsDouble(state);
                 node.terminal = true;
             }
-            UCTNode.N++;
             result = node.goals;
         } else if (node.leaf()){
             if(expanding){
@@ -229,7 +228,6 @@ public final class MCTS extends Thread {
                 if (moves.get(0).equals(entry.getKey().get(0)) &&
                     moves.get(1).equals(entry.getKey().get(1))){
                     root = entry.getValue();
-                    UCTNode.N = root.n();
                     return;
                 }
             }

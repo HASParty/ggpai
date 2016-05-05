@@ -62,7 +62,6 @@ public class UCTNode extends Node {
      * @param moves A list of the legal moves in this node
      */
     public void expand(List<List<Move>> moves){
-        UCTNode.N += 1;
         leaf = false;
         for (List<Move> move : moves){
             children.put(move, new UCTNode(move));
