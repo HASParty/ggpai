@@ -32,7 +32,7 @@ namespace Boardgame.Agent {
             return val;
         }
 
-        public void Update() {
+        public void Update() {            
             int mod = (val < neutral ? 1 : -1);
             val += mod * Time.deltaTime * decay;
             val = Mathf.Clamp(val, min, max);

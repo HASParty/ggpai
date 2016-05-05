@@ -63,7 +63,7 @@ namespace Boardgame.Agent {
         private Trait[] traits = new Trait[5];
 
         // Use this for initialization
-        private void Start() {
+        private void Awake() {
             Low = Config.Low;
             Neutral = Config.Neutral;
             High = Config.High;

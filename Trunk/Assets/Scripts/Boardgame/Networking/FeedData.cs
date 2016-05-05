@@ -18,13 +18,15 @@ namespace Boardgame.Networking {
         public float SimulationStdDev;
         public double AverageSimulations;
         public int TotalSimulations;
-        public float FirstWeightedUCT = 0;
-        public float SecondWeightedUCT = 0;
+        public float FirstWeightedUCT;
+        public float SecondWeightedUCT;
 
         public FeedData(string parse) {
             int maxsim = 0;
             var moves = BoardgameManager.Instance.reader.GetConsideredMoves(parse);
             TotalSimulations = moves.Sum(v => v.Simulations);
+            FirstWeightedUCT = 0;
+            SecondWeightedUCT = 0;
             foreach(var cm in moves) {
                 if (cm.Simulations > maxsim) {
                     Best = (cm.First != null ? cm.First : cm.Second);
@@ -36,9 +38,11 @@ namespace Boardgame.Networking {
                 m.SecondUCT = cm.SecondUCT;
                 m.Who = (cm.First != null ? Player.First : Player.Second);
                 m.Simulations = cm.Simulations;
-                float weight = m.Simulations / TotalSimulations;
-                FirstWeightedUCT += m.FirstUCT * weight;
-                SecondWeightedUCT += m.SecondUCT * weight;
+                if (TotalSimulations > 0) {
+                    float weight = (float)m.Simulations / (float)TotalSimulations;
+                    FirstWeightedUCT += m.FirstUCT * weight;
+                    SecondWeightedUCT += m.SecondUCT * weight;
+                }
                 Moves.Add(m.Move, m);
             }
 

@@ -54,6 +54,7 @@ namespace Boardgame.Agent {
         /// <param name="who">The player who made it</param>
         /// <returns>The agent's reaction</returns>
         private void react(Move move, Player who) {
+            if (moves == null) return;
             if(!moves.ContainsKey(move)) return;
             var m = moves[move];
             if (m.Who != who) return;
@@ -70,6 +71,8 @@ namespace Boardgame.Agent {
         #region React to general game state
 
         public float confidence = 0;
+        private int confidentCount = 0;
+        private int notConfidentCount = 0;
         private int disproportionateFavour = 0;
         private int opponentDisproportionateFavour = 0;
         private int weightedUCTOverFoe = 0;
@@ -82,10 +85,11 @@ namespace Boardgame.Agent {
         /// <param name="d">The data</param>
         /// <param name="isMyTurn">whether it is the agent's turn or not</param>
         public void EvaluateConfidence(Networking.FeedData d, bool isMyTurn) {
+            if (d.Best == null) return;
             bestMove = d.Best;
             averageSims = (float)d.AverageSimulations;
             moves = d.Moves;
-            float myUCT, foeUCT, myWUCT, foeWUCT, valence, arousal;
+            float myUCT, foeUCT, myWUCT, foeWUCT, valence = 0, arousal = 0;
             float previousConfidence = confidence;
             valence = 0;
             arousal = 0;
@@ -119,16 +123,20 @@ namespace Boardgame.Agent {
             if (stabilised(opponentDisproportionateFavour)) confidence -= 0.2f;
             if (stabilised(highSimCount)) confidence += 0.2f;
 
-            //we dropping
-            if (confidence < previousConfidence)
+            count(confidence > previousConfidence, ref confidentCount);
+            count(confidence < previousConfidence, ref notConfidentCount);
+
+            if (stabilised(notConfidentCount))
             {
-                valence -= 0.2f;
-                arousal += 0.1f;
+                //Debug.Log("DROP");
+                valence -= 1f;
+                arousal += 1f;
             }
-            else
+            else if(stabilised(confidentCount))
             {
-                valence += 0.2f;
-                arousal -= 0.1f;
+                //Debug.Log("INCR");
+                valence += 1f;
+                arousal -= 1f;
             }
 
             mood.Evaluate(valence, arousal);
@@ -137,10 +145,10 @@ namespace Boardgame.Agent {
 
         private bool stabilised(int val)
         {
-            return val > 5 && val < 50;
+            return val > 5 && val < 100;
         }
         private void count(bool truthy, ref int val) {
-            if (truthy) val++;
+            if (truthy) val = val+1;
             else val = 0;
         }
 
