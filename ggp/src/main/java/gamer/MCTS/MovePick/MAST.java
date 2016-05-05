@@ -13,11 +13,20 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import org.ggp.base.util.statemachine.Move;
 
+/**
+ * Implements the Move action sampling technique for use in MCTS playouts.
+ *
+ * Abstracts the game down to Move, Value pairs for each role that can be used instead of
+ * completely random picks in an MCTS playout phase
+ */
 public class MAST extends MovePick{
     private ArrayList<HashMap<Move, double[]>> mast;
     private Random rand;
 
     //public MAST(String gameName){{
+    /**
+     * @param gameName the name of the game being played, used for saving/loading
+     */
     public MAST(String gameName){
         super(gameName);
         mast = new ArrayList<>();
@@ -28,6 +37,11 @@ public class MAST extends MovePick{
     }//}}
 
     //public List<Move> pickMove(List<List<Move>> list){{
+    /**
+     * Uses the saved MAST values to pick a joint move
+     *
+     * @param list The joint moves to choose from.
+     */
     @Override
     public List<Move> pickMove(List<List<Move>> list){
         Move[] bestMoves = new Move[list.get(0).size()];
@@ -52,6 +66,12 @@ public class MAST extends MovePick{
     }//}}
 
     //public void update(List<Move> moves, List<Double> newValue){{
+    /**
+     * Updates the mast values of the given moves with the new value
+     *
+     * @param moves The moves to be updated
+     * @param newValue The value to update the moves with
+     */
     @Override
     public void update(List<Move> moves, List<Double> newValue){
         for(int i = 0; i < newValue.size(); i++){
@@ -73,6 +93,10 @@ public class MAST extends MovePick{
     }//}}
 
     //public int size(int which){{
+    /**
+     * @param which which table do you want.
+     * @return The size of the requested mast table
+     */
     @Override
     public int size(int which){
         return mast.get(which).size();

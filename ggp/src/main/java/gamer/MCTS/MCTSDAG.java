@@ -38,9 +38,11 @@ import gamer.MCTS.nodes.UCTNode;
 
 // Note: The weird comments are for forcing sane folding with marks.
 
-/*
+/**
  * A simple MCTS Thread that defines a Monte carlo search algorithm for
- * a tree made up of UCTNode nodes.
+ * a DAG made up of UCTNode nodes.
+ *
+ * Mainly used as a baseline tester against MCTSRAVE.
  */
 public final class MCTSDAG extends Thread {
     //Variables {{

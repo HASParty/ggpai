@@ -55,7 +55,7 @@ public final class PushRequest extends Request
         try {
             GdlTerm term = gamer.addMove();
             String result = (term != null? term.toString() : "nil");
-            String bob =  result + ":" + gamer.getLegalMoves(gamer.getOtherRole()).toString() 
+            String bob =  result + ":" + gamer.getLegalMoves(gamer.getOtherRole()).toString()
                    + ":" + gamer.getCurrentState().toString();
             System.out.println(bob);
             return bob;

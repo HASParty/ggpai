@@ -39,7 +39,7 @@ public class UnityRequestFactory extends RequestFactory {
                 return createPlay(gamer, list);
             } else if (type.equals("start")) {
                 return createStart(gamer, list);
-            } else if (type.equals("unity")) { 
+            } else if (type.equals("unity")) {
                 return createUnity(gamer, list);
             } else if (type.equals("push")) {
                 return createPush(gamer, list);

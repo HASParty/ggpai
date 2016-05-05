@@ -23,12 +23,12 @@ import gamer.MCTS.nodes.UCTNode;
 
 
 
-/*
+/**
  * A simple MCTS Thread that defines a Monte carlo search algorithm for
  * a tree made up of UCTNode nodes.
- */ 
+ */
 public final class MCTS extends Thread {
-    private static final int limit = 0;
+    private static final int limit = 3000;
     private static final int threads = 1;
     private static Runtime runtime = Runtime.getRuntime();
     private ExecutorService executor;
@@ -110,7 +110,7 @@ public final class MCTS extends Thread {
     /**
      * A recursive MCTS search function that searches through MCM nodes.
      * It only expands one node each run when it hits a new leaf.
-     * 
+     *
      * @param node The node we are searching
      * @param state The current state entering this node
      *
@@ -137,7 +137,7 @@ public final class MCTS extends Thread {
             List<Move> ci = node.select();
             UCTNode child = node.children.get(ci);
             if(child.n() == 0){ //We only ever use the SM once for each state
-                child.state = machine.getNextState(state, ci); 
+                child.state = machine.getNextState(state, ci);
             }
             /* This is ugly but its more efficient than checking them all each time */
             int prev = child.size();
@@ -167,7 +167,7 @@ public final class MCTS extends Thread {
         List<Double> result;
         if(machine.isTerminal(state)){
             return getGoalsAsDouble(state);
-        } 
+        }
         List<List<Move>> moves = machine.getLegalJointMoves(state);
         List<Move> chosen;
         chosen = moves.get(rand.nextInt(moves.size()));
@@ -235,7 +235,7 @@ public final class MCTS extends Thread {
             }
 
 
-                
+
         }
         throw new IllegalStateException("A move was selected that was not one of the root node moves");
     }
@@ -245,10 +245,10 @@ public final class MCTS extends Thread {
         synchronized(root){
             DecimalFormat f = new DecimalFormat("#.##f");
             for(Map.Entry<List<Move>, UCTNode> entry : root.children.entrySet()){
-                result += "("; 
+                result += "(";
                 result += "m:" + entry.getKey();
                 result += " n:" + entry.getValue().n();
-                result += " v:[" + f.format(root.QValue(0, entry.getValue())) + " " + 
+                result += " v:[" + f.format(root.QValue(0, entry.getValue())) + " " +
                           f.format(root.QValue(1, entry.getValue())) + "]";
                 result += ") ";
             }

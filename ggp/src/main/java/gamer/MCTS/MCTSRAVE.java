@@ -33,9 +33,14 @@ import util.QueryBuilder;
 // }}
 
 // Note: The weird comments are for forcing sane folding with marks.
-/*
+/**
  * A simple MCTS Thread that defines a Monte carlo search algorithm for
  * a tree made up of RaveNode nodes.
+ *
+ * Its made to be extremelly modifiable with the MCTSControlValues struct.  It is not intended
+ * to be truly competitive and makes some asumptions that makes it unable to play some games.
+ * For instance it cannot play games with more than one player and it also cannot play games
+ * with multiple players moving in the same turn.
  */
 public class MCTSRAVE extends Thread {
     //----------------MCTS Variables----------------------{{
@@ -75,15 +80,10 @@ public class MCTSRAVE extends Thread {
     /**
      * Constructor for a MCTS class using GRAVE and MAST
      *
-     * @param gamer          The gamer using this search
-     * @param lock           A lock just to be safe
-     * @param silent         Set to false to make it silent
-     * @param epsilon        The epsilon greedy value controlling the use of MAST
-     * @param k              The RAVE controll threshold
-     * @param grave          The GRAVE threshold
-     * @param treeDiscount   How much we discount return values in the MCTS tree
-     * @param ChargeDiscount How much we discount return values in the depth charge
-     * @param limit          Sets a simulation limit for the AI
+     * @param gamer             The gamer using this search
+     * @param lock              A lock just to be safe
+     * @param silent            Set to false to make it silent
+     * @param values Holds several values that affect the way the algorithm runs
      */
     public MCTSRAVE(StateMachineGamer gamer, ReentrantReadWriteLock lock,
                     boolean silent, MCTSControlValues values){
@@ -165,12 +165,6 @@ public class MCTSRAVE extends Thread {
     }//}}
 
     //private List<Double> search(RaveNode node,{{
-    /**
-     * A recursive MCTS search function that searches through MCM nodes.
-     * It only expands one node each run when it hits a new leaf.
-     *
-     * @return The simulated value of this node for each player from one simulation.
-     */
     private List<Double> search(RaveNode node,
                                 List<HashMap<Move, double[]>> grave,
                                 List<List<Move>> rave,
@@ -338,21 +332,25 @@ public class MCTSRAVE extends Thread {
     private void applyPersonalityBias(ArrayList<Double> goals, MachineState state){
         ArrayList<Integer> counts = getPieceCount(state);
         if (counts.size() >= 2){
-            maxCounts.set(0, Math.max(maxCounts.get(0), counts.get(0)));
-            maxCounts.set(1, Math.max(maxCounts.get(1), counts.get(1)));
+            int p1Counts = counts.get(0);
+            int p2Counts = counts.get(1);
+            maxCounts.set(0, Math.max(maxCounts.get(0), p1Counts));
+            maxCounts.set(1, Math.max(maxCounts.get(1), p2Counts));
+            int p1Max = maxCounts.get(0);
+            int p2Max = maxCounts.get(1);
             // Defensiveness
             goals.set(0,
-                      Math.max(goals.get(0) - ((maxCounts.get(0) - counts.get(0)) * values.defensiveness.get(0)),
+                      Math.max(goals.get(0) - ((p1Max - p1Counts) * values.defensiveness.get(0)),
                              0.0));
             goals.set(1,
-                      Math.max(goals.get(1) - ((maxCounts.get(1) - counts.get(1)) * values.defensiveness.get(1)),
+                      Math.max(goals.get(1) - ((p2Max - p2Counts) * values.defensiveness.get(1)),
                                0.0));
             // Aggression
             goals.set(0,
-                      Math.min(goals.get(0) + ((maxCounts.get(1) - counts.get(1)) * values.aggression.get(0)),
+                      Math.min(goals.get(0) + ((p2Max - p2Counts) * values.aggression.get(0)),
                                100.0));
             goals.set(1,
-                      Math.min(goals.get(1) + ((maxCounts.get(0) - counts.get(0)) * values.aggression.get(1)),
+                      Math.min(goals.get(1) + ((p1Max - p1Counts) * values.aggression.get(1)),
                                100.0));
         }
     }//}}
@@ -362,6 +360,7 @@ public class MCTSRAVE extends Thread {
     //public List<Move> selectMove() throws MoveDefinitionException {{
     /**
      * @return The most simulated move at this point
+     * @throws MoveDefinitionException
      */
     public List<Move> selectMove() throws MoveDefinitionException {
         Map.Entry<List<Move>, RaveNode> bestMove = null;
@@ -497,6 +496,11 @@ public class MCTSRAVE extends Thread {
     }//}}
 
     //public String baseEval(){{
+    /**
+     * Returns an evaluation of the running game as the AI sees it
+     *
+     * @return String containing the values of each move available at this point
+     */
     public String baseEval(){
         String result = "";
         synchronized(root){

@@ -17,6 +17,12 @@ import org.ggp.base.util.symbol.grammar.SymbolList;
 
 import gamer.UnityGamer;
 
+/**
+ * Starts a bidirectional flow of information through a socket.
+ *
+ * Sends out the AI's evaluation of the board game.
+ * Recieves parameters it uses to change how the AI plays.
+ */
 public final class Update extends Thread {
     private final int port;
     private final UnityGamer gamer;
@@ -62,7 +68,7 @@ public final class Update extends Thread {
                     String input  = inp.readLine();
 
                     if(input.toLowerCase().contains("abort")){
-                        sleep(200);//Because windows
+                        sleep(200);//Because windows sockets are garbage it seems
                         pw.println("ack");
                         System.out.println("Breaking out of update loop");
                         break;

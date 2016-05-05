@@ -13,12 +13,16 @@ import org.ggp.base.util.statemachine.Move;
 
 
 /**
- * A basic Monte Carlo move wrapper with UCT
+ * A basic Monte Carlo node with UCT.
+ *
+ * Note that this class assumes that there are two players and only one of them has
+ * a move each turn.
  */
 @SuppressWarnings("serial")
 public class UCTNode extends Node {
     public HashMap<List<Move>, UCTNode> children; //Its children because statemachines are slow
 
+    //public UCTNode(List<Move> move){{
     /**
      * A tree node carrying the calculated value of the contained state.
      * @param move The move itself.
@@ -26,9 +30,9 @@ public class UCTNode extends Node {
     public UCTNode(List<Move> move){
         super();
         children = new HashMap<List<Move>, UCTNode>(); //TODO: Replace with a saner mapping
-    }
-    // UCBT functions {
-    // update(List<Double) {
+    }//}}
+    // UCBT functions {{
+    //public void update(List<Double> result){{
     /**
      * Takes in the result and updates, wins and simulation counts before calling
      * calcValue() to calculate the new value of the move.
@@ -40,9 +44,8 @@ public class UCTNode extends Node {
         wins[0] += result.get(0);
         wins[1] += result.get(1);
         n++;
-    }
-    //} 
-
+    }//}}
+    //public double QValue(int win, UCTNode node){{
     /**
      * @return The new UCT value of the move
      */
@@ -51,9 +54,8 @@ public class UCTNode extends Node {
             return Integer.MAX_VALUE;
         }
         return (node.wins[win] / node.n) + (C * Math.sqrt(Math.log(n)/node.n));
-    }
-    //}
-    // expand(List<List<Move>> {
+    } //}}
+    //public void expand(List<List<Move>> moves){{
     /**
      * Expands this node, adding the given legal moves to its children.
      *
@@ -66,9 +68,8 @@ public class UCTNode extends Node {
             children.put(move, new UCTNode(move));
             size++;
         }
-    }
-    //}
-    // select(){
+    } //}}
+    //public List<Move> select(){{
     /**
      * Sorts the moves and returns the first one.
      *
@@ -100,12 +101,11 @@ public class UCTNode extends Node {
                 return move;
             }
         }
-        return null; 
-    }
-        //}
-    //}
-
-    // Print helpers{
+        return null;
+    } //}}
+    //}}
+    // Print helpers{{
+    //public String toString(){{
     @Override
     public String toString(){
         String result;
@@ -117,6 +117,6 @@ public class UCTNode extends Node {
             result =  super.toString();
         }
         return  result;
-    }
-    //}
+    }//}}
+    //}}
 }

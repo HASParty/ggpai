@@ -35,7 +35,7 @@ import util.requests.factory.UnityRequestFactory;
 
 
 public class UnityPlayer extends GamePlayer {
-    protected final Thread update; //,
+    protected final Thread update; //For a bidirectional stream of information for the gamer
     public UnityPlayer(int port, Gamer gamer) throws IOException {
         super(port, gamer);
         this.update = new Update(9149, (UnityGamer)gamer);
@@ -64,7 +64,6 @@ public class UnityPlayer extends GamePlayer {
                 String out = request.process(System.currentTimeMillis());
 
                 HttpWriter.writeAsServer(connection, out);
-                // System.out.println("Out string:\n" + out);
 
                 connection.close();
                 GamerLogger.log("GamePlayer", "[Sent at " +

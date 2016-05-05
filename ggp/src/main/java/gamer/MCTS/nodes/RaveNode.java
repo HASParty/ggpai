@@ -13,7 +13,10 @@ import org.ggp.base.util.statemachine.Move;
 // Note: The weird comments are for forcing sane folding with marks.
 
 /**
- * A basic Monte Carlo move wrapper with UCT
+ * A Monte Carlo Tree node that combines GRAVE and UCT for selection.
+ *
+ * Note that this class assumes that there are two players and only one of them has
+ * a move each turn.
  */
 @SuppressWarnings("serial")
 public class RaveNode extends Node {
@@ -38,6 +41,11 @@ public class RaveNode extends Node {
 
     //----------Main MCTS interface functions----------------------------------------------------{{
     //public void expand(List<List<Move>> moves){{
+    /**
+     * Generates empty child nodes for each given move and adds them to children
+     *
+     * @param moves List of joint moves
+     */
     public void expand(List<List<Move>> moves){
         leaf = false;
         rave = new ArrayList<HashMap<Move, double[]>>();
@@ -60,7 +68,7 @@ public class RaveNode extends Node {
      *
      * @param grave The rave values passed down by the ancestors to be used until the threshold is met
      *
-     * @return the child node with the highest UCT value
+     * @return the child node with the highest UCTGRAVE value
      */
     public List<Move> select(List<HashMap<Move, double[]>> grave){
         double best = -1;
@@ -92,6 +100,12 @@ public class RaveNode extends Node {
     } //}}
 
     //public void updateRave(List<List<Move>> jointMoves, List<Double> result){{
+    /**
+     * Updates the stored Rave values
+     *
+     * @param jointMoves List of joint moves that were played further down in this run
+     * @param result     The resulting score of this run to update with.
+     */
     public void updateRave(List<List<Move>> jointMoves, List<Double> result){
         //A hashset to keep track of which rave values have already been updated
         ArrayList<HashSet<Move>> done = new ArrayList<HashSet<Move>>();
@@ -115,21 +129,38 @@ public class RaveNode extends Node {
     //----------Getters and Setters--------------------------------------------------------------{{
 
     //public HashMap<List<Move>, RaveNode> getChildren(){{
+    /**
+     * Getter for children
+     */
     public HashMap<List<Move>, RaveNode> getChildren(){
         return children;
     }//}}
 
     //public static void setGrave(long graveThresh){{
+    /**
+     * Setter for grave
+     *
+     * @param graveThresh The new grave threshold
+     */
     public static void setGrave(long graveThresh){
         RaveNode.graveThresh = graveThresh;
     }//}}
 
     //public List<HashMap<Move, double[]>> getMap(){{
+    /**
+     * Can't remember what this is for but its probably very important
+     */
     public List<HashMap<Move, double[]>> getMap(){
         return rave;
     }//}}
 
     //public List<HashMap<Move, double[]>> updateGrave(List<HashMap<Move, double[]>> grave){{
+    /**
+     * Takes in grave values and updates them/adds to them where it should.
+     *
+     * @param grave the grave values being built up on the way down
+     * @return the grave list, essentially allowing this to be used as a init for them.
+     */
     public List<HashMap<Move, double[]>> updateGrave(List<HashMap<Move, double[]>> grave){
         boolean fresh = false; // If there is no grave we need to make it
         if (grave == null) fresh = true;
@@ -153,7 +184,7 @@ public class RaveNode extends Node {
     //}}
 
     //----------Helpers--------------------------------------------------------------------------{{
-    //public double calcValue(int win, Map.Entry<List<Move>, RaveNode> entry, HashMap<Move, double[]> grave){{
+    //private double calcValue(int win, Map.Entry<List<Move>, RaveNode> entry, HashMap<Move, double[]> grave){{
     private double calcValue(int win, Map.Entry<List<Move>, RaveNode> entry, HashMap<Move, double[]> grave){
         double beta = Math.sqrt(k/(3*n+k));
         List<Move> move = entry.getKey();

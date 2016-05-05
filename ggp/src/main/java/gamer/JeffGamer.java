@@ -33,7 +33,9 @@ import gamer.MCTS.MCTSRAVE;
 //}}
 
 /**
- * JeffGamer implements a simple MCTS search with UCT, GRAVE and MAST
+ * JeffGamer uses a simple MCTS search with UCT, GRAVE and MAST.
+ *
+ * Mainly used to test the algorithms used for the UnityGamer
  */
 
 public class JeffGamer extends StateMachineGamer {

@@ -14,12 +14,10 @@ import org.ggp.base.util.reflection.ProjectSearcher;
  * keeping the search for now in case we need it
  * adapted from PlayerRunner
  */
-public final class JeffRunner
-{
-    public static void main(String[] args) throws IOException, 
-           InstantiationException,
-           IllegalAccessException
-    {
+public final class JeffRunner {
+    public static void main(String[] args) throws IOException,
+                                                  InstantiationException,
+                                                  IllegalAccessException {
         if (args.length != 1 || args[0].equals("${arg0}")) {
             System.out.println("PlayerRunner [port]");
             return;

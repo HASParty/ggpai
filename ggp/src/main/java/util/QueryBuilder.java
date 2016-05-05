@@ -9,6 +9,11 @@ import org.ggp.base.util.gdl.grammar.GdlPool;
 import org.ggp.base.util.statemachine.Role;
 
 
+/**
+ * A class holding query building methods.
+ *
+ * Will have things added to it over time.
+ */
 public class QueryBuilder {
     public static ArrayList<GdlSentence> pieceCount(String where, List<Role> roles){
         ArrayList<GdlSentence> result = new ArrayList<>();
