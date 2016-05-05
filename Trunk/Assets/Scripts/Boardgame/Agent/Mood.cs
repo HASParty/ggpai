@@ -17,23 +17,31 @@ namespace Boardgame.Agent
         private Decayable valence;
         private Decayable arousal;
 
+        [SerializeField]
         private float currentValenceMod;
+        [SerializeField]
         private float currentArousalMod;
 
         private MoodEffect mods;
 
         private PersonalityModule pm;
 
+        [SerializeField]
+        private float currentValence;
+        [SerializeField]
+        private float currentArousal;
+
         //find good defaults
         [SerializeField]
-        private float valenceDecay = 0.05f;
+        private float valenceDecay = 0.005f;
         [SerializeField]
-        private float arousalDecay = 0.05f;
+        private float arousalDecay = 0.005f;
 
         void Start() {
             pm = GetComponent<PersonalityModule>();
             float valenceNeutral, arousalNeutral;
             pm.GetMoodConfig(out valenceNeutral, out arousalNeutral, out mods);
+            Debug.Log(valenceNeutral + " " + arousalNeutral);
             valence = new Decayable(valenceNeutral, 0f, 2f, valenceDecay);
             arousal = new Decayable(arousalNeutral, 0f, 2f, arousalDecay);
         }
@@ -43,6 +51,8 @@ namespace Boardgame.Agent
             arousal.Update();
             currentValenceMod = (valence.IsPositive() ? mods.Positive : mods.Negative);
             currentArousalMod = (arousal.IsPositive() ? mods.Surprising : mods.Expected);
+            currentValence = valence.Get();
+            currentArousal = arousal.Get();
         }
 
         public void Reset() {

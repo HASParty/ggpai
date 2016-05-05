@@ -30,7 +30,7 @@ namespace Behaviour {
             }
             Color color;
             Vector2 position = new Vector2(x, Random.Range(0, ContentBox.rect.height - DotPrefab.GetComponent<RectTransform>().rect.height));
-            string text = chunk.Character.identikit.actorName + " at " + Time.time + "  (" + chunk.ID + ") ";
+            string text = Time.time + "  (" + chunk.ID + ") ";
             switch (chunk.Type) {
                 case BMLChunkType.Face:
                     var fchunk = chunk as Face;

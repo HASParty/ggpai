@@ -201,9 +201,9 @@ namespace Boardgame.Networking {
         }
 
         public void WriteFeed(GGPSettings g) {
-            string send = string.Format("( update {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12} )\n",
+            string send = string.Format("( update {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12} {13} {14} {15} )\n",
                 g.Epsilon, g.Rave, g.Grave, g.ChargeDiscount, g.TreeDiscount, g.Limit, g.FirstAggression, g.SecondAggression, g.FirstDefensiveness,
-                g.SecondDefensiveness, g.ChargeDepth, g.Horizon, g.RandomError);
+                g.SecondDefensiveness, g.ChargeDepth, g.Horizon, g.RandomError, 40, 40, 40);
             //Debug.Log(send);
             Connection.Write(send, Connection.feedConnection.GetStream());
         }
