@@ -7,12 +7,18 @@ namespace Boardgame {
     /// <summary>
     /// Interactable physical representation of a cell
     /// </summary>
-    [RequireComponent(typeof(SphereCollider))]
+    [RequireComponent(typeof(SphereCollider), typeof(AudioSource))]
     public class PhysicalCell : MonoBehaviour {
         private List<GameObject> piece = new List<GameObject>();
         public bool isPile = false;
 
+        public AudioSource AudioSource;
+
         public string id;
+
+        public void Awake() {
+            AudioSource = GetComponent<AudioSource>();
+        }
 
         public void SetColliderRadius(float radius) {
             SphereCollider col = GetComponent<SphereCollider>();

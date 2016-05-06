@@ -1527,6 +1527,7 @@ MonoBehaviour:
   overrideAnimation: 0
   effect: 1
   lean: 0
+  leanAffectors: 0
   headNod: 0
   headShake: 0
   headOverride: 0
@@ -2277,6 +2278,8 @@ MonoBehaviour:
   gameScriptable: {fileID: 11400000, guid: dc9697bcdd74c0d4d80df7beee4bdd15, type: 2}
   BoardSpawnLocation: {fileID: 240844034}
   PileSpawnTransform: {fileID: 1432929962}
+  piecePlaceSound: {fileID: 8300000, guid: 2776d515161f0054aad5469fc5bd9d3d, type: 3}
+  turnChangeSound: {fileID: 0}
   OnGameEnd:
     m_PersistentCalls:
       m_Calls: []
@@ -3095,8 +3098,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f951a98d43354b49bd4b11a75fdcea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Overhead: {fileID: 2079150348}
-  Player: {fileID: 1595330111}
   MouseCast: {fileID: 1970390798}
   HideMe:
   - {fileID: 929899701}
