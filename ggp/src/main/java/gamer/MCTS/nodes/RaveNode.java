@@ -25,7 +25,7 @@ public class RaveNode extends Node {
     private List<HashMap<Move, double[]>> rave;
     private static long graveThresh = 20;
     private HashMap<List<Move>, RaveNode> children;
-    public static long k = 0;
+    private static long k = 0;
     //}}
     //public RaveNode(List<Move> move){{
     /**
@@ -220,6 +220,10 @@ public class RaveNode extends Node {
         }
         return res;
     }//}}
+
+    public static void setRaveBias(long k){
+        RaveNode.k = k;
+    }
 
     //public String toString(){{
     @Override

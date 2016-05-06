@@ -26,7 +26,7 @@ public abstract class Node implements java.io.Serializable {
     protected long n; //how often this node has been selected
     protected int size;
     protected boolean leaf;
-    public List<Double> goals = null;
+    public ArrayList<Double> goals = null;
     public MachineState state; //The move that lead to this state
     public boolean terminal;
 
@@ -99,7 +99,7 @@ public abstract class Node implements java.io.Serializable {
      *
      * @param C the exploration factor to set to
      */
-    public void setExplorationFactor(long C){
+    public static void setExplorationFactor(long C){
         Node.C = C;
     }//}}
 

@@ -69,7 +69,7 @@ public abstract class SearchRunner extends Thread {
         expanding = true;
         this.gameName = gamer.getMatch().getGame().getName();
         if(gameName == null){
-            gameName = "Mylla";
+            gameName = "";
         } else {
             System.out.println(gameName);
         }
@@ -185,7 +185,7 @@ public abstract class SearchRunner extends Thread {
         }
     } //}}
 
-    //private List<Double> getGoalsAsDouble(MachineState state)throws GoalDefinitionException{{
+    //private ArrayList<Double> getGoalsAsDouble(MachineState state)throws GoalDefinitionException{{
     protected ArrayList<Double> getGoalsAsDouble(MachineState state)throws GoalDefinitionException{
             ArrayList<Double> result = new ArrayList<>();
             for(Integer inte : machine.getGoals(state)){

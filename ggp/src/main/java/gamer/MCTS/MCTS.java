@@ -262,8 +262,8 @@ public final class MCTS extends Thread {
         return root.size();
     }
 
-    private List<Double> getGoalsAsDouble(MachineState state)throws GoalDefinitionException{
-            List<Double> result = new ArrayList<>();
+    private ArrayList<Double> getGoalsAsDouble(MachineState state)throws GoalDefinitionException{
+            ArrayList<Double> result = new ArrayList<>();
             for(Integer inte : machine.getGoals(state)){
                 result.add((double)inte);
             }

@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
@@ -52,7 +50,6 @@ public class MCTSRAVE extends SearchRunner {
     private int counter = 0;
     private ArrayList<GdlSentence> pcQuery;
     //Aggression cache
-    private Cache<MachineState, ArrayList<Double>> goalCache;
     //}}
     //General MCTS variables{{
     private Random rand = new Random();
@@ -90,13 +87,17 @@ public class MCTSRAVE extends SearchRunner {
         this.playOutCount = 0;
         this.avgPlayOutDepth = 0;
 
-        RaveNode.k = Math.round(values.rave);
-        RaveNode.setGrave(Math.round(values.grave));
+        RaveNode.setRaveBias(values.rave);
+        RaveNode.setGrave(values.grave);
+        RaveNode.setExplorationFactor(values.explorationFactor);
 
-        this.dag = new HashMap<>(40000);
+        this.dag = new HashMap<>(10000);
         this.mast = new MAST(gameName);
-        this.pcQuery = QueryBuilder.pieceCount("pieces_on_board", machine.getRoles());
-        this.goalCache = CacheBuilder.newBuilder().maximumSize(40000).build();
+        if (gameName.contains("Mylla") || gameName.contains("Checkers")){
+            this.pcQuery = QueryBuilder.pieceCount("pieces_on_board", machine.getRoles());
+        } else {
+            this.pcQuery = null; //To make it work with other games for testing
+        }
 
         //Debug
         this.silent = silent;
@@ -109,8 +110,15 @@ public class MCTSRAVE extends SearchRunner {
     protected void search() throws MoveDefinitionException,
                                    TransitionDefinitionException,
                                    GoalDefinitionException{
+        if (values.changed){
+            RaveNode.setRaveBias(values.rave);
+            RaveNode.setGrave(values.grave);
+            RaveNode.setExplorationFactor(values.explorationFactor);
+
+        }
         search(root, null, new ArrayList<List<Move>>(), 0);
     }//}}
+
     //private List<Double> search(RaveNode node,{{
     private List<Double> search(RaveNode node,
                                 List<HashMap<Move, double[]>> grave,
@@ -122,11 +130,8 @@ public class MCTSRAVE extends SearchRunner {
         MachineState state = node.state;
         if(node.terminal || machine.isTerminal(state)){
             if(node.goals == null){
-                node.goals = goalCache.getIfPresent(state);
-                if(node.goals == null){
-                    node.goals = getGoalsAsDouble(state); //Decreasing terminal calls
-                    goalCache.put(state, new ArrayList<>(node.goals));
-                }
+                node.goals = getGoalsAsDouble(state); // Decreasing terminal calls
+                applyPersonalityBias(node.goals, state);
                 node.terminal = true;
             }
             result = new ArrayList<>(node.goals);
@@ -134,13 +139,13 @@ public class MCTSRAVE extends SearchRunner {
             if(expanding && (depth < values.horizon)){ // We don't expand if we have hit a resource limit
                 node.expand(machine.getLegalJointMoves(state));
             }
-            result = playOut(state, rave); //We do one playout
+            result = playOut(state, rave); // We do one playout
         } else {
-            grave = node.updateGrave(grave); //We add to our grave values
+            grave = node.updateGrave(grave); // We add to our grave values
             List<Move> ci = node.select(grave);
             HashMap<List<Move>, RaveNode> children = node.getChildren();
             RaveNode child =  children.get(ci);
-            if(child.n() == 0){ //We only ever use the SM once for each state
+            if(child.n() == 0){ // We only ever use the SM once for each state
                 child.state = machine.getNextState(state, ci);
                 // Put the node into the dag if its absent
                 RaveNode dagNode = dag.putIfAbsent(child.state, child);
@@ -176,45 +181,34 @@ public class MCTSRAVE extends SearchRunner {
     }//}}
 
     //private List<Double> depthCharge(MachineState state,{{
-    private List<Double> depthCharge(MachineState state,
+    private ArrayList<Double> depthCharge(MachineState state,
                                      List<List<Move>> rave) throws GoalDefinitionException,
                                                                    MoveDefinitionException,
                                                                    TransitionDefinitionException {
         lastPlayOutDepth++;
-        List<Double> result;
+        ArrayList<Double> result;
         if(machine.isTerminal(state)){
             updateAverageDepth();
-            ArrayList<Double> goals = goalCache.getIfPresent(state);
-            if(goals != null){
-                return goals;
-            } else {
-                counter++;
-            }
-            goals = getGoalsAsDouble(state);
-            applyPersonalityBias(goals, state);
-            goalCache.put(state, goals);
-            return goals;
+            result = getGoalsAsDouble(state);
+            applyPersonalityBias(result, state);
         } else if (lastPlayOutDepth > values.chargeDepth){  //If we hit our depth limit
             updateAverageDepth();
-            ArrayList<Double> goals = new ArrayList<>();
-            goals.add(values.chargeDefaults.get(0));
-            goals.add(values.chargeDefaults.get(1)); //We create a default value
-            applyPersonalityBias(goals, state); //And apply bias to it
-            return goals;
-        }
-
-        List<List<Move>> moves = machine.getLegalJointMoves(state);
-        List<Move> chosen;
-        if(rand.nextFloat() >= values.epsilon){
-            chosen = moves.get(rand.nextInt(moves.size()));
+            result = new ArrayList<>(values.chargeDefaults);
+            applyPersonalityBias(result, state); //And apply bias to it
         } else {
-            chosen = mast.pickMove(moves);
+            List<List<Move>> moves = machine.getLegalJointMoves(state);
+            List<Move> chosen;
+            if(rand.nextFloat() >= values.epsilon){
+                chosen = moves.get(rand.nextInt(moves.size()));
+            } else {
+                chosen = mast.pickMove(moves);
+            }
+            state = machine.getNextState(state, chosen);
+            result = depthCharge(state, rave);
+            rave.add(chosen);
+            mast.update(chosen, result);
+            applyDiscount(result, values.chargeDiscount);
         }
-        state = machine.getNextState(state, chosen);
-        result = depthCharge(state, rave);
-        rave.add(chosen);
-        mast.update(chosen, result);
-        applyDiscount(result, values.chargeDiscount);
         return result;
     }//}}
     //}}
@@ -269,9 +263,11 @@ public class MCTSRAVE extends SearchRunner {
     //private ArrayList<Integer> getPieceCount(MachineState state){{
     private ArrayList<Integer> getPieceCount(MachineState state){
         ArrayList<Integer> res = new ArrayList<>();
-        for (GdlSentence query : pcQuery){
-            GdlSentence answer = ((UnityGamer)gamer).prover.askOne(query, state.getContents());
-            res.add(Integer.parseInt(answer.get(0).toSentence().get(1).toString()));
+        if(pcQuery != null){
+            for (GdlSentence query : pcQuery){
+                GdlSentence answer = ((UnityGamer)gamer).prover.askOne(query, state.getContents());
+                res.add(Integer.parseInt(answer.get(0).toSentence().get(1).toString()));
+            }
         }
         return res;
     } //}}
@@ -413,7 +409,7 @@ public class MCTSRAVE extends SearchRunner {
         DagCounter = 0;
 
     }//}}
- 
+
     //private void updateAverageDepth(){{
     private void updateAverageDepth(){
         float rebuild = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth);
