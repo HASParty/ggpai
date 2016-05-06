@@ -17,6 +17,7 @@ public class MCTSControlValues{
     public ArrayList<Double> aggression;    // Used to modulate goal weight of killing pieces
     public ArrayList<Double> chargeDefaults;// The default values used if a charge is stopped
     public boolean changed;                 // A control value used to see if a value has changed
+                                            // Not currently used.
 
     //public MCTSControlValues(){{
     /**

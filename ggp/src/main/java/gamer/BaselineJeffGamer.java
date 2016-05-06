@@ -34,16 +34,16 @@ import gamer.MCTS.MCTSDAG;
  */
 
 public class BaselineJeffGamer extends StateMachineGamer {
-    private MCTS mcts;
-    // private MCTSDAG mcts;
+    // private MCTS mcts;
+    private MCTSDAG mcts;
     private Role other;
     private Map<Role, Integer> roleMap;
     public ReentrantReadWriteLock lock1= new ReentrantReadWriteLock(true);
     @Override
     public void stateMachineMetaGame(long timeout) {
         roleMap = getStateMachine().getRoleIndices();
-        // mcts = new MCTSDAG(this, lock1, false, 0.9f);
-        mcts = new MCTS(this, lock1, false);
+        mcts = new MCTSDAG(this, lock1, false, 0.9f);
+        // mcts = new MCTS(this, lock1, false);
         long finishBy = timeout - 1100;
         mcts.start();
         while(System.currentTimeMillis() < finishBy){
@@ -138,6 +138,7 @@ public class BaselineJeffGamer extends StateMachineGamer {
 
     /**
      * Returns the role that this gamer is playing as in the game.
+     * @return Returns a role.
      */
     public final Role getOtherRole() {
         return other;

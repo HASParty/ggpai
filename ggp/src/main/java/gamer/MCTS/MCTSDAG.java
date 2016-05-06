@@ -44,7 +44,7 @@ import gamer.MCTS.nodes.UCTNode;
  *
  * Mainly used as a baseline tester against MCTSRAVE.
  */
-public final class MCTSDAG extends Thread {
+public final class MCTSDAG extends SearchRunner {
     //Variables {{
     //MCTS Enhancement variables {{
     //MCTS DAG
@@ -55,26 +55,17 @@ public final class MCTSDAG extends Thread {
     //}}
     //General MCTS variables{{
     private Random rand = new Random();
-    private ReentrantReadWriteLock lock;
     private static boolean alive;
     protected UCTNode root;
-    protected StateMachine machine;
-    protected StateMachineGamer gamer;
-    public List<Move> newRoot;
     //}}
     //Extra info/control variables {{
     private int DagCounter = 0;
-    private static Runtime runtime = Runtime.getRuntime();
-    private static boolean expanding;
     private static final int limit = 0;
     private int lastPlayOutDepth;
     private int playOutCount;
     private float avgPlayOutDepth;
     private double treeDiscount;
     private double chargeDiscount;
-    private String gameName;
-
-    public boolean silent;
     //}}
     //}}
     //MCTSDAG(StateMachineGamer, ReadWriteLock, boolean) {{
@@ -85,12 +76,12 @@ public final class MCTSDAG extends Thread {
      * @param gamer The gamer using this search
      * @param lock A lock just to be safe
      * @param silent Set to false to make it silent
+     * @param epsilon What percentage of cases the search should use MAST
      */ //}}
     public MCTSDAG(StateMachineGamer gamer, ReentrantReadWriteLock lock, //{{
-            boolean silent, double epsilon){
+            boolean silent, double epsilon) {
+        super(gamer, lock, silent);
         this.epsilon = epsilon;
-        this.silent = silent;
-        this.gamer = gamer;
         lastPlayOutDepth = 0;
         playOutCount = 0;
         avgPlayOutDepth = 0;
@@ -98,59 +89,18 @@ public final class MCTSDAG extends Thread {
         chargeDiscount = 0.99f;
 
         dag = new HashMap<>(40000);
-        gameName = gamer.getMatch().getGame().getName();
-        if(gameName == null){
-            gameName = "Mylla";
-        }
         mast = new MAST(gameName);
-        expanding = true;
-        machine = gamer.getStateMachine();
         root = new UCTNode(null);
-        newRoot = null;
-        alive = true;
-        this.lock = lock;
     } //}}
     //}}
     //MCTS selection phase {{
+    //protected  void search() throws MoveDefinitionException,{{
     @Override
-    public void run(){
-        int heapCheck = 0;
-        // mast.loadData();
-        //While we are alive we keep on searching
-        System.out.println("Using MCTSDAG");
-        while(!Thread.currentThread().isInterrupted()){
-            try {
-                if(limit > 0){
-                    while(root.n() > limit && newRoot == null){
-                        Thread.sleep(5);
-                    }
-                }
-                lock.writeLock().lock(); //Making sure the statemachine and tree are in sync
-                if (newRoot != null){
-                    applyMove(newRoot); //Move to our new root
-                    newRoot = null;
-                    playOutCount = 0;
-                    avgPlayOutDepth = 0;
-                }
-                if(heapCheck % 1000 == 0){
-                    checkHeap();
-                }
-                heapCheck++;
-                search(root, gamer.getCurrentState());
-                lock.writeLock().unlock();
-            } catch (InterruptedException e) {
-                lock.writeLock().unlock();
-                System.out.println("this never seems to happen?");
-                break;
-            } catch (Exception e){
-                lock.writeLock().unlock();
-                System.out.println("EXCEPTION: " + e.toString());
-                e.printStackTrace();
-                return;
-            }
-        }
-        // mast.saveData();
-    }
+    protected  void search() throws MoveDefinitionException,
+                                    TransitionDefinitionException,
+                                    GoalDefinitionException {
+        search(root, gamer.getCurrentState());
+    }//}}
 
     //search(UCTNode, MachineState){{
     /**
@@ -161,6 +111,9 @@ public final class MCTSDAG extends Thread {
      * @param state The current state entering this node
      *
      * @return The simulated value of this node for each player from one simulation.
+     * @throws MoveDefinitionException Thrown in the GGP base
+     * @throws TransitionDefinitionException Thrown in the GGP base
+     * @throws GoalDefinitionException Thrown in the GGP base
      */
     private List<Double> search(UCTNode node,MachineState state) throws MoveDefinitionException,
                                                                         TransitionDefinitionException,
@@ -206,6 +159,7 @@ public final class MCTSDAG extends Thread {
     //}}
     //}}
     //MCTS playout phase {{
+
     private List<Double> playOut(MachineState state) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
         lastPlayOutDepth = 0;
         return depthCharge(state);
@@ -241,31 +195,21 @@ public final class MCTSDAG extends Thread {
 
     /**
      * @return The best move at this point
+     * @throws MoveDefinitionException Thrown in the GGP base
      */
-    public List<Move> selectMove() throws MoveDefinitionException {
-        System.out.println("Dag connections made this turn: " + DagCounter);
-        DagCounter = 0;
+    @Override
+    public List<Move> bestMove() throws MoveDefinitionException {
         Map.Entry<List<Move>, UCTNode> bestMove = null;
-        if (!silent){
-            System.out.println("================================Available moves================================");
-            System.out.println("N: " + root.n());
-        }
         for (Map.Entry<List<Move>, UCTNode> entry : root.children.entrySet()){
             if (!silent){
-                System.out.println("Move: " + entry.getKey() + " " + entry.getValue());
             }
             if (bestMove == null || entry.getValue().n() > bestMove.getValue().n()){
                 bestMove = entry;
             }
         }
-            System.out.println("===============================================================================");
-        if (!silent){
-            System.out.println("------------------");
-            System.out.println("Selecting: " + bestMove + " With " + bestMove.getValue().n() + " simulations");
-            System.out.println("------------------");
-            System.out.println(String.format("Mast tables size: [%d, %d]",  mast.size(0),
-                                                                            mast.size(1)));
-        }
+        System.out.println("------------------");
+        System.out.println("Selecting: " + bestMove + " With " + bestMove.getValue().n() + " simulations");
+        System.out.println("------------------");
         return bestMove.getKey();
     }
 
@@ -274,34 +218,22 @@ public final class MCTSDAG extends Thread {
      *
      * @param moves The moves that need to be made
      */
+    @Override
     public void applyMove(List<Move> moves)  {
         if (!silent){
             System.out.println("The applied move !: " + moves.toString());
             System.out.println("Average playout depth: " + avgPlayOutDepth);
         }
         synchronized(root){
-            int mb = 1024*1024;
-
-            //Getting the runtime reference from system
-            System.out.println("##### Heap utilization statistics [MB] #####");
-            //Print used memory
-            System.out.println("Used Memory:"
-                    + (runtime.totalMemory() - runtime.freeMemory()) / mb);
-            //Print free memory
-            System.out.println("Free Memory:"
-                    + runtime.freeMemory() / mb);
-            //Print total available memory
-            System.out.println("Total Memory:" + runtime.totalMemory() / mb);
-            //Print Maximum available memory
-            System.out.println("Max Memory:" + runtime.maxMemory() / mb);
-
-            System.out.println();
             for (Map.Entry<List<Move>, UCTNode> entry: root.children.entrySet()){
                 if (moves.get(0).equals(entry.getKey().get(0)) &&
                         moves.get(1).equals(entry.getKey().get(1))){
 
                     markAndSweep(Integer.MAX_VALUE);
                     root = entry.getValue();
+                    newRoot = null;
+                    playOutCount = 0;
+                    avgPlayOutDepth = 0;
                     return;
                 }
             }
@@ -319,6 +251,7 @@ public final class MCTSDAG extends Thread {
         sweep(marked);
         System.out.println("Size of dag after sweep: " + dag.size());
     }
+
     private void sweep(HashSet<MachineState> marked){
         Iterator<Map.Entry<MachineState, UCTNode>> it = dag.entrySet().iterator();
         long time = System.currentTimeMillis();
@@ -385,28 +318,32 @@ public final class MCTSDAG extends Thread {
 
     //}}
     //Helper functions {{
-    private void checkHeap(){
-        if(((runtime.totalMemory() - runtime.freeMemory())/((float)runtime.maxMemory())) >= 0.85f){
-            expanding = false;
-        } else {
-            expanding = true;
-        }
-    }
-
-    private List<Double> getGoalsAsDouble(MachineState state)throws GoalDefinitionException{
-            List<Double> result = new ArrayList<>();
-            for(Integer inte : machine.getGoals(state)){
-                result.add((double)inte);
+    @Override
+    protected  void limitWait() throws InterruptedException{
+        if(limit > 0){
+            while(root.n() > limit && newRoot == null){
+                Thread.sleep(5);
             }
-            return result;
-    }
-
-    private void applyDiscount(List<Double> lis, double discount){
-        for(int i = 0; i < lis.size(); ++i){
-            lis.set(i, lis.get(i) * discount);
         }
     }
+    @Override
+    protected  void printStats(){
+        System.out.println(String.format("Mast tables size: [%d, %d]",  mast.size(0),
+                                                                            mast.size(1)));
+        System.out.println("Dag connections made this turn: " + DagCounter);
+        DagCounter = 0;
 
+    }
+    @Override
+    protected  void printMoves(){
+        System.out.println("================================Available moves================================");
+        System.out.println("N: " + root.n());
+        for (Map.Entry<List<Move>, UCTNode> entry : root.children.entrySet()){
+            System.out.println("Move: " + entry.getKey() + " " + entry.getValue());
+        }
+        System.out.println("===============================================================================");
+
+    }
     public String baseEval(){
         String result = "";
         synchronized(root){

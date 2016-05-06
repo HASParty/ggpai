@@ -179,6 +179,7 @@ public final class MCTS extends Thread {
 
     /**
      * @return The best move at this point
+     * @throws MoveDefinitionException Thrown in the GGP base
      */
     public List<Move> selectMove() throws MoveDefinitionException {
         Map.Entry<List<Move>, UCTNode> bestMove = null;

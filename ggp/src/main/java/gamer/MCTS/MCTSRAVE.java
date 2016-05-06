@@ -2,18 +2,18 @@ package gamer.MCTS;
 // Imports {{
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.ggp.base.player.gamer.statemachine.StateMachineGamer;
 import org.ggp.base.util.statemachine.MachineState;
@@ -42,7 +42,7 @@ import util.QueryBuilder;
  * For instance it cannot play games with more than one player and it also cannot play games
  * with multiple players moving in the same turn.
  */
-public class MCTSRAVE extends Thread {
+public class MCTSRAVE extends SearchRunner {
     //----------------MCTS Variables----------------------{{
     //MCTS Enhancement variables {{
     //MCTS DAG
@@ -56,24 +56,15 @@ public class MCTSRAVE extends Thread {
     //}}
     //General MCTS variables{{
     private Random rand = new Random();
-    private ReentrantReadWriteLock lock;
     protected RaveNode root;
-    protected StateMachine machine;
-    protected StateMachineGamer gamer;
-    public List<Move> newRoot;
     //}}
     //Extra info/control variables {{
     private MCTSControlValues values;
     private int DagCounter = 0;
-    private static Runtime runtime = Runtime.getRuntime();
-    private static boolean expanding;
     private int lastPlayOutDepth;
     private int playOutCount;
     private float avgPlayOutDepth;
-    private String gameName;
     private ArrayList<Integer> maxCounts;
-
-    public boolean silent;
     //}}
     //}}
     //public MCTSRAVE(StateMachineGamer gamer, ReentrantReadWriteLock lock,{{
@@ -87,17 +78,13 @@ public class MCTSRAVE extends Thread {
      */
     public MCTSRAVE(StateMachineGamer gamer, ReentrantReadWriteLock lock,
                     boolean silent, MCTSControlValues values){
+        super(gamer, lock, silent);
         this.maxCounts = new ArrayList<>();
         maxCounts.add(0);
         maxCounts.add(0);
         this.values = values;
-        this.gamer = gamer;
-        this.lock = lock;
-        this.machine = gamer.getStateMachine();
-        this.newRoot = null;
         this.root = new RaveNode(null);
         this.root.state = gamer.getCurrentState();
-        expanding = true;
 
         this.lastPlayOutDepth = 0;
         this.playOutCount = 0;
@@ -106,12 +93,6 @@ public class MCTSRAVE extends Thread {
         RaveNode.k = Math.round(values.rave);
         RaveNode.setGrave(Math.round(values.grave));
 
-        this.gameName = gamer.getMatch().getGame().getName();
-        if(gameName == null){
-            gameName = "Mylla";
-        } else {
-            System.out.println(gameName);
-        }
         this.dag = new HashMap<>(40000);
         this.mast = new MAST(gameName);
         this.pcQuery = QueryBuilder.pieceCount("pieces_on_board", machine.getRoles());
@@ -123,47 +104,13 @@ public class MCTSRAVE extends Thread {
     //}}
 
     //----------------MCTS selection phase----------------{{
-    //public void run(){{
+    //protected void search() throws MoveDefinitionException,{{
     @Override
-    public void run(){
-        int heapCheck = 0;
-        //While we are alive we keep on searching
-        System.out.println("Using MCTSRAVE");
-        while(!Thread.currentThread().isInterrupted()){
-            try {
-                if(values.limit > 0){
-                    while(root.n() > values.limit && newRoot == null){
-                        Thread.sleep(5); //Not necessary to do this in a more efficient way
-                    }
-                }
-                lock.writeLock().lock(); //Making sure the statemachine and tree are in sync
-                if (newRoot != null){
-                    applyMove(newRoot); //Move to our new root
-                    newRoot = null;
-                    playOutCount = 0;
-                    avgPlayOutDepth = 0;
-                }
-                if(heapCheck % 1000 == 0){
-                    checkHeap();
-                }
-                heapCheck++;
-                search(root, null, new ArrayList<List<Move>>(), 0);
-                lock.writeLock().unlock();
-            } catch (InterruptedException e) {
-                if (lock.writeLock().isHeldByCurrentThread()){
-                    lock.writeLock().unlock();
-                }
-                System.out.println("Interrupted");
-                break;
-            } catch (Exception e){
-                lock.writeLock().unlock();
-                System.out.println("EXCEPTION: " + e.toString());
-                e.printStackTrace();
-                return;
-            }
-        }
+    protected void search() throws MoveDefinitionException,
+                                   TransitionDefinitionException,
+                                   GoalDefinitionException{
+        search(root, null, new ArrayList<List<Move>>(), 0);
     }//}}
-
     //private List<Double> search(RaveNode node,{{
     private List<Double> search(RaveNode node,
                                 List<HashMap<Move, double[]>> grave,
@@ -281,6 +228,7 @@ public class MCTSRAVE extends Thread {
         mark(root, marked, depth, time);
         sweep(marked);
         System.out.println("Size of dag after sweep: " + dag.size());
+        System.out.println("\n");
    }//}}
 
     //private void sweep(HashSet<MachineState> marked){{
@@ -357,38 +305,14 @@ public class MCTSRAVE extends Thread {
     //}}
 
     //----------------MCTS Move managment-----------------{{
-    //public List<Move> selectMove() throws MoveDefinitionException {{
+    //public List<Move> bestMove() throws MoveDefinitionException {{
     /**
      * @return The most simulated move at this point
-     * @throws MoveDefinitionException
+     * @throws MoveDefinitionException Thrown in the GGP base
      */
-    public List<Move> selectMove() throws MoveDefinitionException {
+    @Override
+    public List<Move> bestMove() throws MoveDefinitionException {
         Map.Entry<List<Move>, RaveNode> bestMove = null;
-        if (!silent){
-            int mb = 1024*1024;
-            long total = runtime.totalMemory();
-            long free = runtime.freeMemory();
-
-            //Getting the runtime reference from system
-            System.out.println("###################### " +
-                               "Heap utilization statistics [MB] " +
-                               "#######################");
-            //Print used memory
-            System.out.println(String.format("Used Memory:  %d",
-                                            (total - free) / mb));
-            //Print free memory
-            System.out.println(String.format("Free Memory:  %d", free / mb));
-            //Print total available memory
-            System.out.println(String.format("Total Memory: %d", total / mb));
-            //Print Maximum available memory
-            System.out.println(String.format("Max Memory:   %d", runtime.maxMemory() / mb));
-
-            System.out.println();
-            System.out.println("================================"+
-                               "Available moves"+
-                               "================================");
-            System.out.println("N: " + root.n());
-        }
         boolean whoops = false;
         if(rand.nextFloat() <= values.randErr){
             System.out.println("Whoops, selecting a random move");
@@ -396,11 +320,6 @@ public class MCTSRAVE extends Thread {
 
         }
         for (Map.Entry<List<Move>, RaveNode> entry : root.getChildren().entrySet()){
-            if (!silent){
-                System.out.println(String.format(" Move: %-40s %-40s",
-                            entry.getKey(),
-                            entry.getValue()));
-            }
             if (whoops){
                 if (bestMove == null || entry.getValue().n() < bestMove.getValue().n()){
                     bestMove = entry;
@@ -412,7 +331,6 @@ public class MCTSRAVE extends Thread {
                 }
             }
         }
-        System.out.println();
         if (!silent){
             System.out.println("------------------------------------------------------------" +
                                "-------------------");
@@ -421,15 +339,6 @@ public class MCTSRAVE extends Thread {
                                              bestMove.getValue().n()));
             System.out.println("------------------------------------------------------------" +
                                "-------------------");
-
-            System.out.println("--------------------------------"+
-                               "Data Structures"+
-                               "--------------------------------");
-            System.out.println(String.format("Mast tables size: [%d, %d]",  mast.size(0),
-                                                                            mast.size(1)));
-            System.out.println("Dag connections made this turn: " + DagCounter);
-            DagCounter = 0;
-            System.out.println();
         }
         return bestMove.getKey();
     } //}}
@@ -440,6 +349,7 @@ public class MCTSRAVE extends Thread {
      *
      * @param moves The moves that need to be made
      */
+    @Override
     public void applyMove(List<Move> moves)  {
         if (!silent){
             System.out.println("The applied move !: " + moves.toString());
@@ -453,6 +363,9 @@ public class MCTSRAVE extends Thread {
 
                     markAndSweep(Integer.MAX_VALUE);
                     root = entry.getValue();
+                    newRoot = null;
+                    playOutCount = 0;
+                    avgPlayOutDepth = 0;
                     return;
                 }
             }
@@ -463,36 +376,49 @@ public class MCTSRAVE extends Thread {
     //}}
 
     //----------------MCTS Helper functions---------------{{
+    //protected void printMoves(){{
+    @Override
+    protected void printMoves(){
+        System.out.println("================================"+
+                           "Available moves"+
+                           "================================");
+        System.out.println("N: " + root.n());
+        for (Map.Entry<List<Move>, RaveNode> entry : root.getChildren().entrySet()){
+            System.out.println(String.format(" Move: %-40s %-40s",
+                                             entry.getKey(),
+                                             entry.getValue()));
+        }
+    }//}}
+
+    //protected void limitWait() throws InterruptedException{{
+    @Override
+    protected void limitWait() throws InterruptedException{
+        if(values.limit > 0){
+            while(root.n() > values.limit && newRoot == null){
+                Thread.sleep(5);
+            }
+        }
+
+    }//}}
+
+    //protected void printStats(){{
+    @Override
+    protected void printStats(){
+        System.out.println("--------------------------------"+
+                           "Data Structures"+
+                           "--------------------------------");
+        System.out.println(String.format("Mast tables size: [%d, %d]",  mast.size(0),
+                                                                        mast.size(1)));
+        System.out.println("Dag connections made this turn: " + DagCounter);
+        DagCounter = 0;
+
+    }//}}
+ 
     //private void updateAverageDepth(){{
     private void updateAverageDepth(){
         float rebuild = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth);
         avgPlayOutDepth = rebuild / (float)(playOutCount + 1);
         playOutCount++;
-    }//}}
-
-    //private void checkHeap(){{
-    private void checkHeap(){
-        if(((runtime.totalMemory() - runtime.freeMemory())/((float)runtime.maxMemory())) >= 0.85f){
-            expanding = false;
-        } else {
-            expanding = true;
-        }
-    } //}}
-
-    //private List<Double> getGoalsAsDouble(MachineState state)throws GoalDefinitionException{{
-    private ArrayList<Double> getGoalsAsDouble(MachineState state)throws GoalDefinitionException{
-            ArrayList<Double> result = new ArrayList<>();
-            for(Integer inte : machine.getGoals(state)){
-                result.add((double)inte);
-            }
-            return result;
-    }//}}
-
-    //private void applyDiscount(List<Double> lis, double discount){{
-    private void applyDiscount(List<Double> lis, double discount){
-        for(int i = 0; i < lis.size(); ++i){
-            lis.set(i, lis.get(i) * discount);
-        }
     }//}}
 
     //public String baseEval(){{
