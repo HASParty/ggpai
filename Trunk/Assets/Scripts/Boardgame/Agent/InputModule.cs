@@ -63,7 +63,7 @@ namespace Boardgame.Agent {
                 ConnectionMonitor.Instance.SetMaxRequestTime(2f);
             }
 
-            if (data.Moves.Count == 1) ConnectionMonitor.Instance.SetMaxRequestTime(1f);
+            if (data.Moves.Count == 1 && isMyTurn) ConnectionMonitor.Instance.SetMaxRequestTime(1f);
 
             //generate ggp thingy in brain, use results here
             ConnectionMonitor.Instance.WriteFeed(Config.GGP);
