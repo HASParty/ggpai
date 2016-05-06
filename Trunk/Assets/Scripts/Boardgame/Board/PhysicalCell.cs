@@ -18,6 +18,8 @@ namespace Boardgame {
 
         public void Awake() {
             AudioSource = GetComponent<AudioSource>();
+            AudioSource.spatialBlend = 1f;
+            AudioSource.volume = 0.5f;
         }
 
         public void SetColliderRadius(float radius) {

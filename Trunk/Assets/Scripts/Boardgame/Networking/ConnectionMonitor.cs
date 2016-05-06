@@ -85,6 +85,10 @@ namespace Boardgame.Networking {
 			requestLeft *= modifier;
 		}
 
+        public void SetMaxRequestTime(float max) {
+            requestLeft = Mathf.Min(max, requestLeft);
+        }
+
 		private float requestLeft;
         IEnumerator Request() {
 			while(requestLeft > 0f) {
