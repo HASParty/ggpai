@@ -131,6 +131,8 @@ public class RaveNode extends Node {
     //public HashMap<List<Move>, RaveNode> getChildren(){{
     /**
      * Getter for children
+     *
+     * @return A Mapping from joint moves to child nodes
      */
     public HashMap<List<Move>, RaveNode> getChildren(){
         return children;
@@ -144,14 +146,6 @@ public class RaveNode extends Node {
      */
     public static void setGrave(long graveThresh){
         RaveNode.graveThresh = graveThresh;
-    }//}}
-
-    //public List<HashMap<Move, double[]>> getMap(){{
-    /**
-     * Can't remember what this is for but its probably very important
-     */
-    public List<HashMap<Move, double[]>> getMap(){
-        return rave;
     }//}}
 
     //public List<HashMap<Move, double[]>> updateGrave(List<HashMap<Move, double[]>> grave){{
@@ -204,13 +198,15 @@ public class RaveNode extends Node {
 
     //public double QValue(int win, RaveNode node){{
     /**
+     * @param which  Which roles q value do you want.
+     * @param node The node to calculate the Q value of.
      * @return The new UCT value of the move
      */
-    public double QValue(int win, RaveNode node){
+    public double QValue(int which, RaveNode node){
         if(node.n == 0){
             return Integer.MAX_VALUE;
         }
-        return (node.wins[win] / node.n) + (C * Math.sqrt(Math.log(n)/node.n));
+        return (node.wins[which] / node.n) + (C * Math.sqrt(Math.log(n)/node.n));
     } //}}
 
     //public String raveToString(){{

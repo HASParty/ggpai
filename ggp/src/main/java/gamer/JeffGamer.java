@@ -165,6 +165,7 @@ public class JeffGamer extends StateMachineGamer {
     //public final Role getOtherRole() {{
     /**
      * Returns the role that this gamer is playing as in the game.
+     * @return Returns a role.
      */
     public final Role getOtherRole() {
         return other;

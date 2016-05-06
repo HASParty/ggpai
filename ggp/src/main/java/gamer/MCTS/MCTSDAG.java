@@ -85,6 +85,7 @@ public final class MCTSDAG extends Thread {
      * @param gamer The gamer using this search
      * @param lock A lock just to be safe
      * @param silent Set to false to make it silent
+     * @param epsilon What percentage of cases the search should use MAST
      */ //}}
     public MCTSDAG(StateMachineGamer gamer, ReentrantReadWriteLock lock, //{{
             boolean silent, double epsilon){
@@ -161,6 +162,9 @@ public final class MCTSDAG extends Thread {
      * @param state The current state entering this node
      *
      * @return The simulated value of this node for each player from one simulation.
+     * @throws MoveDefinitionException Thrown in the GGP base
+     * @throws TransitionDefinitionException Thrown in the GGP base
+     * @throws GoalDefinitionException Thrown in the GGP base
      */
     private List<Double> search(UCTNode node,MachineState state) throws MoveDefinitionException,
                                                                         TransitionDefinitionException,
@@ -241,6 +245,7 @@ public final class MCTSDAG extends Thread {
 
     /**
      * @return The best move at this point
+     * @throws MoveDefinitionException Thrown in the GGP base
      */
     public List<Move> selectMove() throws MoveDefinitionException {
         System.out.println("Dag connections made this turn: " + DagCounter);

@@ -138,6 +138,7 @@ public class BaselineJeffGamer extends StateMachineGamer {
 
     /**
      * Returns the role that this gamer is playing as in the game.
+     * @return Returns a role.
      */
     public final Role getOtherRole() {
         return other;

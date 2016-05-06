@@ -78,6 +78,9 @@ public class UnityGamer extends StateMachineGamer {
     /**
      * @param timeout isn't really used at this moment, might remove entirely
      * @return the current best move according to the MCTS class
+     * @throws TransitionDefinitionException Thrown in the GGP base
+     * @throws MoveDefinitionException Thrown in the GGP base
+     * @throws GoalDefinitionException Thrown in the GGP base
      */
     public List<Move> stateMachineSelectMoves(long timeout) throws TransitionDefinitionException, MoveDefinitionException, GoalDefinitionException{
 
@@ -233,6 +236,7 @@ public class UnityGamer extends StateMachineGamer {
     /**
      * @param role The role you want the moves for
      * @return Legal moves for the given role
+     * @throws MoveDefinitionException Thrown in the GGP base
      */
     public List<Move> getLegalMoves(Role role) throws MoveDefinitionException{
         lock1.writeLock().lock();

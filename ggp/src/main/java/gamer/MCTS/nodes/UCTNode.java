@@ -45,15 +45,17 @@ public class UCTNode extends Node {
         wins[1] += result.get(1);
         n++;
     }//}}
-    //public double QValue(int win, UCTNode node){{
+    //public double QValue(int win, RaveNode node){{
     /**
+     * @param which  Which roles q value do you want.
+     * @param node The node to calculate the Q value of.
      * @return The new UCT value of the move
      */
-    public double QValue(int win, UCTNode node){
+    public double QValue(int which, UCTNode node){
         if(node.n == 0){
             return Integer.MAX_VALUE;
         }
-        return (node.wins[win] / node.n) + (C * Math.sqrt(Math.log(n)/node.n));
+        return (node.wins[which] / node.n) + (C * Math.sqrt(Math.log(n)/node.n));
     } //}}
     //public void expand(List<List<Move>> moves){{
     /**
