@@ -34,13 +34,7 @@ import util.QueryBuilder;
 
 // Note: The weird comments are for forcing sane folding with marks.
 /**
- * A simple MCTS Thread that defines a Monte carlo search algorithm for
- * a tree made up of RaveNode nodes.
- *
- * Its made to be extremelly modifiable with the MCTSControlValues struct.  It is not intended
- * to be truly competitive and makes some asumptions that makes it unable to play some games.
- * For instance it cannot play games with more than one player and it also cannot play games
- * with multiple players moving in the same turn.
+ * A base class that takes care of creating the base search loop and provides some helpers.
  */
 public abstract class SearchRunner extends Thread {
     //----------------MCTS Variables----------------------{{
@@ -118,27 +112,9 @@ public abstract class SearchRunner extends Thread {
             }
         }
     }//}}
+    //}}
 
-    protected void printMemoryStats(){
-        int mb = 1024*1024;
-        long total = runtime.totalMemory();
-        long free = runtime.freeMemory();
-
-        //Getting the runtime reference from system
-        System.out.println("###################### " +
-                "Heap utilization statistics [MB] " +
-                "#######################");
-        //Print used memory
-        System.out.println(String.format("Used Memory:  %d",
-                    (total - free) / mb));
-        //Print free memory
-        System.out.println(String.format("Free Memory:  %d", free / mb));
-        //Print total available memory
-        System.out.println(String.format("Total Memory: %d", total / mb));
-        //Print Maximum available memory
-        System.out.println(String.format("Max Memory:   %d", runtime.maxMemory() / mb));
-
-    }
+    //----------------Abstracts--------------------------{{
     protected abstract void printStats();
     protected abstract void printMoves();
     protected abstract void search() throws MoveDefinitionException,
@@ -154,9 +130,6 @@ public abstract class SearchRunner extends Thread {
      */
     public abstract void applyMove(List<Move> moves);//}}
     //}}
-
-    //}}
-
 
     //----------------MCTS Move managment-----------------{{
     //public List<Move> selectMove() throws MoveDefinitionException {{
@@ -178,9 +151,30 @@ public abstract class SearchRunner extends Thread {
         System.out.println();
         return bestMove;
     } //}}
-
+    //}}
 
     //----------------Helper functions---------------{{
+    //protected void printMemoryStats(){{
+    protected void printMemoryStats(){
+        int mb = 1024*1024;
+        long total = runtime.totalMemory();
+        long free = runtime.freeMemory();
+
+        //Getting the runtime reference from system
+        System.out.println("###################### " +
+                "Heap utilization statistics [MB] " +
+                "#######################");
+        //Print used memory
+        System.out.println(String.format("Used Memory:  %d",
+                    (total - free) / mb));
+        //Print free memory
+        System.out.println(String.format("Free Memory:  %d", free / mb));
+        //Print total available memory
+        System.out.println(String.format("Total Memory: %d", total / mb));
+        //Print Maximum available memory
+        System.out.println(String.format("Max Memory:   %d", runtime.maxMemory() / mb));
+
+    }//}}
 
     //private void checkHeap(){{
     private void checkHeap(){
