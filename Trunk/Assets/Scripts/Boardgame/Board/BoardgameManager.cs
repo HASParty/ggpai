@@ -25,7 +25,7 @@ namespace Boardgame {
         private AudioClip piecePlaceSound;
 
         [SerializeField]
-        private AudioClip turnChangeSound;
+        private AudioSource turnChangeSource;
 
         [System.Serializable]
         public class MoveEvent : UnityEvent<List<Move>, Player> { }
@@ -80,9 +80,22 @@ namespace Boardgame {
                     if (data.LegalMoves.Count == 0 && data.MovesMade.Count == 0) SyncState();
                 }
                 SetLegalMoves(data.LegalMoves);
-                if (data.IsHumanPlayerTurn) {
+                Player last = turn;
+                if (data.IsHumanPlayerTurn)
+                {
+                    //arbitrary
+                    turn = Player.Second;
                     UIManager.Instance.SetState("Player's turn");
-                } else UIManager.Instance.SetState("AI's turn");
+                }
+                else
+                {
+                    turn = Player.First;
+                    UIManager.Instance.SetState("AI's turn");
+                }
+                if (turn != last)
+                {
+                    turnChangeSource.Play();
+                }
             } else {
                 //Debug.Log(data.State);
                 SetLegalMoves(new List<Move>());
