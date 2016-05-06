@@ -44,7 +44,7 @@ public class MCTSControlValues{
         epsilon = 0.0f;
         treeDiscount = 0.999f;
         chargeDiscount = 0.995f;
-        limit = 3000;
+        limit = 0;
         defensiveness = new ArrayList<>();
         defensiveness.add(0.10);
         defensiveness.add(0.10);

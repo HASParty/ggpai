@@ -17,6 +17,7 @@ import org.ggp.base.util.logging.GamerLogger;
 import org.ggp.base.util.match.Match;
 import org.ggp.base.util.statemachine.exceptions.MoveDefinitionException;
 
+import gamer.MCTS.MCTSControlValues;
 import gamer.UnityGamer;
 
 public final class UnityRequest extends Request {
@@ -27,7 +28,7 @@ public final class UnityRequest extends Request {
     private int playClock;
     private GdlConstant roleName;
     private int startClock;
-    private ArrayList<Double> controlValues;
+    private MCTSControlValues controlValues;
 
     public UnityRequest(Gamer gamer, GdlConstant roleName, String matchId,
                         String gameName, int startClock, int playClock,
@@ -39,7 +40,7 @@ public final class UnityRequest extends Request {
         this.gameName = gameName;
         this.roleName = roleName;
         this.game = null;
-        this.controlValues = new ArrayList<>(controlValues);
+        this.controlValues = new MCTSControlValues(new ArrayList<>(controlValues));
         System.out.println("Managed to make a UnityRequest");
     }
 

@@ -59,6 +59,8 @@ public final class Update extends Thread {
             while (listener != null) {
                 String in;
                 do {
+                    sleep(1); //Make the loop less busy, there is probably a socket method for
+                              //proper waits but this shouldn't really ever hang spinning
                     in =  inp.readLine();
                 } while(!in.toLowerCase().contains("ready"));
                 while (listener != null) {
@@ -73,6 +75,7 @@ public final class Update extends Thread {
                         System.out.println("Breaking out of update loop");
                         break;
                     } else if (input.toLowerCase().contains("update")) {
+                        //Expects strings with the format ( update value value value..)
                         updateGamer(input);
                     }
 

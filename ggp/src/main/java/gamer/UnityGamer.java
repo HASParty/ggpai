@@ -45,8 +45,6 @@ public class UnityGamer extends StateMachineGamer {
     public boolean silent = false;
     public Map<Role, Integer> roleMap;
     public AimaProver prover;
-    private ArrayList<Double> cVal; //0:Epsilon, 1:raveThresh, 2:graveThresh, 3:chargeDicount
-                                    //4:treeDicount, 5:limit
     //TODO: Swap this out for synchronizing on the root node
     public ReentrantReadWriteLock lock1= new ReentrantReadWriteLock(true);
     //}}
@@ -57,11 +55,7 @@ public class UnityGamer extends StateMachineGamer {
     public void stateMachineMetaGame(long timeout) {
         prover = new AimaProver(getMatch().getGame().getRules());
         roleMap = getStateMachine().getRoleIndices();
-        values = new MCTSControlValues();
-        values.setAll(cVal);
         mcts = new MCTSRAVE(this, lock1, false, values);
-        // mcts = new MCTSRAVE(this, lock1, silent, cVal.get(0),
-        //         cVal.get(1), cVal.get(2), cVal.get(3), cVal.get(4), cVal.get(5));
         long finishBy = timeout - 1000;
         mcts.start();
     }//}}
@@ -214,9 +208,9 @@ public class UnityGamer extends StateMachineGamer {
         return "Unity";
     }//}}
 
-    //public void setValues(List<Double> controlValues){{
-    public void setValues(List<Double> controlValues){
-        this.cVal = new ArrayList<>(controlValues);
+    //public void setValues(MCTSControlValues controlValues){{
+    public void setValues(MCTSControlValues controlValues){
+        this.values = controlValues;
     }//}}
 
    //public void updateValues(ArrayList<Double> controlValues){{

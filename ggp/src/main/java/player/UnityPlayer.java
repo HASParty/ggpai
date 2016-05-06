@@ -42,7 +42,6 @@ public class UnityPlayer extends GamePlayer {
         System.out.println("UnityPlayer ready to start metagaming");
     }
 
-
     @Override
     public void run() {
         boolean debug = false;

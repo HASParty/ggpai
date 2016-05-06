@@ -93,6 +93,7 @@ public class MCTSRAVE extends SearchRunner {
 
         this.dag = new HashMap<>(10000);
         this.mast = new MAST(gameName);
+        this.gameName = "Mylla";
         if (gameName.contains("Mylla") || gameName.contains("Checkers")){
             this.pcQuery = QueryBuilder.pieceCount("pieces_on_board", machine.getRoles());
         } else {
@@ -114,7 +115,6 @@ public class MCTSRAVE extends SearchRunner {
             RaveNode.setRaveBias(values.rave);
             RaveNode.setGrave(values.grave);
             RaveNode.setExplorationFactor(values.explorationFactor);
-
         }
         search(root, null, new ArrayList<List<Move>>(), 0);
     }//}}
@@ -185,7 +185,7 @@ public class MCTSRAVE extends SearchRunner {
                                      List<List<Move>> rave) throws GoalDefinitionException,
                                                                    MoveDefinitionException,
                                                                    TransitionDefinitionException {
-        lastPlayOutDepth++;
+        lastPlayOutDepth++; // too keep track of our depths
         ArrayList<Double> result;
         if(machine.isTerminal(state)){
             updateAverageDepth();
@@ -196,6 +196,9 @@ public class MCTSRAVE extends SearchRunner {
             result = new ArrayList<>(values.chargeDefaults);
             applyPersonalityBias(result, state); //And apply bias to it
         } else {
+            //If the state isn't terminal and we havn't hit a limit we
+            //use MAST in an epsilon greedy manner to pick moves.
+            //otherwise we fall back to random moves.
             List<List<Move>> moves = machine.getLegalJointMoves(state);
             List<Move> chosen;
             if(rand.nextFloat() >= values.epsilon){
@@ -205,7 +208,7 @@ public class MCTSRAVE extends SearchRunner {
             }
             state = machine.getNextState(state, chosen);
             result = depthCharge(state, rave);
-            rave.add(chosen);
+            rave.add(chosen); //Build up the rave list on the way down
             mast.update(chosen, result);
             applyDiscount(result, values.chargeDiscount);
         }
@@ -241,6 +244,7 @@ public class MCTSRAVE extends SearchRunner {
 
     //private void mark(RaveNode node, HashSet<MachineState> marked, int depth){{
     private void mark(RaveNode node, HashSet<MachineState> marked, int depth, long time){
+        //Basically just a bfs to mark which children are reachable
         if(node.leaf() || depth == 0){
             return;
         }
@@ -449,11 +453,11 @@ public class MCTSRAVE extends SearchRunner {
 
     //public void shutdown(){{
     /**
-     * Breaks the searcher out of his loop
+     * Doesn't really serve a purpose anymore, has sentimental value.
      */
     public void shutdown(){
-        dag = new HashMap<>(100000);
-        mast = new MAST(this.gamer.getMatch().getGame().getName());
+        dag = null;
+        mast = null;
     }//}}
     //}}
 }
