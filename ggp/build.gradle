@@ -39,6 +39,17 @@ uploadArchives{
     }
 }
 
+task fatJar(type:Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Jeff',
+        'Implementation-Version': 1.0,
+        'Main-Class': 'org.ggp.base.apps.player.JeffRunner'
+    }
+    baseName = 'Jeff'
+    from  { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
 def playerJvmArgs = [
         '-Xmx1500m', //Gives players a max heap size of 1500 MB
         '-server',

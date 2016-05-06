@@ -3,21 +3,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MCTSControlValues{
-    public long rave;                       // Rave K value to set linear rave weight decrease
-    public long grave;                      // Threshold at which to stop using grave
-    public long limit;                      // The simulation limit
-    public double randErr;                  // The odds of randomly picking a move instead of picking the best
-    public double treeDiscount;             // The goal discount inside of the tree
-    public double chargeDiscount;           // The goal discount in a depth charge
-    public double epsilon;                  // The odds of using MAST rather than picking a random move
-    public long chargeDepth;                // At which depth should a charge be stopped
-    public long horizon;                    // How deep should our tree be allowed to be
-    public long explorationFactor;          // UCT C value to control MCTS exploration
-    public ArrayList<Double> defensiveness; // Used to modulate goal weight of keeping pieces alive
-    public ArrayList<Double> aggression;    // Used to modulate goal weight of killing pieces
-    public ArrayList<Double> chargeDefaults;// The default values used if a charge is stopped
-    public boolean changed;                 // A control value used to see if a value has changed
-                                            // Not currently used.
+    /**Rave K value to set linear rave weight decrease*/
+    public long rave;                      
+    /**Threshold at which to stop using grave*/
+    public long grave;                     
+    /**The simulation limit*/
+    public long limit;                     
+    /**The odds of randomly picking a move instead of picking the best*/
+    public double randErr;                 
+    /**The goal discount inside of the tree*/
+    public double treeDiscount;            
+    /**The goal discount in a depth charge*/
+    public double chargeDiscount;          
+    /**The odds of using MAST rather than picking a random move*/
+    public double epsilon;                 
+    /**At which depth should a charge be stopped*/
+    public long chargeDepth;               
+    /**How deep should our tree be allowed to be*/
+    public long horizon;                   
+    /**UCT C value to control MCTS exploration*/
+    public long explorationFactor;         
+    /**Used to modulate goal weight of keeping pieces alive*/
+    public ArrayList<Double> defensiveness;
+    /**Used to modulate goal weight of killing pieces*/
+    public ArrayList<Double> aggression;   
+    /**The default values used if a charge is stopped*/
+    public ArrayList<Double> chargeDefaults;
+    /**A control value used to see if a value has changed*/
+    public boolean changed;                
 
     //public MCTSControlValues(){{
     /**
@@ -49,20 +62,20 @@ public class MCTSControlValues{
     /**
      * Constructor that uses a list to set the control values
      * <p>
-     *  The sixteen variables for the MCTS are
-     *  Epsilon
-     *  Rave
-     *  Grave
-     *  Charge Discount
-     *  Tree Discount
-     *  Limit
-     *  Aggression x2
-     *  Defensiveness x2
-     *  Charge Depth
-     *  Horizon
-     *  Random Error
-     *  Charge Defaults x2
-     *  Exploration Factor
+     *  The sixteen variables for the MCTS are<br>
+     *  Epsilon<br>
+     *  Rave<br>
+     *  Grave<br>
+     *  Charge Discount<br>
+     *  Tree Discount<br>
+     *  Limit<br>
+     *  Aggression x2<br>
+     *  Defensiveness x2<br>
+     *  Charge Depth<br>
+     *  Horizon<br>
+     *  Random Error<br>
+     *  Charge Defaults x2<br>
+     *  Exploration Factor<br>
      * </p>
      *
      * @param values A list containing the values to be set.  needs to hold 16 doubles
