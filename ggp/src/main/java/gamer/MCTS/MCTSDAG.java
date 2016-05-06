@@ -94,38 +94,13 @@ public final class MCTSDAG extends SearchRunner {
     } //}}
     //}}
     //MCTS selection phase {{
-    @Override
-    protected  void printStats(){
-        System.out.println(String.format("Mast tables size: [%d, %d]",  mast.size(0),
-                                                                            mast.size(1)));
-        System.out.println("Dag connections made this turn: " + DagCounter);
-        DagCounter = 0;
-
-    }
-    @Override
-    protected  void printMoves(){
-        System.out.println("================================Available moves================================");
-        System.out.println("N: " + root.n());
-        for (Map.Entry<List<Move>, UCTNode> entry : root.children.entrySet()){
-            System.out.println("Move: " + entry.getKey() + " " + entry.getValue());
-        }
-        System.out.println("===============================================================================");
-
-    }
+    //protected  void search() throws MoveDefinitionException,{{
     @Override
     protected  void search() throws MoveDefinitionException,
                                     TransitionDefinitionException,
                                     GoalDefinitionException {
         search(root, gamer.getCurrentState());
-    }
-    @Override
-    protected  void limitWait() throws InterruptedException{
-        if(limit > 0){
-            while(root.n() > limit && newRoot == null){
-                Thread.sleep(5);
-            }
-        }
-    }
+    }//}}
 
     //search(UCTNode, MachineState){{
     /**
@@ -184,6 +159,7 @@ public final class MCTSDAG extends SearchRunner {
     //}}
     //}}
     //MCTS playout phase {{
+
     private List<Double> playOut(MachineState state) throws GoalDefinitionException, MoveDefinitionException, TransitionDefinitionException {
         lastPlayOutDepth = 0;
         return depthCharge(state);
@@ -275,6 +251,7 @@ public final class MCTSDAG extends SearchRunner {
         sweep(marked);
         System.out.println("Size of dag after sweep: " + dag.size());
     }
+
     private void sweep(HashSet<MachineState> marked){
         Iterator<Map.Entry<MachineState, UCTNode>> it = dag.entrySet().iterator();
         long time = System.currentTimeMillis();
@@ -341,6 +318,32 @@ public final class MCTSDAG extends SearchRunner {
 
     //}}
     //Helper functions {{
+    @Override
+    protected  void limitWait() throws InterruptedException{
+        if(limit > 0){
+            while(root.n() > limit && newRoot == null){
+                Thread.sleep(5);
+            }
+        }
+    }
+    @Override
+    protected  void printStats(){
+        System.out.println(String.format("Mast tables size: [%d, %d]",  mast.size(0),
+                                                                            mast.size(1)));
+        System.out.println("Dag connections made this turn: " + DagCounter);
+        DagCounter = 0;
+
+    }
+    @Override
+    protected  void printMoves(){
+        System.out.println("================================Available moves================================");
+        System.out.println("N: " + root.n());
+        for (Map.Entry<List<Move>, UCTNode> entry : root.children.entrySet()){
+            System.out.println("Move: " + entry.getKey() + " " + entry.getValue());
+        }
+        System.out.println("===============================================================================");
+
+    }
     public String baseEval(){
         String result = "";
         synchronized(root){

@@ -104,12 +104,13 @@ public class MCTSRAVE extends SearchRunner {
     //}}
 
     //----------------MCTS selection phase----------------{{
+    //protected void search() throws MoveDefinitionException,{{
     @Override
     protected void search() throws MoveDefinitionException,
                                    TransitionDefinitionException,
                                    GoalDefinitionException{
         search(root, null, new ArrayList<List<Move>>(), 0);
-    }
+    }//}}
     //private List<Double> search(RaveNode node,{{
     private List<Double> search(RaveNode node,
                                 List<HashMap<Move, double[]>> grave,
@@ -304,44 +305,6 @@ public class MCTSRAVE extends SearchRunner {
     //}}
 
     //----------------MCTS Move managment-----------------{{
-
-
-
-    @Override
-    protected void printMoves(){
-        System.out.println("================================"+
-                           "Available moves"+
-                           "================================");
-        System.out.println("N: " + root.n());
-        for (Map.Entry<List<Move>, RaveNode> entry : root.getChildren().entrySet()){
-            System.out.println(String.format(" Move: %-40s %-40s",
-                                             entry.getKey(),
-                                             entry.getValue()));
-        }
-    }
-
-
-    @Override
-    protected void limitWait() throws InterruptedException{
-        if(values.limit > 0){
-            while(root.n() > values.limit && newRoot == null){
-                Thread.sleep(5);
-            }
-        }
-
-    }
-    @Override
-    protected void printStats(){
-        System.out.println("--------------------------------"+
-                           "Data Structures"+
-                           "--------------------------------");
-        System.out.println(String.format("Mast tables size: [%d, %d]",  mast.size(0),
-                                                                        mast.size(1)));
-        System.out.println("Dag connections made this turn: " + DagCounter);
-        DagCounter = 0;
-
-    }
-
     //public List<Move> bestMove() throws MoveDefinitionException {{
     /**
      * @return The most simulated move at this point
@@ -413,6 +376,44 @@ public class MCTSRAVE extends SearchRunner {
     //}}
 
     //----------------MCTS Helper functions---------------{{
+    //protected void printMoves(){{
+    @Override
+    protected void printMoves(){
+        System.out.println("================================"+
+                           "Available moves"+
+                           "================================");
+        System.out.println("N: " + root.n());
+        for (Map.Entry<List<Move>, RaveNode> entry : root.getChildren().entrySet()){
+            System.out.println(String.format(" Move: %-40s %-40s",
+                                             entry.getKey(),
+                                             entry.getValue()));
+        }
+    }//}}
+
+    //protected void limitWait() throws InterruptedException{{
+    @Override
+    protected void limitWait() throws InterruptedException{
+        if(values.limit > 0){
+            while(root.n() > values.limit && newRoot == null){
+                Thread.sleep(5);
+            }
+        }
+
+    }//}}
+
+    //protected void printStats(){{
+    @Override
+    protected void printStats(){
+        System.out.println("--------------------------------"+
+                           "Data Structures"+
+                           "--------------------------------");
+        System.out.println(String.format("Mast tables size: [%d, %d]",  mast.size(0),
+                                                                        mast.size(1)));
+        System.out.println("Dag connections made this turn: " + DagCounter);
+        DagCounter = 0;
+
+    }//}}
+ 
     //private void updateAverageDepth(){{
     private void updateAverageDepth(){
         float rebuild = ((avgPlayOutDepth * playOutCount) + lastPlayOutDepth);
