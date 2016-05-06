@@ -227,6 +227,7 @@ public class MCTSRAVE extends SearchRunner {
         mark(root, marked, depth, time);
         sweep(marked);
         System.out.println("Size of dag after sweep: " + dag.size());
+        System.out.println("\n");
    }//}}
 
     //private void sweep(HashSet<MachineState> marked){{
