@@ -357,8 +357,10 @@ public class BehaviourRealiser : MonoBehaviour {
     IEnumerator LeanIn(float duration = 3f, float amount = 30f) {
         //Debug.Log("Leaning in");
         _hl.lean = amount;
+        _hl.leanAffectors++;
         yield return new WaitForSeconds(duration);
-        _hl.lean = 0;
+        _hl.leanAffectors--;
+        if(_hl.leanAffectors == 0) _hl.lean = 0;
     }
     /// <summary>
     /// Nod down. Duration/repetitions/amount are highly dependent on one another -

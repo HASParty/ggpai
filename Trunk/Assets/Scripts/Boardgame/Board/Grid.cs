@@ -34,6 +34,10 @@ namespace Boardgame {
             }
         }
 
+        public void PlaySoundAt(string cellID, AudioClip sound) {
+            pcells[cellID].AudioSource.PlayOneShot(sound);
+        }
+
         public void SetPile(string cellID) {
             pcells[cellID].isPile = true;
         }

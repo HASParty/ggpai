@@ -21,6 +21,12 @@ namespace Boardgame {
         public Transform BoardSpawnLocation;
         public Transform PileSpawnTransform;
 
+        [SerializeField]
+        private AudioClip piecePlaceSound;
+
+        [SerializeField]
+        private AudioClip turnChangeSound;
+
         [System.Serializable]
         public class MoveEvent : UnityEvent<List<Move>, Player> { }
 
@@ -76,9 +82,9 @@ namespace Boardgame {
                 SetLegalMoves(data.LegalMoves);
                 if (data.IsHumanPlayerTurn) {
                     UIManager.Instance.SetState("Player's turn");
-                } else UIManager.Instance.SetState("Opponent's turn");
+                } else UIManager.Instance.SetState("AI's turn");
             } else {
-                Debug.Log(data.State);
+                //Debug.Log(data.State);
                 SetLegalMoves(new List<Move>());
                 UIManager.Instance.SetState(data.State.ToString());
             }
@@ -91,7 +97,7 @@ namespace Boardgame {
 
         public void SyncState() {
             if (state.Cells == null) return;
-            Debug.Log("synchronising");
+            //Debug.Log("synchronising");
             //TODO: make not disgusting
             //UPDATE: I made it more disgusting, in a way
             foreach (var cell in grid.GetAllCells()) {
@@ -172,15 +178,18 @@ namespace Boardgame {
                         string heap = player == Player.First ? gameScriptable.FirstPile : gameScriptable.SecondPile;
                         piece = grid.RemovePiece(heap);
                         grid.PlacePiece(piece, move.To);
+                        grid.PlaySoundAt(move.To, piecePlaceSound);
                         break;
                     case MoveType.REMOVE:
                         piece = grid.RemovePiece(move.From);
                         grid.PlacePiece(piece, gameScriptable.TrashPile);
+                        grid.PlaySoundAt(move.From, piecePlaceSound);
                         break;
                     case MoveType.CAPTURE:
                     case MoveType.MOVE:
                         piece = grid.RemovePiece(move.From);
                         grid.PlacePiece(piece, move.To);
+                        grid.PlaySoundAt(move.To, piecePlaceSound);
                         break;
                 }
             }
@@ -256,6 +265,10 @@ namespace Boardgame {
                 return legals;
             }
             return new List<string>();
+        }
+
+        public void MakeNoise(string cellID) {
+            grid.PlaySoundAt(cellID, piecePlaceSound);
         }
 
         public bool IsRemoveablePiece(PhysicalCell piece) {

@@ -10,6 +10,7 @@ using Impulsion;
 public class OpenHeadLookController : HeadLookController
 {
     public float lean = 0;
+    public int leanAffectors = 0;
     public float headNod = 0;
     public float headShake = 0;
 
