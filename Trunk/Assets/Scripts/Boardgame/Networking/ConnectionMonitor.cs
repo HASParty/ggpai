@@ -61,13 +61,35 @@ namespace Boardgame.Networking {
             return Connection.GameConnectionStatus == Connection.Status.ESTABLISHED && Connection.FeedConnectionStatus == Connection.Status.ESTABLISHED;
         }
 
+        System.Diagnostics.Process p;
         void Start() {
+            UIManager.Instance.ShowLoading();
+            /*if (p == null || !p.Responding) {
+                p = new System.Diagnostics.Process();
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.FileName = "java";
+                p.StartInfo.Arguments = "-jar " + System.IO.Path.Combine(Application.streamingAssetsPath, "Jeff.jar 9147");
+                p.Start();
+            }*/
+            StartCoroutine(Init());
+        }
+
+        void OnDestroy() {
+            if(p != null) p.Close();
+        }
+
+        public IEnumerator Init() {
             Disconnect();
-            if(Connect()) StartGame();
+            while (!Connect()) {
+                Disconnect();
+                yield return new WaitForSeconds(0.5f);
+            }
+            StartGame();
             turnCount = 0;
             IsOver = false;
             OnGameUpdate.RemoveListener(TurnMonitor);
             OnGameUpdate.AddListener(TurnMonitor);
+            BoardgameManager.Instance.OnMakeMove.RemoveListener(MoveMade);
             BoardgameManager.Instance.OnMakeMove.AddListener(MoveMade);
         }
 
@@ -113,6 +135,7 @@ namespace Boardgame.Networking {
             }
             else if (data.State == GDL.Terminal.FALSE) {
                 if (data.IsStart) {
+                    UIManager.Instance.HideLoading();
                     if (!data.IsHumanPlayerTurn) {
                         other = data.Control == Player.First ? Player.Second : Player.First;
                     }
@@ -149,10 +172,6 @@ namespace Boardgame.Networking {
             waitingToEnd = false;
             IsOver = true;
             Debug.Log("It's over.");
-        }
-
-        void OnDestroy() {
-            //EndGame();
         }
 
         public void Pull() {

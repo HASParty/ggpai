@@ -56,5 +56,10 @@ namespace Boardgame.GDL {
                 return other.Type == Type && other.From == From && other.To == To;
             } else return false;
         }
+
+        public override int GetHashCode() {
+            int hash = (Type.GetHashCode() >> 4) + (From.GetHashCode() >> 2) + To.GetHashCode();
+            return hash;
+        }
     }
 }

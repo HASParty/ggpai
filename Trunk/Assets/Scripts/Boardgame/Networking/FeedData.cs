@@ -12,6 +12,10 @@ namespace Boardgame.Networking {
             public Player Who;
             public float FirstUCT;
             public float SecondUCT;
+            public override string ToString() {
+                return string.Format("{0} s: {1} p: {2} fUCT: {3} sUCT: {4}",
+                    Move, Simulations, Who, FirstUCT, SecondUCT);
+            }
         }
         public Move Best;
         public Dictionary<Move, FMove> Moves = new Dictionary<Move, FMove>();
