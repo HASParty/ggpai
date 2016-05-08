@@ -31,6 +31,8 @@ namespace Boardgame {
         private Vector3 legalOffset;
         [SerializeField]
         private Text stateText;
+        [SerializeField]
+        private GameObject loading;
 
         private GameObject highlightObject;
         private GameObject selectObject;
@@ -43,6 +45,15 @@ namespace Boardgame {
             if (canvas == null) {
                 Debug.LogWarning("UIManager: Found no canvas. UI will not render properly.");
             }
+            HideLoading();
+        }
+
+        public void ShowLoading() {
+            loading.SetActive(true);
+        }
+
+        public void HideLoading() {
+            loading.SetActive(false);
         }
 
         public void ShowHighlightEffect(Vector3 worldPosition) {

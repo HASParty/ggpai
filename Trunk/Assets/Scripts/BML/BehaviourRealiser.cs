@@ -310,7 +310,7 @@ public class BehaviourRealiser : MonoBehaviour {
     /// <param name="duration">Duration of motion.</param>
     IEnumerator Grasp(float duration = 3f, GameObject target = null, bool left = true)
     {
-        Debug.Log("Grasp");
+        //Debug.Log("Grasp");
         if (target != null)
         {
             yield return StartCoroutine(_motion.Grab(duration, target, left));
@@ -324,7 +324,7 @@ public class BehaviourRealiser : MonoBehaviour {
     /// <param name="duration">Duration of motion.</param>
     IEnumerator Place(float duration = 3f, GameObject target = null, bool left = true)
     {
-        Debug.Log("Place");
+        //Debug.Log("Place");
         if (target != null)
         {
             yield return _motion.Place(duration, target, left);

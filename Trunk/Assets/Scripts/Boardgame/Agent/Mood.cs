@@ -41,7 +41,6 @@ namespace Boardgame.Agent
             pm = GetComponent<PersonalityModule>();
             float valenceNeutral, arousalNeutral;
             pm.GetMoodConfig(out valenceNeutral, out arousalNeutral, out mods);
-            Debug.Log(valenceNeutral + " " + arousalNeutral);
             valence = new Decayable(valenceNeutral, 0f, 2f, valenceDecay);
             arousal = new Decayable(arousalNeutral, 0f, 2f, arousalDecay);
         }

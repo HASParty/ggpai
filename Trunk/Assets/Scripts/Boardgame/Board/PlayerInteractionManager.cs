@@ -44,6 +44,10 @@ namespace Boardgame {
             }
         }
 
+        public void LegalUpdate() {
+            updated = true;
+        }
+
         void Update() {
             if (ConnectionMonitor.Instance.other != player) player = ConnectionMonitor.Instance.other;
             //sub optimal

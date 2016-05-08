@@ -43,9 +43,9 @@ namespace Boardgame.Agent {
             if (!data.IsStart && bm.player == data.Control && move.Count > 0)
             {
                 bm.ExecuteMove(move);
-                Debug.Log("Moves:");
-                Debug.Log(Tools.Stringify<GDL.Move>.List(move));
-                OnMoveMade(move, bm.player);
+                //Debug.Log("Moves:");
+                //Debug.Log(Tools.Stringify<GDL.Move>.List(move));
+                //OnMoveMade(move, bm.player);
             }
 
             isMyTurn = !data.IsHumanPlayerTurn;
@@ -59,8 +59,11 @@ namespace Boardgame.Agent {
         public void CheckStatus(FeedData data) {
             bm.EvaluateConfidence(data, isMyTurn);
             bm.ConsiderMove(data.Best);
-            if(data.TotalSimulations > Config.SimulationCutoff && isMyTurn) {
-				ConnectionMonitor.Instance.ModifyRequestTime(0.33f);
+            if (isMyTurn) {
+                if (data.TotalSimulations > Config.SimulationCutoff) {
+                    ConnectionMonitor.Instance.SetMaxRequestTime(2f);
+                }
+                if (data.Moves.Count == 1) ConnectionMonitor.Instance.SetMaxRequestTime(1f);
             }
 
             //generate ggp thingy in brain, use results here
@@ -73,7 +76,7 @@ namespace Boardgame.Agent {
         /// <param name="moves">Moves</param>
         /// <param name="player">by whom</param>
         public void OnMoveMade(List<GDL.Move> moves, Player player) {
-            Debug.Log("InputModule acknowledging a move has been made");
+            Debug.Log("InputModule acknowledging a move has been made by "+player.ToString());
             bm.ReactMove(moves, player);
         }
     }

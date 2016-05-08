@@ -5,6 +5,7 @@ using UnityEngine.Events;
 using Boardgame.GDL;
 using System;
 using Boardgame.Networking;
+using System.Collections;
 
 namespace Boardgame {
 
@@ -25,7 +26,7 @@ namespace Boardgame {
         private AudioClip piecePlaceSound;
 
         [SerializeField]
-        private AudioClip turnChangeSound;
+        private AudioSource turnChangeSource;
 
         [System.Serializable]
         public class MoveEvent : UnityEvent<List<Move>, Player> { }
@@ -72,17 +73,46 @@ namespace Boardgame {
             return grid.GetPhysicalCell(id).gameObject;
         }
 
+        Player last;
+        void Update() {
+            if (turn != last) {
+                turnChangeSource.Play();
+                last = turn;
+            }
+        }
+
+        bool moveInProgress = false;
+        IEnumerator WaitForMove(UnityAction action) {
+            while (moveInProgress) yield return new WaitForSeconds(0.2f);
+            Debug.Log("I have waited a million years");
+            action();
+        }
+
         public void CheckGame(GameData data) {
+            moveInProgress = true;
             if (!data.IsDone && data.State == Terminal.FALSE) {
                 if (data.IsStart) GameStart(data.GameState);
                 else {
                     SetState(data.GameState);
                     if (data.LegalMoves.Count == 0 && data.MovesMade.Count == 0) SyncState();
                 }
-                SetLegalMoves(data.LegalMoves);
-                if (data.IsHumanPlayerTurn) {
-                    UIManager.Instance.SetState("Player's turn");
-                } else UIManager.Instance.SetState("AI's turn");
+                
+                if (data.IsHumanPlayerTurn)
+                {
+                    if (last == Player.Second) moveInProgress = false;
+                    StartCoroutine(WaitForMove(() => {
+                        SetLegalMoves(data.LegalMoves);
+                        turn = Player.Second;
+                        UIManager.Instance.SetState("Player's turn");
+                    }));                   
+                }
+                else
+                {
+                    SetLegalMoves(data.LegalMoves);
+                    turn = Player.First;
+                    UIManager.Instance.SetState("AI's turn");
+                }
+                
             } else {
                 //Debug.Log(data.State);
                 SetLegalMoves(new List<Move>());
@@ -163,6 +193,7 @@ namespace Boardgame {
                         break;
                 }
             }
+            PlayerInteractionManager.Instance.LegalUpdate();
         }
 
         public Vector3 GetCellPosition(string id) {
@@ -193,6 +224,7 @@ namespace Boardgame {
                         break;
                 }
             }
+            moveInProgress = false;
             //notify listeners the move has been made
             OnMakeMove.Invoke(moves, player);
         }
@@ -221,6 +253,7 @@ namespace Boardgame {
         } 
 
         public void MoveMade(List<Move> moves, Player player) {
+            moveInProgress = false;
             OnMakeMove.Invoke(moves, player);
         }
 

@@ -41,10 +41,10 @@ namespace Boardgame.Agent {
 
 
         #region React to move
-        private Move bestMove;
-        private Dictionary<Move, Networking.FeedData.FMove> moves;
-        private float averageSims;
-        private Player forWho; //making sure the data is in sync
+        private Move myBestMove;
+        private Dictionary<Move, Networking.FeedData.FMove> firstMoves;
+        private Dictionary<Move, Networking.FeedData.FMove> secondMoves;
+        private float firstAverageSims, secondAverageSims;
         private bool surprised = false;
         /// <summary>
         /// Using the data currently stored, attempt to work out whether the
@@ -54,17 +54,39 @@ namespace Boardgame.Agent {
         /// <param name="who">The player who made it</param>
         /// <returns>The agent's reaction</returns>
         private void react(Move move, Player who) {
+            float averageSims = (who == Player.First ? firstAverageSims : secondAverageSims);
+            Debug.LogFormat("actual {0} avg {1}", who.ToString(), averageSims);
+            var moves = (who == Player.First ? firstMoves : secondMoves);
             if (moves == null) return;
-            if(!moves.ContainsKey(move)) return;
-            var m = moves[move];
+            Networking.FeedData.FMove m;
+            try {
+                m = moves[move];
+            } catch (Exception e) { 
+                Debug.LogWarning("Sync issue");
+                Debug.Log(move);
+                var ms = new Move[moves.Count];
+                moves.Keys.CopyTo(ms, 0);
+                Debug.Log(Tools.Stringify<Move>.Array(ms));
+                return;
+            }
+            Debug.Log(m.Who);
             if (m.Who != who) return;
-
-            if ((m.Simulations < averageSims && who != player) || (who == player && move != bestMove))
+            Debug.LogFormat("player {0} sims {1} avg {2}", who.ToString(), m.Simulations, averageSims);
+            Debug.LogFormat("Best {0} vs Actual {1}", myBestMove, move);
+            if ((m.Simulations < averageSims && who != player) || (who == player && !move.Equals(myBestMove)))
             {
                 Debug.Log("SURPRISED");
                 surprised = true;
             }
             
+        }
+
+        private bool AckSurprise() {
+            if(surprised) {
+                surprised = false;
+                return true;
+            }
+            return false;
         }
         #endregion
 
@@ -86,9 +108,24 @@ namespace Boardgame.Agent {
         /// <param name="isMyTurn">whether it is the agent's turn or not</param>
         public void EvaluateConfidence(Networking.FeedData d, bool isMyTurn) {
             if (d.Best == null) return;
-            bestMove = d.Best;
-            averageSims = (float)d.AverageSimulations;
-            moves = d.Moves;
+            if(isMyTurn) {               
+                myBestMove = d.Best;
+                if (player == Player.First) {
+                    firstMoves = d.Moves;
+                    firstAverageSims = (float)d.AverageSimulations;
+                } else {
+                    secondMoves = d.Moves;
+                    secondAverageSims = (float)d.AverageSimulations;
+                }
+            } else {
+                if (player == Player.First) {
+                    secondMoves = d.Moves;
+                    secondAverageSims = (float)d.AverageSimulations;
+                } else {
+                    firstMoves = d.Moves;
+                    firstAverageSims = (float)d.AverageSimulations;
+                }
+            }
             float myUCT, foeUCT, myWUCT, foeWUCT, valence = 0, arousal = 0;
             float previousConfidence = confidence;
             valence = 0;
@@ -188,7 +225,7 @@ namespace Boardgame.Agent {
                             this.react(react.MoveToReact[0], react.MyMove ? player : (player == Player.First ? Player.Second : Player.First));
                             FaceEmotion faceReact;
                             Posture poser = new Posture("postureReact", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0f, 8f);
-                            if (surprised)
+                            if (AckSurprise())
                             {
                                 faceReact = new FaceEmotion("ConfusedFace", chunk.owner, 0f, 1.6f, 0.6f);
                                 poser.AddPose(Behaviour.Lexemes.BodyPart.RIGHT_ARM, Behaviour.Lexemes.BodyPose.FIST_COVER_MOUTH);
@@ -215,7 +252,7 @@ namespace Boardgame.Agent {
                         case FMLFunction.FunctionType.BOARDGAME_MAKE_MOVE:
                             MakeMoveFunction move = function as MakeMoveFunction;
                             //Debug.Log(Tools.Stringify<Move>.List(move.MoveToMake));
-                            BoardgameManager.Instance.MoveMade(move.MoveToMake, player);
+                            
                             PhysicalCell from, to;
                             BoardgameManager.Instance.GetMoveFromTo(move.MoveToMake[0], player, out from, out to);
                             Grasp reach = new Grasp("reachTowardsPiece", chunk.owner, from.gameObject,
@@ -226,7 +263,9 @@ namespace Boardgame.Agent {
                             leanReach.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD, 
                                 (int)(Vector3.Distance(from.transform.position, transform.position)*20));
                             Place place = new Place("placePiece", chunk.owner, to.gameObject,
-                                Behaviour.Lexemes.Mode.LEFT_HAND, (piece) => { placePiece(piece, to); BoardgameManager.Instance.SyncState(); BoardgameManager.Instance.MakeNoise(to.id); }, 1.25f, end: 2f);
+                                Behaviour.Lexemes.Mode.LEFT_HAND, (piece) => { placePiece(piece, to);
+                                    BoardgameManager.Instance.MoveMade(move.MoveToMake, player); BoardgameManager.Instance.SyncState(); BoardgameManager.Instance.MakeNoise(to.id); }, 
+                                1.25f, end: 2f);
                             Gaze lookPlace = new Gaze("glanceAtPlace", chunk.owner, to.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 1.25f, end: 2f);
                             Gaze glance = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 2f, end: 1.25f);
                             curr.AddChunk(glance);
