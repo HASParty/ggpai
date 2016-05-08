@@ -16,7 +16,6 @@ dependencies {
     // The production code uses the SLF4J logging API at compile time
     compile 'org.slf4j:slf4j-api:1.7.14'
     compile fileTree(dir: 'lib', include: ['*.jar'])
-    runtime fileTree(dir: 'games', include: ['**/*'])
 
 
     // Declare the dependency for your favourite test framework you want to use in your tests.
@@ -52,10 +51,13 @@ task fatJar(type:Jar) {
     from  { 
         configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } 
     }
-    from  { 
-        configurations.runtime.collect { it} 
-    }
     with jar
+}
+
+jar{
+    from {
+    ["games/"]
+}
 }
 
 def playerJvmArgs = [
