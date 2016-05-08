@@ -42,7 +42,7 @@ namespace Behaviour {
 		/// <param name="relax">When the character starts looking away.</param>
 		/// <param name="end">When the character is done looking.</param>
 		public Gaze(string id, Participant character, GameObject target, Lexemes.Influence influence, 
-		            float start = 0f, float ready = -1f, float relax = -1f, float end = 1f) 
+		            float start = 0f, float ready = -1f, float relax = -1f, float end = 1f, int priority = 1) 
 		{
 			ID = id;
 			Character = character;
@@ -52,6 +52,7 @@ namespace Behaviour {
 			Ready = ready;
 			Relax = relax;
 			End = end;
+            Priority = priority;
 		}
 
 		public override float GetTime(SyncPoints point) {

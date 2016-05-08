@@ -45,7 +45,9 @@ namespace Boardgame.Agent {
         private Dictionary<Move, Networking.FeedData.FMove> firstMoves;
         private Dictionary<Move, Networking.FeedData.FMove> secondMoves;
         private float firstAverageSims, secondAverageSims;
-        private bool surprised = false;
+        private Switch surprised = new Switch();
+        private Switch impatient = new Switch();
+        public Switch ReduceTurnTime = new Switch();
         /// <summary>
         /// Using the data currently stored, attempt to work out whether the
         /// move was a "surprise" and such for the AI
@@ -55,7 +57,6 @@ namespace Boardgame.Agent {
         /// <returns>The agent's reaction</returns>
         private void react(Move move, Player who) {
             float averageSims = (who == Player.First ? firstAverageSims : secondAverageSims);
-            Debug.LogFormat("actual {0} avg {1}", who.ToString(), averageSims);
             var moves = (who == Player.First ? firstMoves : secondMoves);
             if (moves == null) return;
             Networking.FeedData.FMove m;
@@ -71,28 +72,19 @@ namespace Boardgame.Agent {
             }
             Debug.Log(m.Who);
             if (m.Who != who) return;
-            Debug.LogFormat("player {0} sims {1} avg {2}", who.ToString(), m.Simulations, averageSims);
-            Debug.LogFormat("Best {0} vs Actual {1}", myBestMove, move);
             if ((m.Simulations < averageSims && who != player) || (who == player && !move.Equals(myBestMove)))
             {
                 Debug.Log("SURPRISED");
-                surprised = true;
+                surprised.Enable();
             }
             
-        }
-
-        private bool AckSurprise() {
-            if(surprised) {
-                surprised = false;
-                return true;
-            }
-            return false;
         }
         #endregion
 
         #region React to general game state
 
         public float confidence = 0;
+        private int impatience = 0;
         private int confidentCount = 0;
         private int notConfidentCount = 0;
         private int disproportionateFavour = 0;
@@ -186,6 +178,19 @@ namespace Boardgame.Agent {
                 arousal -= 2f*weight(confidentCount);
             }
 
+            if(confidence > 10) {
+                if(!isMyTurn) {
+                    impatience++;  
+                    if(impatience == 80) {
+                        impatient.Enable();
+                        ReduceTurnTime.Enable();
+                        impatience = 0;
+                    } 
+                }
+            } else {
+                impatience = 0;
+            }
+
             mood.Evaluate(valence, arousal);
 
         }
@@ -225,7 +230,7 @@ namespace Boardgame.Agent {
                             this.react(react.MoveToReact[0], react.MyMove ? player : (player == Player.First ? Player.Second : Player.First));
                             FaceEmotion faceReact;
                             Posture poser = new Posture("postureReact", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0f, 8f);
-                            if (AckSurprise())
+                            if (surprised.Check())
                             {
                                 faceReact = new FaceEmotion("ConfusedFace", chunk.owner, 0f, 1.6f, 0.6f);
                                 poser.AddPose(Behaviour.Lexemes.BodyPart.RIGHT_ARM, Behaviour.Lexemes.BodyPose.FIST_COVER_MOUTH);
@@ -234,40 +239,43 @@ namespace Boardgame.Agent {
                             }
                             break;
                         case FMLFunction.FunctionType.BOARDGAME_CONSIDER_MOVE:
-                            ConsiderMoveFunction func = function as ConsiderMoveFunction;
-                            if (func.MoveToConsider.Type == MoveType.MOVE) {
-                                Gaze glanceFrom = new Gaze("glanceAtFrom", chunk.owner, BoardgameManager.Instance.GetCellObject(func.MoveToConsider.From), 
-                                    Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 2f);
-                                curr.AddChunk(glanceFrom);
-                                Gaze glanceTo = new Gaze("glanceAtTo", chunk.owner, BoardgameManager.Instance.GetCellObject(func.MoveToConsider.To), 
-                                    Behaviour.Lexemes.Influence.HEAD, start: 2.1f, end: 2f);
-                                curr.AddChunk(glanceTo);
+                            //tbh this shouldn't be here
+                            if (impatient.Check()) {
+                                Gaze glanceAtPlayer = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 0.25f, priority: 3);
+                                curr.AddChunk(glanceAtPlayer);
                             } else {
-                                Gaze glanceTo = new Gaze("glanceAtCell", chunk.owner, BoardgameManager.Instance.GetCellObject(func.MoveToConsider.To),
-                                   Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 2f);
-                                curr.AddChunk(glanceTo);
+                                ConsiderMoveFunction func = function as ConsiderMoveFunction;
+                                if (func.MoveToConsider.Type == MoveType.MOVE) {
+                                    Gaze glanceFrom = new Gaze("glanceAtFrom", chunk.owner, BoardgameManager.Instance.GetCellObject(func.MoveToConsider.From),
+                                        Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 2f);
+                                    curr.AddChunk(glanceFrom);
+                                    Gaze glanceTo = new Gaze("glanceAtTo", chunk.owner, BoardgameManager.Instance.GetCellObject(func.MoveToConsider.To),
+                                        Behaviour.Lexemes.Influence.HEAD, start: 2.1f, end: 2f, priority: 2);
+                                    curr.AddChunk(glanceTo);
+                                } else {
+                                    Gaze glanceTo = new Gaze("glanceAtCell", chunk.owner, BoardgameManager.Instance.GetCellObject(func.MoveToConsider.To),
+                                       Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 2f);
+                                    curr.AddChunk(glanceTo);
+                                }
                             }
                             
                             break;
                         case FMLFunction.FunctionType.BOARDGAME_MAKE_MOVE:
                             MakeMoveFunction move = function as MakeMoveFunction;
-                            //Debug.Log(Tools.Stringify<Move>.List(move.MoveToMake));
-                            
                             PhysicalCell from, to;
                             BoardgameManager.Instance.GetMoveFromTo(move.MoveToMake[0], player, out from, out to);
                             Grasp reach = new Grasp("reachTowardsPiece", chunk.owner, from.gameObject,
                                 Behaviour.Lexemes.Mode.LEFT_HAND, (arm) => { graspPiece(from, arm); }, 0, end: 1.5f);
                             Posture leanReach = new Posture("leantowardsPiece", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0, end: 1.5f);
                             Gaze lookReach = new Gaze("glanceAtReach", chunk.owner, from.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 1.25f);
-                            //Debug.Log(Vector3.Distance(from.transform.position, transform.position));
                             leanReach.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD, 
                                 (int)(Vector3.Distance(from.transform.position, transform.position)*20));
                             Place place = new Place("placePiece", chunk.owner, to.gameObject,
                                 Behaviour.Lexemes.Mode.LEFT_HAND, (piece) => { placePiece(piece, to);
                                     BoardgameManager.Instance.MoveMade(move.MoveToMake, player); BoardgameManager.Instance.SyncState(); BoardgameManager.Instance.MakeNoise(to.id); }, 
                                 1.25f, end: 2f);
-                            Gaze lookPlace = new Gaze("glanceAtPlace", chunk.owner, to.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 1.25f, end: 2f);
-                            Gaze glance = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 2f, end: 1.25f);
+                            Gaze lookPlace = new Gaze("glanceAtPlace", chunk.owner, to.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 1.25f, end: 2f, priority: 2);
+                            Gaze glance = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 2f, end: 1.25f, priority: 3);
                             curr.AddChunk(glance);
                             curr.AddChunk(lookReach);
                             curr.AddChunk(lookPlace);

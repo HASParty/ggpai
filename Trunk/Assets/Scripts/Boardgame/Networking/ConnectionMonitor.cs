@@ -64,13 +64,13 @@ namespace Boardgame.Networking {
         System.Diagnostics.Process p;
         void Start() {
             UIManager.Instance.ShowLoading();
-            /*if (p == null || !p.Responding) {
+            if (p == null || !p.Responding) {
                 p = new System.Diagnostics.Process();
                 p.StartInfo.UseShellExecute = false;
                 p.StartInfo.FileName = "java";
                 p.StartInfo.Arguments = "-jar " + System.IO.Path.Combine(Application.streamingAssetsPath, "Jeff.jar 9147");
                 p.Start();
-            }*/
+            }
             StartCoroutine(Init());
         }
 
@@ -113,10 +113,13 @@ namespace Boardgame.Networking {
 
 		private float requestLeft;
         IEnumerator Request() {
-			while(requestLeft > 0f) {
+            while (BoardgameManager.Instance.IsBusy()) {
+                yield return new WaitForEndOfFrame();
+            }
+            while (requestLeft > 0f) {
             	yield return new WaitForSeconds(0.1f);
 				requestLeft -= 0.1f;
-			}
+			}            
 			Pull();
         }
 
