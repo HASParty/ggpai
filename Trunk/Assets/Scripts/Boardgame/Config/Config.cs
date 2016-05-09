@@ -35,7 +35,7 @@ namespace Boardgame.Configuration {
             e: 0.9f,
             td: 0.999f,
             cd: 0.995f,
-            l: 0,
+            l: 1000,
             fa: 0.5f,
             sa: 0.5f,
             fd: 0.5f,

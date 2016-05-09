@@ -82,6 +82,8 @@ namespace Boardgame.Networking {
             if (p != null) {
                 p.Kill();
                 string err = p.StandardError.ReadToEnd();
+                Debug.Log(feedlog);
+                Debug.Log(gamelog);
                 if(err.Length > 0) Debug.LogError(err);              
                 p.Close();
             }
@@ -183,6 +185,7 @@ namespace Boardgame.Networking {
             Write("ABORT " + Config.MatchID);
             waitingToEnd = false;
             IsOver = true;
+            ReadOnce();
             Debug.Log("It's over.");
         }
 
@@ -214,8 +217,10 @@ namespace Boardgame.Networking {
 
         public void Write(string write) {
             Connection.Write(Connection.Compose(write), Connection.gameConnection.GetStream());
-        } 
+        }
 
+        string feedlog = "";
+        string gamelog = "";
         public void ReadOnce() {
             string data;
             if(Connection.ReadLine(Connection.feedConnection, out data)) {
@@ -228,9 +233,12 @@ namespace Boardgame.Networking {
                 {
                     endAcked = true;
                 }
+                feedlog += data;
             }
             if(Connection.gameConnection.Available > 0) {
                 data = Connection.HttpRead(Connection.gameConnection);
+                gamelog += data;
+                Debug.Log(data);
                 OnGameUpdate.Invoke(new GameData(data));
             }
         }
