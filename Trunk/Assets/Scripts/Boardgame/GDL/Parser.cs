@@ -11,7 +11,7 @@ namespace Boardgame.GDL {
     }
     public class Parser {
         public static Message BreakMessage(string message) {
-            var split = message.Split(new char[] { ':' }, 3, StringSplitOptions.RemoveEmptyEntries);
+            var split = message.Split(new char[] { ':' }, 4, StringSplitOptions.RemoveEmptyEntries);
             Message m;
             if (split.Length == 1)
             {
@@ -22,8 +22,9 @@ namespace Boardgame.GDL {
             }
             if (split.Length < 3) throw new Exception("GDL Parser: malformed message: "+message);
             m.action = split[0];
-            m.legalMoves = split[1].Substring(1, split[1].Length - 2);
-            m.state = split[2].Substring(1, split[2].Length - 2).Replace(",", "");
+            m.state = split[1].Trim();
+            m.legalMoves = split[2].Substring(1, split[1].Length - 2);
+            m.state = split[3].Substring(1, split[2].Length - 2).Replace(",", "");
             return m;
         }
 
