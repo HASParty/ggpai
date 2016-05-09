@@ -141,12 +141,14 @@ public class UnityGamer extends StateMachineGamer {
             getMatch().appendState(currentState.getContents());
             if(stateMachine.isTerminal(currentState)){
                 int p = stateMachine.getGoal(currentState, getOtherRole());
+                //What follows is a dirty hack but it required the least change of the ggp-base
+                String mStr = move.get(roleMap.get(getRole())).getContents().toString();
                 if (p == 100){
-                    return Move.create(move.toString() + ":won").getContents();
+                    return Move.create(mStr.substring(0, mStr.length() - 1) + ":won )").getContents();
                 } else if (p > 1){
-                    return Move.create(move.toString() + ":draw").getContents();
+                    return Move.create(mStr.substring(0, mStr.length() - 1) + ":draw )").getContents();
                 } else {
-                    return Move.create(move.toString() + ":lost").getContents();
+                    return Move.create(mStr.substring(0, mStr.length() - 1) + ":lost )").getContents();
                 }
             }
         lock1.writeLock().unlock();
@@ -237,7 +239,6 @@ public class UnityGamer extends StateMachineGamer {
         List<Move> res;
         if (getStateMachine().isTerminal(getCurrentState())){
             res = new ArrayList<>();
-            res.add(Move.create("noop"));
             res.add(Move.create("noop"));
         } else {
             if (role.equals(getRole())){

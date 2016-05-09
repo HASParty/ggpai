@@ -43,9 +43,13 @@ public final class PullRequest extends Request {
 
         try {
             String move = gamer.selectMove(gamer.getMatch().getPlayClock()  + receptionTime).toString();
+            if (move.contains(":")){
+                String[] parts = move.split(":");
+                move = parts[0] + ")" + ":" + parts[1].substring(0, parts[1].length() - 2);
+            }
             String bob =  move + ":" + gamer.getLegalMoves(gamer.getOtherRole()).toString()
                    + ":" + gamer.getCurrentState().toString();
-            System.out.println(bob);
+            System.err.println(bob);
             return bob;
         } catch (Exception e) {
             System.out.println(e.toString());
