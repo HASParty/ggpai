@@ -57,14 +57,16 @@ namespace Boardgame.Agent {
         [SerializeField]
         float idleDuration;
         [SerializeField]
-        float idleElapsed = 0f;
+        float idleLeft = 0f;
         void Update()
         {
+            idleLeft -= Time.deltaTime;
             idleDuration = idleDurationBaseValue / mood.GetArousal();
-            if (idleElapsed > idleDuration)
+            if (idleLeft <= 0f)
             {
-                idleElapsed = 0f;
-                int die = UnityEngine.Random.Range(0, 3);
+                idleLeft = idleDuration;
+                int die = UnityEngine.Random.Range(0, 4);
+                int hand = UnityEngine.Random.Range(0, 2);
                 switch (die)
                 {
                     case 0:
@@ -74,11 +76,21 @@ namespace Boardgame.Agent {
                         motion.SetPose(1, 1);
                         break;
                     case 2:
-                        motion.SetPose(0, 2);
+                        if (hand == 0) {
+                            motion.SetPose(0, 2);
+                        } else {
+                            motion.SetPose(2, 0);
+                        }
+                        break;
+                    case 3:
+                        if (hand == 0) {
+                            motion.SetPose(0, 3);
+                        } else {
+                            motion.SetPose(3, 0);
+                        }
                         break;
                 }
             }
-            idleElapsed += Time.deltaTime;
         }
         #region React to move
         private Move myBestMove;
