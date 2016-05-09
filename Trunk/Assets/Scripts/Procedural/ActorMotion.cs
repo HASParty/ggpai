@@ -296,6 +296,8 @@ public class ActorMotion : MonoBehaviour {
     int rightPose = 0;
     void PauseIdling() {
         idling = false;
+        leftPose = 0;
+        rightPose = 0;
         animator.SetInteger("left", 0);
         animator.SetInteger("right", 0);
     }

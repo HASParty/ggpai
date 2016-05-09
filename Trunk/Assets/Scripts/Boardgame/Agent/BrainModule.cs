@@ -37,9 +37,49 @@ namespace Boardgame.Agent {
             me.identikit = GetComponent<Identikit>();
             motion = transform.parent.GetComponentInChildren<ActorMotion>();
             mood = GetComponent<Mood>();
+
+
+            switch (pm.GetNeuroticism())
+            { 
+                case PersonalityModule.PersonalityValue.high:
+                    idleDurationBaseValue = 10f;
+                    break;
+                case PersonalityModule.PersonalityValue.neutral:
+                    idleDurationBaseValue = 20f;
+                    break;
+                case PersonalityModule.PersonalityValue.low:
+                    idleDurationBaseValue = 30f;
+                    break;                    
+            }
         }
 
-
+        float idleDurationBaseValue;
+        [SerializeField]
+        float idleDuration;
+        [SerializeField]
+        float idleElapsed = 0f;
+        void Update()
+        {
+            idleDuration = idleDurationBaseValue / mood.GetArousal();
+            if (idleElapsed > idleDuration)
+            {
+                idleElapsed = 0f;
+                int die = UnityEngine.Random.Range(0, 3);
+                switch (die)
+                {
+                    case 0:
+                        motion.SetPose(0, 0);
+                        break;
+                    case 1:
+                        motion.SetPose(1, 1);
+                        break;
+                    case 2:
+                        motion.SetPose(0, 2);
+                        break;
+                }
+            }
+            idleElapsed += Time.deltaTime;
+        }
         #region React to move
         private Move myBestMove;
         private Dictionary<Move, Networking.FeedData.FMove> firstMoves;
