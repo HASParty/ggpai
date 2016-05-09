@@ -66,7 +66,7 @@ namespace Boardgame.GDL {
         }
 
         public Terminal GetTerminal(string data) {
-            var s = Parser.BreakMessage(data).action.Trim();
+            var s = Parser.BreakMessage(data).state.Trim();
             switch (s) {
                 case "lost":
                     return Terminal.LOSS;
@@ -75,17 +75,7 @@ namespace Boardgame.GDL {
                 case "draw":
                     return Terminal.DRAW;
                 default:
-                    s = Parser.BreakMessage(data).legalMoves.Trim();
-                    switch(s) {
-                        case "lost":
-                            return Terminal.LOSS;
-                        case "won":
-                            return Terminal.WIN;
-                        case "draw":
-                            return Terminal.DRAW;
-                        default:
-                            return Terminal.FALSE;
-                    }
+                    return Terminal.FALSE;
             }
         }
 
