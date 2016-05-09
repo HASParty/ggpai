@@ -46,6 +46,8 @@ public final class PullRequest extends Request {
             if (move.contains(":")){
                 String[] parts = move.split(":");
                 move = parts[0] + ")" + ":" + parts[1].substring(0, parts[1].length() - 2);
+            } else {
+                move = move + ":false";
             }
             String bob =  move + ":" + gamer.getLegalMoves(gamer.getOtherRole()).toString()
                    + ":" + gamer.getCurrentState().toString();
