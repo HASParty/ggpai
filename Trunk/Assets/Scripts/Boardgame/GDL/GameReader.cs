@@ -75,7 +75,17 @@ namespace Boardgame.GDL {
                 case "draw":
                     return Terminal.DRAW;
                 default:
-                    return Terminal.FALSE;
+                    s = Parser.BreakMessage(data).legalMoves.Trim();
+                    switch(s) {
+                        case "lost":
+                            return Terminal.LOSS;
+                        case "won":
+                            return Terminal.WIN;
+                        case "draw":
+                            return Terminal.DRAW;
+                        default:
+                            return Terminal.FALSE;
+                    }
             }
         }
 
