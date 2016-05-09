@@ -54,12 +54,6 @@ task fatJar(type:Jar) {
     with jar
 }
 
-jar{
-    from {
-    ["games/"]
-}
-}
-
 def playerJvmArgs = [
         '-Xmx1500m', //Gives players a max heap size of 1500 MB
         '-server',
@@ -98,6 +92,11 @@ task kiosk(type: JavaExec) {
 
 task server(type: JavaExec) {
     main = 'org.ggp.base.apps.server.Server'
+    classpath = sourceSets.main.runtimeClasspath
+}
+
+task list(type: JavaExec) {
+    main = 'util.ResourceList'
     classpath = sourceSets.main.runtimeClasspath
 }
 

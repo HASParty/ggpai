@@ -235,12 +235,18 @@ public class UnityGamer extends StateMachineGamer {
     public List<Move> getLegalMoves(Role role) throws MoveDefinitionException{
         lock1.writeLock().lock();
         List<Move> res;
-        if (role.equals(getRole())){
-            res =  getStateMachine().getLegalMoves(getCurrentState(), getRole());
-        } else if (role.equals(getOtherRole())) {
-            res = getStateMachine().getLegalMoves(getCurrentState(), getOtherRole());
+        if (getStateMachine().isTerminal(getCurrentState())){
+            res = new ArrayList<>();
+            res.add(Move.create("noop"));
+            res.add(Move.create("noop"));
         } else {
-            res = null;
+            if (role.equals(getRole())){
+                res =  getStateMachine().getLegalMoves(getCurrentState(), getRole());
+            } else if (role.equals(getOtherRole())) {
+                res = getStateMachine().getLegalMoves(getCurrentState(), getOtherRole());
+            } else {
+                res = null;
+            }
         }
         lock1.writeLock().unlock();
         return res;
