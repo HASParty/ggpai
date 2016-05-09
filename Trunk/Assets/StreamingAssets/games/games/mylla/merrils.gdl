@@ -1,0 +1,442 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; roles
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(role white)
+(role black)
+
+(opponent white black)
+(opponent black white)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; initial state
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(init (heap white 9))
+(init (heap black 9))
+
+(init (pieces_on_board white 0))
+(init (pieces_on_board black 0))
+
+(init (step 0))
+
+(init (control white))
+
+(init (pit outer n empty))
+(init (pit outer ne empty))
+(init (pit outer e empty))
+(init (pit outer se empty))
+(init (pit outer s empty))
+(init (pit outer sw empty))
+(init (pit outer w empty))
+(init (pit outer nw empty))
+(init (pit middle n empty))
+(init (pit middle ne empty))
+(init (pit middle e empty))
+(init (pit middle se empty))
+(init (pit middle s empty))
+(init (pit middle sw empty))
+(init (pit middle w empty))
+(init (pit middle nw empty))
+(init (pit inner n empty))
+(init (pit inner ne empty))
+(init (pit inner e empty))
+(init (pit inner se empty))
+(init (pit inner s empty))
+(init (pit inner sw empty))
+(init (pit inner w empty))
+(init (pit inner nw empty))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; goal and terminal rules
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; game ends with one player winning
+(<= terminal
+	(lost ?p)
+)
+; game also ends after 60 steps to make it terminating (in a draw)
+(<= terminal
+    (true (step 80)))
+
+(<= (lost ?p)
+    (true (heap ?p 0))
+	(true (pieces_on_board ?p 2))
+)
+(<= (lost ?p)
+	(moving ?p)
+	(not (has_legal_move ?p))
+)
+
+(<= (has_legal_move ?p)
+	(legal_move ?p ?m)
+)
+
+(<= (goal ?p 0)
+    (lost ?p)
+)
+(<= (goal ?p 100)
+	(opponent ?p ?o)
+    (lost ?o)
+)
+(<= (goal ?p 50)
+	(role ?p)
+	(not (lost white))
+	(not (lost black))
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; legal moves
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(<= (legal ?p noop)
+	(opponent ?p ?o)
+    (true (control ?o))
+)
+
+(<= (legal ?p ?m)
+	(true (control ?p))
+	(legal_move ?p ?m)
+)
+
+(<= (placing ?p)
+    (true (control ?p))
+    (not (true made_a_mill))
+    (not (true (heap ?p 0)))
+)
+(<= (moving ?p)
+    (true (control ?p))
+    (not (true made_a_mill))
+    (true (heap ?p 0))
+)
+(<= (removing ?p)
+    (true (control ?p))
+    (true made_a_mill)
+)
+
+(<= (legal_move ?p (place ?x ?y))
+	(placing ?p)
+    (true (pit ?x ?y empty))
+)
+(<= (legal_move ?p (move ?x1 ?y1 ?x2 ?y2))
+	(moving ?p)
+    (true (pit ?x1 ?y1 ?p))
+    (true (pit ?x2 ?y2 empty))
+    (adjacent ?x1 ?y1 ?x2 ?y2)
+)
+; if player has only 3 pieces left, he can move anywhere
+(<= (legal_move ?p (move ?x1 ?y1 ?x2 ?y2))
+	(moving ?p)
+	(true (heap ?p 0))
+	(true (pieces_on_board ?p 3))
+    (true (pit ?x1 ?y1 ?p))
+    (true (pit ?x2 ?y2 empty))
+)
+; remove piece that is not in a mill
+(<= (legal_move ?p (remove ?x ?y))
+    (removing ?p)
+	(opponent ?p ?o)
+    (true (pit ?x ?y ?o))
+    (not (in_a_mill ?o ?x ?y))
+)
+; if all opponents pieces are in mill, remove any
+(<= (legal_move ?p (remove ?x ?y))
+    (removing ?p)
+	(opponent ?p ?o)
+	(not (exists_piece_outside_of_mill ?o))
+    (true (pit ?x ?y ?o))
+)
+(<= (exists_piece_outside_of_mill ?p)
+	(true (pit ?x ?y ?p))
+    (not (in_a_mill ?p ?x ?y))
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; state update
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(<= (next (step ?n2))
+    (true (step ?n))
+    (succ ?n ?n2))
+
+; counting pieces on the heap
+(<= (next (heap ?p ?n))
+    (places ?p)
+    (true (heap ?p ?n2))
+    (succ ?n ?n2))
+(<= (next (heap ?p ?n))
+    (true (heap ?p ?n))
+    (not (places ?p)))
+
+; counting pieces on the board
+(<= (next (pieces_on_board ?p ?n2))
+    (places ?p)
+    (true (pieces_on_board ?p ?n))
+    (succ ?n ?n2))
+(<= (next (pieces_on_board ?p ?n))
+    (removes ?o)
+	(opponent ?p ?o)
+    (true (pieces_on_board ?p ?n2))
+    (succ ?n ?n2))
+(<= (next (pieces_on_board ?p ?n))
+    (true (pieces_on_board ?p ?n))
+    (not (places ?p))
+	(opponent ?p ?o)
+    (not (removes ?o))
+)
+
+(<= (places ?p)
+    (does ?p (place ?x ?y))
+)
+(<= (removes ?p)
+    (does ?p (remove ?x ?y))
+)
+
+; keeping track of the board
+(<= (next (pit ?x ?y ?p))
+	(pit_will_be ?x ?y ?p)
+)
+
+(<= (pit_will_be ?x ?y ?p)
+    (does ?p (place ?x ?y))
+)
+(<= (pit_will_be ?x ?y ?p)
+    (does ?p (move ?x1 ?y1 ?x ?y))
+)
+(<= (pit_will_be ?x ?y empty)
+    (does ?p (remove ?x ?y))
+)
+(<= (pit_will_be ?x ?y empty)
+    (does ?p (move ?x ?y ?x1 ?y1))
+)
+
+(<= (pit_will_be ?x ?y ?c)
+    (true (pit ?x ?y ?c))
+	(not (touched ?x ?y)))
+
+(<= (touched ?x ?y)
+	(does ?p (place ?x ?y))
+)
+(<= (touched ?x ?y)
+	(does ?p (move ?x ?y ?x2 ?y2))
+)
+(<= (touched ?x ?y)
+	(does ?p (move ?x1 ?y1 ?x ?y))
+)
+(<= (touched ?x ?y)
+	(does ?p (remove ?x ?y))
+)
+
+; keeping track of turns
+(<= (next (control ?p))
+    (true (control ?p))
+    (makes_a_mill ?p)
+)
+(<= (next (control ?o))
+    (true (control ?p))
+	(opponent ?p ?o)
+    (not (makes_a_mill ?p))
+)
+
+; did a player just make a mill
+(<= (next made_a_mill)
+    (true (control ?p))
+    (makes_a_mill ?p)
+)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; making a mill
+;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(<= (will_be_a_mill ?p ?x1 ?y1 ?x2 ?y2 ?x3 ?y3)
+	(mill ?x1 ?y1 ?x2 ?y2 ?x3 ?y3)
+	(pit_will_be ?x1 ?y1 ?p)
+	(pit_will_be ?x2 ?y2 ?p)
+	(pit_will_be ?x3 ?y3 ?p)
+)	
+
+(<= (makes_a_mill ?p)
+	(touched ?x1 ?y1)
+	(will_be_a_mill ?p ?x1 ?y1 ?x2 ?y2 ?x3 ?y3)
+)
+(<= (makes_a_mill ?p)
+	(touched ?x2 ?y2)
+	(will_be_a_mill ?p ?x1 ?y1 ?x2 ?y2 ?x3 ?y3)
+)
+(<= (makes_a_mill ?p)
+	(touched ?x3 ?y3)
+	(will_be_a_mill ?p ?x1 ?y1 ?x2 ?y2 ?x3 ?y3)
+)
+
+(<= (is_a_mill ?p ?x1 ?y1 ?x2 ?y2 ?x3 ?y3)
+	(mill ?x1 ?y1 ?x2 ?y2 ?x3 ?y3)
+	(true (pit ?x1 ?y1 ?p))
+	(true (pit ?x2 ?y2 ?p))
+	(true (pit ?x3 ?y3 ?p))
+)
+
+(<= (in_a_mill ?p ?x1 ?y1)
+	(is_a_mill ?p ?x1 ?y1 ?x2 ?y2 ?x3 ?y3)
+)
+(<= (in_a_mill ?p ?x2 ?y2)
+	(is_a_mill ?p ?x1 ?y1 ?x2 ?y2 ?x3 ?y3)
+)
+(<= (in_a_mill ?p ?x3 ?y3)
+	(is_a_mill ?p ?x1 ?y1 ?x2 ?y2 ?x3 ?y3)
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; successor for counting steps and pieces
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(succ 0 1)
+(succ 1 2)
+(succ 2 3)
+(succ 3 4)
+(succ 4 5)
+(succ 5 6)
+(succ 6 7)
+(succ 7 8)
+(succ 8 9)
+(succ 9 10)
+(succ 10 11)
+(succ 11 12)
+(succ 12 13)
+(succ 13 14)
+(succ 14 15)
+(succ 15 16)
+(succ 16 17)
+(succ 17 18)
+(succ 18 19)
+(succ 19 20)
+(succ 20 21)
+(succ 21 22)
+(succ 22 23)
+(succ 23 24)
+(succ 24 25)
+(succ 25 26)
+(succ 26 27)
+(succ 27 28)
+(succ 28 29)
+(succ 29 30)
+(succ 30 31)
+(succ 31 32)
+(succ 32 33)
+(succ 33 34)
+(succ 34 35)
+(succ 35 36)
+(succ 36 37)
+(succ 37 38)
+(succ 38 39)
+(succ 39 40)
+(succ 40 41)
+(succ 41 42)
+(succ 42 43)
+(succ 43 44)
+(succ 44 45)
+(succ 45 46)
+(succ 46 47)
+(succ 47 48)
+(succ 48 49)
+(succ 49 50)
+(succ 50 51)
+(succ 51 52)
+(succ 52 53)
+(succ 53 54)
+(succ 54 55)
+(succ 55 56)
+(succ 56 57)
+(succ 57 58)
+(succ 58 59)
+(succ 59 60)
+(succ 60 61)
+(succ 61 62)
+(succ 62 63)
+(succ 63 64)
+(succ 64 65)
+(succ 65 66)
+(succ 66 67)
+(succ 67 68)
+(succ 68 69)
+(succ 69 70)
+(succ 70 71)
+(succ 71 72)
+(succ 72 73)
+(succ 73 74)
+(succ 74 75)
+(succ 75 76)
+(succ 76 77)
+(succ 77 78)
+(succ 78 79)
+(succ 79 80)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; board structure
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; the three concentric squares
+(square inner)
+(square middle)
+(square outer)
+
+(next_square inner middle)
+(next_square middle outer)
+
+(<= (adj_squares ?s1 ?s2)
+    (next_square ?s1 ?s2))
+(<= (adj_squares ?s1 ?s2)
+    (next_square ?s2 ?s1))
+
+
+; the 8 compass directions
+
+(corner ne)
+(corner se)
+(corner sw)
+(corner nw)
+
+(cardinal_direction n)
+(cardinal_direction e)
+(cardinal_direction s)
+(cardinal_direction w)
+
+(<= (direction ?y)
+    (corner ?y)
+)
+(<= (direction ?y)
+    (cardinal_direction ?y)
+)
+
+(next_dir n ne)
+(next_dir ne e)
+(next_dir e se)
+(next_dir se s)
+(next_dir s sw)
+(next_dir sw w)
+(next_dir w nw)
+(next_dir nw n)
+
+(<= (adj_directions ?d1 ?d2)
+    (next_dir ?d1 ?d2))
+(<= (adj_directions ?d1 ?d2)
+    (next_dir ?d2 ?d1))
+
+; positions that are adjacent to each other
+
+(<= (adjacent ?x1 ?y ?x2 ?y)
+    (cardinal_direction ?y)
+    (adj_squares ?x1 ?x2))
+(<= (adjacent ?x ?y1 ?x ?y2)
+    (adj_directions ?y1 ?y2)
+    (square ?x))
+
+; triples of positions that form a mill
+
+(<= (mill ?x ?y1 ?x ?y2 ?x ?y3)
+    (square ?x)
+    (corner ?y1)
+    (next_dir ?y1 ?y2)
+    (next_dir ?y2 ?y3)
+)
+(<= (mill inner ?y middle ?y outer ?y)
+	(cardinal_direction ?y)
+)

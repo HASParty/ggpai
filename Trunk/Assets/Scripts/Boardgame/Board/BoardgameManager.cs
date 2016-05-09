@@ -84,7 +84,7 @@ namespace Boardgame {
         bool moveInProgress = false;
         IEnumerator WaitForMove(UnityAction action) {
             while (moveInProgress) yield return new WaitForSeconds(0.2f);
-            Debug.Log("I have waited a million years");
+            //Debug.Log("I have waited a million years");
             action();
         }
 
@@ -108,6 +108,7 @@ namespace Boardgame {
                 }
                 else
                 {
+                    if (last == Player.Second) moveInProgress = false;
                     SetLegalMoves(data.LegalMoves);
                     turn = Player.First;
                     UIManager.Instance.SetState("AI's turn");
@@ -123,6 +124,10 @@ namespace Boardgame {
         State state;
         void SetState(State state) {
             this.state = state;
+        }
+
+        public bool IsBusy() {
+            return moveInProgress;
         }
 
         public void SyncState() {

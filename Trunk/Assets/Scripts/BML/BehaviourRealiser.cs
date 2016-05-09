@@ -102,42 +102,59 @@ public class BehaviourRealiser : MonoBehaviour {
         yield return null;
     }
 
+    int gazePriority = 0;
     IEnumerator Schedule(Gaze chunk) {
         yield return new WaitForSeconds(chunk.Start);
-        DebugManager.Instance.OnChunkStart(chunk);
         float duration = chunk.End;
-        //ignores ready and relax for now
-        if (chunk.Target == null) {
-            //we actually just want to glance away rather than look at anything specific
-            switch (chunk.Influence) {
-                case Behaviour.Lexemes.Influence.EYES:
-                    StartCoroutine(GlanceAway(duration));
-                    break;
-                case Behaviour.Lexemes.Influence.HEAD:
-                    StartCoroutine(GlanceAway(duration, affectHead: true));
-                    break;
-                case Behaviour.Lexemes.Influence.WAIST:
-                    StartCoroutine(GazeRandom(duration, returnToPreviousTarget: true));
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+        while (gazePriority > chunk.Priority && duration > 0f) {           
+            yield return new WaitForEndOfFrame();
+            duration -= Time.deltaTime;
+        }
+        if (duration > 0) {
+            gazePriority = chunk.Priority;
+            DebugManager.Instance.OnChunkStart(chunk);
+            //ignores ready and relax for now
+            if (chunk.Target == null) {
+                //we actually just want to glance away rather than look at anything specific
+                switch (chunk.Influence) {
+                    case Behaviour.Lexemes.Influence.EYES:
+                        StartCoroutine(GlanceAway(duration));
+                        break;
+                    case Behaviour.Lexemes.Influence.HEAD:
+                        StartCoroutine(GlanceAway(duration, affectHead: true));
+                        break;
+                    case Behaviour.Lexemes.Influence.WAIST:
+                        StartCoroutine(GazeRandom(duration, returnToPreviousTarget: true));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+            } else {
+                //we have a specific target in mind
+                switch (chunk.Influence) {
+                    case Behaviour.Lexemes.Influence.EYES:
+                        StartCoroutine(Glance(chunk.Target, duration));
+                        break;
+                    case Behaviour.Lexemes.Influence.HEAD:
+                        StartCoroutine(Glance(chunk.Target, duration, affectHead: true));
+                        break;
+                    case Behaviour.Lexemes.Influence.WAIST:
+                        StartCoroutine(Gaze(chunk.Target, duration, returnToPreviousTarget: true));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
 
-        } else {
-            //we have a specific target in mind
-            switch (chunk.Influence) {
-                case Behaviour.Lexemes.Influence.EYES:
-                    StartCoroutine(Glance(chunk.Target, duration));
-                    break;
-                case Behaviour.Lexemes.Influence.HEAD:
-                    StartCoroutine(Glance(chunk.Target, duration, affectHead: true));
-                    break;
-                case Behaviour.Lexemes.Influence.WAIST:
-                    StartCoroutine(Gaze(chunk.Target, duration, returnToPreviousTarget: true));
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+            while(duration > 0) {
+                yield return new WaitForEndOfFrame();
+                duration -= Time.deltaTime;
+                if (gazePriority < chunk.Priority) gazePriority = chunk.Priority;
             }
+            if (gazePriority == chunk.Priority) gazePriority = 0;
+        } else {
+            Debug.Log("Chunk cancelled. "+chunk);
         }
         yield return null;
     }
@@ -410,7 +427,7 @@ public class BehaviourRealiser : MonoBehaviour {
     IEnumerator Glance(GameObject target, float duration = 0.5f, bool affectHead = false) {
         //Debug.Log("GlanceAway");
         //CustomActor actor = target.GetComponent<CustomActor>();
-        Vector3 position = target.transform.position; ;
+        Vector3 position = target.transform.position;
         /*if (actor != null) {
             position += new Vector3(0, actor.eyesHeight, 0);
         }*/

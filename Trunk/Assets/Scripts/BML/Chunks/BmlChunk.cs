@@ -30,6 +30,10 @@ namespace Behaviour {
 		/// <value>A float in seconds (relative to start).</value>
 		public float End { get; protected set; }
 
+        /// <summary>
+        /// Prevent overriding currently executing behaviours etc.
+        /// </summary>
+        public int Priority { get; protected set; }
 
         /// <summary>
         /// Gets the time of a sync point. To be used to synchronise

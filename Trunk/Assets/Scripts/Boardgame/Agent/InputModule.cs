@@ -60,10 +60,13 @@ namespace Boardgame.Agent {
             bm.EvaluateConfidence(data, isMyTurn);
             bm.ConsiderMove(data.Best);
             if (isMyTurn) {
+                if (bm.ReduceTurnTime.Check()) {
+                    ConnectionMonitor.Instance.ModifyRequestTime(0.5f);
+                }
                 if (data.TotalSimulations > Config.SimulationCutoff) {
                     ConnectionMonitor.Instance.SetMaxRequestTime(2f);
                 }
-                if (data.Moves.Count == 1) ConnectionMonitor.Instance.SetMaxRequestTime(1f);
+                if (data.Moves.Count == 1) ConnectionMonitor.Instance.SetMaxRequestTime(1f);                
             }
 
             //generate ggp thingy in brain, use results here

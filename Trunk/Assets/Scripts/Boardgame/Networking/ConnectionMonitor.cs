@@ -64,18 +64,27 @@ namespace Boardgame.Networking {
         System.Diagnostics.Process p;
         void Start() {
             UIManager.Instance.ShowLoading();
-            /*if (p == null || !p.Responding) {
+            if (p == null || !p.Responding) {
                 p = new System.Diagnostics.Process();
                 p.StartInfo.UseShellExecute = false;
+                p.StartInfo.WorkingDirectory = Application.streamingAssetsPath;
+                p.StartInfo.CreateNoWindow = true;
+                p.StartInfo.RedirectStandardError = true;
                 p.StartInfo.FileName = "java";
-                p.StartInfo.Arguments = "-jar " + System.IO.Path.Combine(Application.streamingAssetsPath, "Jeff.jar 9147");
+                p.StartInfo.Arguments = "-Xmx1500m -server -XX:-DontCompileHugeMethods -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=10 -jar " + 
+                    System.IO.Path.Combine(Application.streamingAssetsPath, "Jeff.jar 9147");
                 p.Start();
-            }*/
+            }
             StartCoroutine(Init());
         }
 
         void OnDestroy() {
-            if(p != null) p.Close();
+            if (p != null) {
+                p.Kill();
+                string err = p.StandardError.ReadToEnd();
+                if(err.Length > 0) Debug.LogError(err);              
+                p.Close();
+            }
         }
 
         public IEnumerator Init() {
@@ -113,10 +122,13 @@ namespace Boardgame.Networking {
 
 		private float requestLeft;
         IEnumerator Request() {
-			while(requestLeft > 0f) {
+            while (BoardgameManager.Instance.IsBusy()) {
+                yield return new WaitForEndOfFrame();
+            }
+            while (requestLeft > 0f) {
             	yield return new WaitForSeconds(0.1f);
 				requestLeft -= 0.1f;
-			}
+			}            
 			Pull();
         }
 

@@ -313,6 +313,8 @@ public class OpenHeadLookController : HeadLookController
     /// <param name="duration">Duration.</param>
     public void SetTarget(Vector3 targetPoint, bool headOnly = false, bool eyesOnly = false, float duration = 0f)
     {
+        currTargetSet++;
+        int id = currTargetSet;        
         if (duration > 0f)
         {
             if (!headOverride)
@@ -323,7 +325,7 @@ public class OpenHeadLookController : HeadLookController
             {
                 eyeOverride = eyesOnly;
             }
-            StartCoroutine(ResetTarget(target, duration, headOnly, eyesOnly));
+            StartCoroutine(ResetTarget(target, duration, headOnly, eyesOnly, id));
         }
         target = targetPoint;
         foreach (BendingSegment segment in segments)
@@ -337,19 +339,20 @@ public class OpenHeadLookController : HeadLookController
             }
         }
     }
+    int currTargetSet = 0;
 
-    IEnumerator ResetTarget(Vector3 previousTarget, float duration, bool headOverridden, bool eyeOverridden)
+    IEnumerator ResetTarget(Vector3 previousTarget, float duration, bool headOverridden, bool eyeOverridden, int id)
     {
         yield return new WaitForSeconds(duration);
-        if (headOverridden)
-        {
-            headOverride = false;
+        if (currTargetSet == id) {
+            if (headOverridden) {
+                headOverride = false;
+            }
+            if (eyeOverridden) {
+                eyeOverride = false;
+            }
+            SetTarget(previousTarget);
         }
-        if (eyeOverridden)
-        {
-            eyeOverride = false;
-        }
-        SetTarget(previousTarget);
     }
 
     
