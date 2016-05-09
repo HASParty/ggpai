@@ -85,7 +85,7 @@ public final class UnityRequest extends Request {
         }
 
         try{
-            return "ready:" + gamer.getLegalMoves(gamer.getOtherRole()).toString()
+            return "ready:false:" + gamer.getLegalMoves(gamer.getOtherRole()).toString()
                    + ":" +  gamer.getCurrentState().toString();
         } catch (MoveDefinitionException e){
            return "ERROR" + e ;
