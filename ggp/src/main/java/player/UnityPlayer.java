@@ -53,7 +53,7 @@ public class UnityPlayer extends GamePlayer {
                 if (in.length() == 0) {
                     throw new IOException("Empty message received.");
                 }
-                System.out.println(in);
+                System.out.println("Message: " + in);
 
                 GamerLogger.log("GamePlayer", "[Received at " +
                         System.currentTimeMillis() +
@@ -69,7 +69,7 @@ public class UnityPlayer extends GamePlayer {
                         System.currentTimeMillis() + "] " +
                         out, GamerLogger.LOG_LEVEL_DATA_DUMP);
             } catch (Exception e) {
-                System.out.println(e.toString());
+                System.err.println(e.toString());
                 GamerLogger.log("GamePlayer", "[Dropped data at " +
                         System.currentTimeMillis() +
                         "] Due to " + e, GamerLogger.LOG_LEVEL_DATA_DUMP);

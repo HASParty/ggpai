@@ -75,7 +75,6 @@ public final class UnityRequest extends Request {
         } catch (MetaGamingException e) {
             GamerLogger.logStackTrace("GamePlayer", e);
             e.printStackTrace();
-
             // Upon encountering an uncaught exception during metagaming,
             // assume that indicates that we aren't actually able to play
             // right now, and tell the server that we're busy.

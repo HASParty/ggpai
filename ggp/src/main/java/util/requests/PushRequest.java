@@ -54,13 +54,12 @@ public final class PushRequest extends Request
 
         try {
             GdlTerm term = gamer.addMove();
-            String result = (term != null? term.toString() : "nil");
-            String bob =  result + ":" + gamer.getLegalMoves(gamer.getOtherRole()).toString()
+            String result = (term != null? term.toString() : "false");
+            String bob =  "noop:" + result + ":" + gamer.getLegalMoves(gamer.getOtherRole()).toString()
                    + ":" + gamer.getCurrentState().toString();
-            System.out.println(bob);
             return bob;
         } catch (Exception e) {
-            System.out.println(e.toString());
+            System.err.println(e.toString());
             GamerLogger.logStackTrace("GamePlayer", e);
             return "nil";
         }

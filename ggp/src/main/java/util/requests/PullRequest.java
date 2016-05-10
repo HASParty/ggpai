@@ -51,10 +51,9 @@ public final class PullRequest extends Request {
             }
             String bob =  move + ":" + gamer.getLegalMoves(gamer.getOtherRole()).toString()
                    + ":" + gamer.getCurrentState().toString();
-            System.err.println(bob);
             return bob;
         } catch (Exception e) {
-            System.out.println(e.toString());
+            System.err.println(e.toString());
             GamerLogger.logStackTrace("GamePlayer", e);
             return "nil";
         }
