@@ -11,7 +11,6 @@ namespace Boardgame.GDL {
         public override State GetBoardState(string message) {
             State state;
             state.Control = Player.First;
-
             var list = new List<Cell>();
             string lexify = Parser.BreakMessage(message).state;
             var lexed = lexer.Lex(lexify);

@@ -66,7 +66,7 @@ namespace Boardgame.GDL {
         }
 
         public Terminal GetTerminal(string data) {
-            var s = Parser.BreakMessage(data).state.Trim();
+            var s = Parser.BreakMessage(data).terminal.Trim();
             switch (s) {
                 case "lost":
                     return Terminal.LOSS;

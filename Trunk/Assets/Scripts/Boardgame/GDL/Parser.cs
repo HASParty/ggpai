@@ -7,6 +7,7 @@ namespace Boardgame.GDL {
     public struct Message {
         public string action;
         public string legalMoves;
+        public string terminal;
         public string state;
     }
     public class Parser {
@@ -18,13 +19,21 @@ namespace Boardgame.GDL {
                 m.action = "done";
                 m.legalMoves = null;
                 m.state = null;
+                m.terminal = "false";
                 return m;
             }
             if (split.Length < 3) throw new Exception("GDL Parser: malformed message: "+message);
+            int legind = 2, stateind = 3;
+            if (split.Length == 3)
+            {
+                legind--;
+                stateind--;
+                m.terminal = "false";
+            }
             m.action = split[0];
-            m.state = split[1].Trim();
-            m.legalMoves = split[2].Substring(1, split[1].Length - 2);
-            m.state = split[3].Substring(1, split[2].Length - 2).Replace(",", "");
+            m.terminal = split[1].Trim();
+            m.legalMoves = split[legind].Substring(1, split[legind].Length - 2);
+            m.state = split[stateind].Substring(1, split[stateind].Length - 2).Replace(",", "");
             return m;
         }
 
