@@ -155,7 +155,7 @@ public class UnityGamer extends StateMachineGamer {
             return move.get(roleMap.get(getRole())).getContents();
         }
         catch (Exception e) {
-            System.out.println(e.toString());
+            System.err.println(e.toString());
             GamerLogger.logStackTrace("GamePlayer", e);
             throw new MoveSelectionException(e);
         }

@@ -63,7 +63,6 @@ public class UnityRequestFactory extends RequestFactory {
     }
 
     private PushRequest createPush(Gamer gamer, SymbolList list) throws GdlFormatException {
-        System.out.println(list);
         if (list.size() != 3) {
             throw new IllegalArgumentException("Expected exactly 2 arguments!");
         }
@@ -78,7 +77,6 @@ public class UnityRequestFactory extends RequestFactory {
     }
 
     private PullRequest createPull(Gamer gamer, SymbolList list) throws GdlFormatException {
-        System.out.println(list);
         if (list.size() != 2) {
             throw new IllegalArgumentException("Expected exactly 2 arguments!");
         }
