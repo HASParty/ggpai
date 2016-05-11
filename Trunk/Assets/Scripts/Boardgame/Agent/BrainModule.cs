@@ -210,24 +210,24 @@ namespace Boardgame.Agent {
 
             float diff = Mathf.Abs(confidence - previousConfidence);
             if(diff > 0.7f) {
-                arousal += 1f;
+                arousal += 1.5f;
             }
 
             if(stabilised(highSimCount)) {
-                arousal -= 3f*weight(highSimCount);
+                arousal -= 3.5f*weight(highSimCount);
             }
 
             if (stabilised(notConfidentCount))
             {
                 //Debug.Log("DROP");
-                valence -= 2f*weight(notConfidentCount);
-                arousal += 0.5f*weight(notConfidentCount);
+                valence -= 2.5f*weight(notConfidentCount);
+                arousal += 1f*weight(notConfidentCount);
             }
             else if(stabilised(confidentCount))
             {
                 //Debug.Log("INCR");
-                valence += 2f*weight(confidentCount);
-                arousal -= 1f*weight(confidentCount);
+                valence += 2.5f*weight(confidentCount);
+                arousal -= 1.5f*weight(confidentCount);
             }
 
             if(confidence > 10) {
@@ -248,12 +248,12 @@ namespace Boardgame.Agent {
         }
 
         private float weight(int val) {
-            return (float)(90-val) / 90f;
+            return (float)(100-val) / 100f;
         }
 
         private bool stabilised(int val)
         {
-            return val > 5 && val < 90;
+            return val > 5 && val < 100;
         }
         private void count(bool truthy, ref int val) {
             if (val > 500) {
