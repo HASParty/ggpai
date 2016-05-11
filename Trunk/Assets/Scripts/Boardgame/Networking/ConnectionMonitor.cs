@@ -190,6 +190,7 @@ namespace Boardgame.Networking {
         }
 
         public void Pull() {
+            Debug.Log("Requested pull");
             Write("PULL " + Config.MatchID);
         }
 

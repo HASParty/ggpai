@@ -1526,6 +1526,8 @@ GameObject:
   - 114: {fileID: 500687592}
   - 114: {fileID: 500687591}
   - 114: {fileID: 500687590}
+  - 82: {fileID: 500687597}
+  - 114: {fileID: 500687596}
   m_Layer: 0
   m_Name: Body
   m_TagString: Untagged
@@ -1692,6 +1694,109 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &500687596
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 500687588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da523a992de7c7541996feb5bff52fd4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  positivelyExcited:
+  - {fileID: 8300000, guid: 54b6982c94de6b24b84b2fdc20366630, type: 3}
+  - {fileID: 8300000, guid: 79c69b5a64cff51458aaf9840d411a71, type: 3}
+  - {fileID: 8300000, guid: 37275375e9cb64c4e84030261cb9d09e, type: 3}
+  negativelyExcited:
+  - {fileID: 8300000, guid: 3d21c2a31244d694b98df28502395f95, type: 3}
+  - {fileID: 8300000, guid: 41b67ffddeed03543bf3fa484f1c3a20, type: 3}
+  - {fileID: 8300000, guid: 6a368903092bf6a4b9777a20e8e49f34, type: 3}
+  neutral: []
+  positivelyCalm:
+  - {fileID: 8300000, guid: e2447025d2f20984c817a849f279c69b, type: 3}
+  - {fileID: 8300000, guid: cbf5a19b7700a8746af7a8775437c4e4, type: 3}
+  - {fileID: 8300000, guid: abb47a1c9406bb84fbd5f2fc1e1334b8, type: 3}
+  negativelyCalm:
+  - {fileID: 8300000, guid: d2d5ae859bf2a024dad04360462b87c4, type: 3}
+  - {fileID: 8300000, guid: 81825dc76ae69ba4893dc449ebdb9db8, type: 3}
+  - {fileID: 8300000, guid: 787bb480da62a7c4a9e7510a13cf89af, type: 3}
+--- !u!82 &500687597
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 500687588}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 24333746, guid: abc37a0c57964ef4f9e48f0e7e66139f,
+    type: 2}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 0.513
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 20
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
 --- !u!1 &510002990
 GameObject:
   m_ObjectHideFlags: 0
@@ -3406,7 +3511,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Override: 0
   MatchID: 1234
-  GameName: mylla
+  GameName: checkers
   StartTime: 25
   TurnTime: 5
   Turns: -1

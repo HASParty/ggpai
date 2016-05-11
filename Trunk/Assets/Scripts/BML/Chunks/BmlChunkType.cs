@@ -21,7 +21,8 @@ namespace Behaviour
         //Boardgame additions
         FaceEmotion,
         Grasping,
-        Placing
+        Placing,
+        Vocalisation
 	}
 
 }

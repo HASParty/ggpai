@@ -3,11 +3,13 @@ using System.Collections;
 using Behaviour;
 using System;
 using System.Collections.Generic;
+using Boardgame.Agent;
 
 public class BehaviourRealiser : MonoBehaviour {
     OpenHeadLookController _hl;
     FaceControllerII _fc;
     ActorMotion _motion;
+    VoiceBox _voice;
 
     public void ScheduleBehaviour(BMLBody body) {
         StartCoroutine(ScheduleBehaviourBody(body));
@@ -73,6 +75,9 @@ public class BehaviourRealiser : MonoBehaviour {
                 break;
             case BMLChunkType.Speech:
                 StartCoroutine(Schedule(chunk as Speech));
+                break;
+            case BMLChunkType.Vocalisation:
+                StartCoroutine(Schedule(chunk as Vocalisation));
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
@@ -287,6 +292,12 @@ public class BehaviourRealiser : MonoBehaviour {
         yield return null;
     }
 
+    IEnumerator Schedule(Vocalisation chunk) {
+        //DebugManager.Instance.OnChunkStart(chunk);
+        yield return new WaitForSeconds(chunk.Start);
+        _voice.Vocalise(chunk.Arousal, chunk.Valence);
+    }
+
     IEnumerator Schedule(Speech chunk) {
         yield return null;
     }
@@ -295,6 +306,7 @@ public class BehaviourRealiser : MonoBehaviour {
         _hl = transform.GetComponent<OpenHeadLookController>();
         _fc = GetComponent<FaceControllerII>();
         _motion = GetComponent<ActorMotion>();
+        _voice = GetComponent<VoiceBox>();
     }
 
     #region Behaviour building blocks

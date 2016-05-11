@@ -214,20 +214,20 @@ namespace Boardgame.Agent {
             }
 
             if(stabilised(highSimCount)) {
-                arousal -= 2f*weight(highSimCount);
+                arousal -= 3f*weight(highSimCount);
             }
 
             if (stabilised(notConfidentCount))
             {
                 //Debug.Log("DROP");
-                valence -= 3f*weight(notConfidentCount);
-                arousal += 2f*weight(notConfidentCount);
+                valence -= 2f*weight(notConfidentCount);
+                arousal += 0.5f*weight(notConfidentCount);
             }
             else if(stabilised(confidentCount))
             {
                 //Debug.Log("INCR");
-                valence += 3f*weight(confidentCount);
-                arousal -= 2f*weight(confidentCount);
+                valence += 2f*weight(confidentCount);
+                arousal -= 1f*weight(confidentCount);
             }
 
             if(confidence > 10) {
@@ -248,12 +248,12 @@ namespace Boardgame.Agent {
         }
 
         private float weight(int val) {
-            return (float)(100-val) / 100f;
+            return (float)(90-val) / 90f;
         }
 
         private bool stabilised(int val)
         {
-            return val > 5 && val < 100;
+            return val > 5 && val < 90;
         }
         private void count(bool truthy, ref int val) {
             if (val > 500) {
@@ -276,7 +276,8 @@ namespace Boardgame.Agent {
                 BMLBody curr = new BMLBody();
                 chunk.BMLRef = curr;                
                 foreach (var function in chunk.functions) {
-                    switch(function.Function) {
+                    Vocalisation voc = new Vocalisation("Vocal", chunk.owner, 1f, mood.GetArousal(), mood.GetValence());
+                    switch (function.Function) {
                         case FMLFunction.FunctionType.BOARDGAME_REACT_MOVE:
                             ReactMoveFunction react = function as ReactMoveFunction;
                             this.react(react.MoveToReact[0], react.MyMove ? player : (player == Player.First ? Player.Second : Player.First));
@@ -284,17 +285,20 @@ namespace Boardgame.Agent {
                             Posture poser = new Posture("postureReact", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0f, 8f);
                             if (surprised.Check())
                             {
-                                faceReact = new FaceEmotion("ConfusedFace", chunk.owner, 0f, 1.6f, 0.6f);
+                                faceReact = new FaceEmotion("ConfusedFace", chunk.owner, 0f, 1.4f, 0.8f);
                                 poser.AddPose(Behaviour.Lexemes.BodyPart.RIGHT_ARM, Behaviour.Lexemes.BodyPose.FIST_COVER_MOUTH);
                                 curr.AddChunk(faceReact);
                                 curr.AddChunk(poser);
+                                curr.AddChunk(voc);
                             }
                             break;
                         case FMLFunction.FunctionType.BOARDGAME_CONSIDER_MOVE:
                             //tbh this shouldn't be here
                             if (impatient.Check()) {
-                                Gaze glanceAtPlayer = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 0.25f, priority: 3);
+                                Debug.Log("IMPATIENT");
+                                Gaze glanceAtPlayer = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 0.25f, priority: 2);
                                 curr.AddChunk(glanceAtPlayer);
+                                curr.AddChunk(voc);
                             } else {
                                 ConsiderMoveFunction func = function as ConsiderMoveFunction;
                                 if (func.MoveToConsider.Type == MoveType.MOVE) {
