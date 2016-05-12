@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Boardgame.Configuration;
 
 namespace Boardgame.Agent
 {
@@ -41,15 +42,15 @@ namespace Boardgame.Agent
             pm = GetComponent<PersonalityModule>();
             float valenceNeutral, arousalNeutral;
             pm.GetMoodConfig(out valenceNeutral, out arousalNeutral, out mods);
-            valence = new Decayable(valenceNeutral, 0f, 2f, valenceDecay);
-            arousal = new Decayable(arousalNeutral, 0f, 2f, arousalDecay);
+            valence = new Decayable(Config.Neutral, valenceNeutral, 0f, 2f, valenceDecay);
+            arousal = new Decayable(Config.Neutral, arousalNeutral, 0f, 2f, arousalDecay);
         }
 
         void Update() {
             valence.Update();
             arousal.Update();
-            currentValenceMod = (valence.IsPositive() ? mods.Positive : mods.Negative);
-            currentArousalMod = (arousal.IsPositive() ? mods.Surprising : mods.Expected);
+            currentValenceMod = (valence.IsPositive() ? mods.Positive : (valence.IsNegative() ? mods.Negative : 1));
+            currentArousalMod = (arousal.IsPositive() ? mods.Surprising : (arousal.IsNegative() ? mods.Expected : 1));
             currentValence = valence.Get();
             currentArousal = arousal.Get();
         }

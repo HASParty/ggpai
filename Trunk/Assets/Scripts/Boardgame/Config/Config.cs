@@ -29,13 +29,13 @@ namespace Boardgame.Configuration {
 
         //ggp defaults
         public static Networking.GGPSettings GGP = new Networking.GGPSettings(
-            r: 100,
+            r: 50,
             g: 20,
             rnd: 0,
             e: 0.9f,
             td: 0.999f,
             cd: 0.995f,
-            l: 1000,
+            l: 200,
             fa: 0.5f,
             sa: 0.5f,
             fd: 0.5f,
