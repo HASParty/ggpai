@@ -144,15 +144,18 @@ public class UnityGamer extends StateMachineGamer {
                 //What follows is a dirty hack but it required the least change of the ggp-base
                 String mStr = move.get(roleMap.get(getRole())).getContents().toString();
                 if (p == 100){
+                    System.err.println("The Game is over");
                     return Move.create(mStr.substring(0, mStr.length() - 1) + ":won )").getContents();
                 } else if (p > 1){
+                    System.err.println("The Game is over");
                     return Move.create(mStr.substring(0, mStr.length() - 1) + ":draw )").getContents();
                 } else {
+                    System.err.println("The Game is over");
                     return Move.create(mStr.substring(0, mStr.length() - 1) + ":lost )").getContents();
                 }
             }
         lock1.writeLock().unlock();
-            return move.get(roleMap.get(getRole())).getContents();
+        return move.get(roleMap.get(getRole())).getContents();
         }
         catch (Exception e) {
             System.err.println(e.toString());
