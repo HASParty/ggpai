@@ -63,9 +63,6 @@ namespace Boardgame.Agent {
                 if (bm.ReduceTurnTime.Check()) {
                     ConnectionMonitor.Instance.ModifyRequestTime(0.5f);
                 }
-                if (data.TotalSimulations > Config.SimulationCutoff) {
-                    ConnectionMonitor.Instance.SetMaxRequestTime(2f);
-                }
                 if (data.Moves.Count == 1) ConnectionMonitor.Instance.SetMaxRequestTime(1f);                
             }
 

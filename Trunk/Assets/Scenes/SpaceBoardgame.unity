@@ -1984,7 +1984,6 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -4882,7 +4881,6 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -5730,22 +5728,22 @@ MonoBehaviour:
     value: 1
     baseMoodMod:
       High:
-        Positive: 1.2
-        Negative: 0.8
+        Positive: 1.05
+        Negative: 0.95
         Surprising: 1
         Expected: 1
       Low:
-        Positive: 0.8
-        Negative: 1.2
+        Positive: 0.95
+        Negative: 1.05
         Surprising: 1
         Expected: 1
     interpolation:
       High:
-        arousal: 0.1
-        valence: 0.4
+        arousal: 0.05
+        valence: 0.2
       Low:
         arousal: 0
-        valence: -0.6
+        valence: -0.2
   conscientiousness:
     value: 1
     baseMoodMod:
@@ -5770,15 +5768,15 @@ MonoBehaviour:
     value: 1
     baseMoodMod:
       High:
-        Positive: 1.2
-        Negative: 1.2
-        Surprising: 1.2
-        Expected: 1.2
+        Positive: 1.05
+        Negative: 1.05
+        Surprising: 1.05
+        Expected: 1.05
       Low:
-        Positive: 0.8
-        Negative: 0.8
-        Surprising: 0.8
-        Expected: 0.8
+        Positive: 0.95
+        Negative: 0.95
+        Surprising: 0.95
+        Expected: 0.95
     interpolation:
       High:
         arousal: 0
@@ -5792,19 +5790,19 @@ MonoBehaviour:
       High:
         Positive: 1
         Negative: 1
-        Surprising: 1.2
-        Expected: 0.8
+        Surprising: 1.05
+        Expected: 0.95
       Low:
         Positive: 1
         Negative: 1
-        Surprising: 0.8
-        Expected: 1.2
+        Surprising: 0.95
+        Expected: 1.05
     interpolation:
       High:
-        arousal: 0.3
+        arousal: 0.15
         valence: 0
       Low:
-        arousal: -0.3
+        arousal: -0.15
         valence: 0
   openness:
     value: 1
@@ -6102,7 +6100,6 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
