@@ -346,18 +346,23 @@ namespace Boardgame.Agent {
                                 Behaviour.Lexemes.Mode.LEFT_HAND, (arm) => { graspPiece(from, arm); }, 0, end: 1.5f);
                             Posture leanReach = new Posture("leantowardsPiece", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0, end: 1.5f, priority: 2);
                             Gaze lookReach = new Gaze("glanceAtReach", chunk.owner, from.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 1.25f);
+                            Debug.Log((int)(Vector3.Distance(from.transform.position, transform.position) * 80));
                             leanReach.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD, 
-                                (int)(Vector3.Distance(from.transform.position, transform.position)*20));
+                                (int)(Vector3.Distance(from.transform.position, transform.position)*70));
                             Place place = new Place("placePiece", chunk.owner, to.gameObject,
                                 Behaviour.Lexemes.Mode.LEFT_HAND, (piece) => { placePiece(piece, to);
                                     BoardgameManager.Instance.MoveMade(move.MoveToMake, player); BoardgameManager.Instance.SyncState(); BoardgameManager.Instance.MakeNoise(to.id); }, 
                                 1.25f, end: 2f);
+                            Posture leanPlace = new Posture("leantowardsCell", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 1.25f, end: 1.5f, priority: 3);
+                            leanPlace.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD,
+                                (int)(Vector3.Distance(to.transform.position, transform.position) * 70));
                             Gaze lookPlace = new Gaze("glanceAtPlace", chunk.owner, to.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 1.25f, end: 2f, priority: 2);
                             Gaze glance = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 2f, end: 1.25f, priority: 3);
                             curr.AddChunk(glance);
                             curr.AddChunk(lookReach);
                             curr.AddChunk(lookPlace);
                             curr.AddChunk(leanReach);
+                            curr.AddChunk(leanPlace);
                             curr.AddChunk(reach);
                             curr.AddChunk(place);
                             break;

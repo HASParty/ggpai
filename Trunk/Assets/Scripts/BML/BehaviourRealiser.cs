@@ -152,11 +152,7 @@ public class BehaviourRealiser : MonoBehaviour {
                 }
             }
 
-            while(duration > 0) {
-                yield return new WaitForEndOfFrame();
-                duration -= Time.deltaTime;
-                if (gazePriority < chunk.Priority) gazePriority = chunk.Priority;
-            }
+            yield return new WaitForSeconds(duration);
             if (gazePriority == chunk.Priority) gazePriority = 0;
         } else {
             Debug.Log("Chunk cancelled. "+chunk);
@@ -275,6 +271,9 @@ public class BehaviourRealiser : MonoBehaviour {
                     case Behaviour.Lexemes.BodyPose.LEGS_OPEN:
                         break;
                     case Behaviour.Lexemes.BodyPose.LEANING_FORWARD:
+                        if (!chunk.ID.Contains("emo")) {
+                            Debug.Log("I LEAN MY TRALALA " + pose.Degree);
+                        }
                         StartCoroutine(LeanIn(duration, pose.Degree));
                         break;
                     case Behaviour.Lexemes.BodyPose.FIST_COVER_MOUTH:
@@ -404,7 +403,7 @@ public class BehaviourRealiser : MonoBehaviour {
     /// <param name="duration">Duration.</param>
     /// <param name="amount">Amount.</param>
     IEnumerator LeanIn(float duration = 3f, float amount = 30f) {
-        //Debug.Log("Leaning in");
+//Debug.Log("Leaning in");
         _hl.lean = amount;
         _hl.leanAffectors++;
         yield return new WaitForSeconds(duration);
