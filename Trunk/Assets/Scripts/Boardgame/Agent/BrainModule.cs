@@ -31,6 +31,7 @@ namespace Boardgame.Agent {
 
         float expressionIntensity = 1f;
         float moodMod = 1f;
+        public int noiseChance = 1;
         void Awake() {
             pm = GetComponent<PersonalityModule>();
             im = GetComponent<InputModule>();
@@ -61,12 +62,15 @@ namespace Boardgame.Agent {
             {
                 case PersonalityModule.PersonalityValue.high:
                     expressionIntensity = 1.2f;
+                    noiseChance = 2;
                     break;
                 case PersonalityModule.PersonalityValue.neutral:
                     expressionIntensity = 0.95f;
+                    noiseChance = 3;
                     break;
                 case PersonalityModule.PersonalityValue.low:
                     expressionIntensity = 0.8f;
+                    noiseChance = 5;
                     break;
             }
         }
@@ -310,8 +314,9 @@ namespace Boardgame.Agent {
                                     poser.AddPose(Behaviour.Lexemes.BodyPart.RIGHT_ARM, Behaviour.Lexemes.BodyPose.FIST_COVER_MOUTH);
                                     curr.AddChunk(poser);
                                 }
-                                curr.AddChunk(faceReact);                                
-                                curr.AddChunk(voc);
+                                coin = UnityEngine.Random.Range(0, noiseChance);
+                                curr.AddChunk(faceReact);
+                                if(coin == 0) curr.AddChunk(voc);
                             }
                             break;
                         case FMLFunction.FunctionType.BOARDGAME_CONSIDER_MOVE:

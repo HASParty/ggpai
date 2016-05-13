@@ -5389,7 +5389,7 @@ RectTransform:
   m_GameObject: {fileID: 1970390796}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
+  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_Children: []
   m_Father: {fileID: 1735327164}
   m_RootOrder: 1
@@ -5709,6 +5709,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: 0
+  noiseChance: 1
   idleDuration: 0
   idleLeft: 0
   confidence: 0
