@@ -124,7 +124,7 @@ namespace Boardgame.Agent {
             }
             Debug.Log(m.Who);
             if (m.Who != who) return;
-            if ((m.Simulations < averageSims && who != player) || (who == player && !move.Equals(myBestMove)))
+            if ((m.Simulations < averageSims * 0.8f && who != player) || (who == player && !move.Equals(myBestMove)))
             {
                 Debug.Log("SURPRISED");
                 surprised.Enable();

@@ -4,6 +4,7 @@ using System.Collections;
 public class TestManager : Singleton<TestManager> {
     public MouseCast MouseCast;
     public GameObject[] HideMe;
+    public AudioSource silenceMe;
 
     public bool HidePlayerMode = false;
     private bool showingPlayer = true;
@@ -22,6 +23,7 @@ public class TestManager : Singleton<TestManager> {
         showingPlayer = false;
         foreach (GameObject go in HideMe) {
             go.SetActive(false);
+            silenceMe.mute = true;
         }
         //MouseCast.FreeMode();
     }
@@ -31,6 +33,7 @@ public class TestManager : Singleton<TestManager> {
         showingPlayer = true;
         foreach (GameObject go in HideMe) {
             go.SetActive(true);
+            silenceMe.mute = false;
         }
        // MouseCast.DefaultMode();
     }
