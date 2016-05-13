@@ -242,38 +242,58 @@ public class BehaviourRealiser : MonoBehaviour {
         chunk.Callback(which);
     }
 
+    int posePriority = 0;
     IEnumerator Schedule(Posture chunk) {
         yield return new WaitForSeconds(chunk.Start);
         DebugManager.Instance.OnChunkStart(chunk);
         float duration = chunk.End;
         //ignore stance for now
-        foreach (Pose pose in chunk.Poses) {
-            //ignoring affected parts
-            switch (pose.Lexeme) {
-                case Behaviour.Lexemes.BodyPose.ARMS_AKIMBO:
-                    break;
-                case Behaviour.Lexemes.BodyPose.ARMS_CROSSED:
-                    StartCoroutine(Pose(1, 1, duration));
-                    break;
-                case Behaviour.Lexemes.BodyPose.ARMS_NEUTRAL:
-                    break;
-                case Behaviour.Lexemes.BodyPose.ARMS_OPEN:
-                    break;
-                case Behaviour.Lexemes.BodyPose.LEGS_CROSSED:
-                    break;
-                case Behaviour.Lexemes.BodyPose.LEGS_NEUTRAL:
-                    break;
-                case Behaviour.Lexemes.BodyPose.LEGS_OPEN:
-                    break;
-                case Behaviour.Lexemes.BodyPose.LEANING_FORWARD:
-                    StartCoroutine(LeanIn(duration, pose.Degree));
-                    break;
-                case Behaviour.Lexemes.BodyPose.FIST_COVER_MOUTH:
-                    StartCoroutine(Pose(0, 2, duration));
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
+        while (posePriority > chunk.Priority && duration > 0f) {           
+            yield return new WaitForEndOfFrame();
+            duration -= Time.deltaTime;
+        }
+        if (duration > 0)
+        {
+            foreach (Pose pose in chunk.Poses)
+            {
+                //ignoring affected parts
+                switch (pose.Lexeme)
+                {
+                    case Behaviour.Lexemes.BodyPose.ARMS_AKIMBO:
+                        break;
+                    case Behaviour.Lexemes.BodyPose.ARMS_CROSSED:
+                        StartCoroutine(Pose(1, 1, duration));
+                        break;
+                    case Behaviour.Lexemes.BodyPose.ARMS_NEUTRAL:
+                        break;
+                    case Behaviour.Lexemes.BodyPose.ARMS_OPEN:
+                        break;
+                    case Behaviour.Lexemes.BodyPose.LEGS_CROSSED:
+                        break;
+                    case Behaviour.Lexemes.BodyPose.LEGS_NEUTRAL:
+                        break;
+                    case Behaviour.Lexemes.BodyPose.LEGS_OPEN:
+                        break;
+                    case Behaviour.Lexemes.BodyPose.LEANING_FORWARD:
+                        StartCoroutine(LeanIn(duration, pose.Degree));
+                        break;
+                    case Behaviour.Lexemes.BodyPose.FIST_COVER_MOUTH:
+                        StartCoroutine(Pose(0, 2, duration));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
             }
+
+            yield return new WaitForSeconds(duration);
+            if (posePriority == chunk.Priority)
+            {
+                posePriority = 0;
+            }
+        }
+        else
+        {
+            Debug.Log("Chunk cancelled. " + chunk);
         }
     }
 

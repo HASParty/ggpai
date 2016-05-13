@@ -29,19 +29,20 @@ namespace Boardgame.Configuration {
 
         //ggp defaults
         public static Networking.GGPSettings GGP = new Networking.GGPSettings(
-            r: 50,
-            g: 20,
+            r: 100,
+            g: 60,
             rnd: 0,
             e: 0.9f,
-            td: 0.999f,
-            cd: 0.995f,
-            l: 200,
+            td: 0.997f,
+            cd: 0.99f,
+            l: 5000,
             fa: 0.5f,
-            sa: 0.5f,
-            fd: 0.5f,
+            sa: 1.5f,
+            fd: 3f,
             sd: 0.5f,
             h: 10000,
-            cdp: 10000
+            cdp: 10000,
+            exp: 55
         );
 
         public static void SetValue(string which, string value) {

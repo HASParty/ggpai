@@ -77,8 +77,8 @@ public class MCTSRAVE extends SearchRunner {
                     boolean silent, MCTSControlValues values){
         super(gamer, lock, silent);
         this.maxCounts = new ArrayList<>();
-        maxCounts.add(0);
-        maxCounts.add(0);
+        maxCounts.add(9);
+        maxCounts.add(9);
         this.values = values;
         this.root = new RaveNode(null);
         this.root.state = gamer.getCurrentState();
@@ -93,7 +93,6 @@ public class MCTSRAVE extends SearchRunner {
 
         this.dag = new HashMap<>(10000);
         this.mast = new MAST(gameName);
-        this.gameName = "Mylla";
         if (gameName.contains("Mylla") || gameName.contains("Checkers")){
             this.pcQuery = QueryBuilder.pieceCount("pieces_on_board", machine.getRoles());
         } else {
@@ -334,7 +333,7 @@ public class MCTSRAVE extends SearchRunner {
         if (!silent){
             System.out.println("------------------------------------------------------------" +
                                "-------------------");
-            System.out.println(String.format("Selecting: %s\n With %d simulations.",
+            System.err.println(String.format("Selecting: %s\n With %d simulations.",
                                              bestMove,
                                              bestMove.getValue().n()));
             System.out.println("------------------------------------------------------------" +

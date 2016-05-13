@@ -513,7 +513,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 149910517}
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -5.432, y: 1.6613016, z: -4.101}
+  m_LocalPosition: {x: -5.432, y: 1.6613016, z: -3.941}
   m_LocalScale: {x: 0.22, y: 0.22, z: 0.055}
   m_Children: []
   m_Father: {fileID: 1432929962}
@@ -1900,7 +1900,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 559548946}
   m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071067}
-  m_LocalPosition: {x: -5.1, y: 2.3, z: -3.352}
+  m_LocalPosition: {x: -5.156, y: 2.3, z: -3.352}
   m_LocalScale: {x: 0.05, y: 0.1, z: 0.05}
   m_Children:
   - {fileID: 165993902}
@@ -2306,7 +2306,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 659147524}
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -5.432, y: 1.6593016, z: -2.686}
+  m_LocalPosition: {x: -5.432, y: 1.6593016, z: -2.745}
   m_LocalScale: {x: 0.22, y: 0.22, z: 0.055}
   m_Children: []
   m_Father: {fileID: 1432929962}
@@ -2422,7 +2422,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 690579758}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.495, y: 1.2503016, z: -2.697}
+  m_LocalPosition: {x: -5.495, y: 1.2503016, z: -2.758}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 500687589}
@@ -2577,7 +2577,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86a67906ad8ef4147bafd3bd616be815, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameScriptable: {fileID: 11400000, guid: dc9697bcdd74c0d4d80df7beee4bdd15, type: 2}
+  gameScriptable: {fileID: 11400000, guid: 2795ed79484d10c49855d4628e1e9da9, type: 2}
   BoardSpawnLocation: {fileID: 240844034}
   PileSpawnTransform: {fileID: 1432929962}
   piecePlaceSound: {fileID: 8300000, guid: 2776d515161f0054aad5469fc5bd9d3d, type: 3}
@@ -3120,7 +3120,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1024769261}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.444, y: 2.8083014, z: -4.17}
+  m_LocalPosition: {x: -5.44, y: 2.8083014, z: -3.97}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1595330105}
@@ -5170,7 +5170,7 @@ RectTransform:
   m_RootOrder: 0
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -507, y: -1043.8}
+  m_AnchoredPosition: {x: -472.5, y: -1043.8}
   m_SizeDelta: {x: 95, y: 45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1848117883
@@ -5682,8 +5682,8 @@ MonoBehaviour:
   currentArousalMod: 0
   currentValence: 0
   currentArousal: 0
-  valenceDecay: 0.05
-  arousalDecay: 0.05
+  valenceDecay: 0.12
+  arousalDecay: 0.12
 --- !u!114 &2039804515
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5771,15 +5771,15 @@ MonoBehaviour:
     value: 1
     baseMoodMod:
       High:
-        Positive: 1.05
-        Negative: 1.05
-        Surprising: 1.05
-        Expected: 1.05
+        Positive: 1.1
+        Negative: 1.1
+        Surprising: 1.1
+        Expected: 1.1
       Low:
-        Positive: 0.95
-        Negative: 0.95
-        Surprising: 0.95
-        Expected: 0.95
+        Positive: 0.9
+        Negative: 0.9
+        Surprising: 0.9
+        Expected: 0.9
     interpolation:
       High:
         arousal: 0
@@ -6149,7 +6149,7 @@ Transform:
   m_GameObject: {fileID: 2113192864}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -5.43174, y: 1.25, z: -3.3408513}
-  m_LocalScale: {x: 0.4, y: 0.6, z: 0.4}
+  m_LocalScale: {x: 0.35, y: 0.6, z: 0.35}
   m_Children:
   - {fileID: 593630198}
   m_Father: {fileID: 1432929962}

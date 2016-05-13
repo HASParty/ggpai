@@ -146,7 +146,8 @@ namespace Boardgame {
             grid.SetPile(gameScriptable.TrashPile);
             foreach(GDL.Cell cell in state.Cells) {
                 if (piecePrefabs.ContainsKey(cell.Type)) {
-                    if (!skipPiles && cell.Count > 0) {
+                    if (grid.IsPile(cell.ID) && skipPiles) continue;
+                    if (cell.Count > 0) {
                         grid.SetPile(cell.ID);
                         for (int i = 0; i < cell.Count; i++) {
                             GameObject p = Instantiate(piecePrefabs[cell.Type]);

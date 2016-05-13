@@ -515,7 +515,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Override: 1
   MatchID: 1234
-  GameName: checkers
+  GameName: mylla
   StartTime: 10
   TurnTime: 10
   Turns: -1
@@ -640,7 +640,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11449366, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
       propertyPath: m_IsOn
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11449366, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
       propertyPath: m_Interactable
@@ -698,7 +698,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Which: GameName
-  Value: CheckersTestB
+  Value: mylla
 --- !u!1 &396826197
 GameObject:
   m_ObjectHideFlags: 0
@@ -1762,7 +1762,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11449366, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
       propertyPath: m_IsOn
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
