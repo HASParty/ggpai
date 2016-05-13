@@ -31,6 +31,7 @@ namespace Boardgame.Agent {
 
         float expressionIntensity = 1f;
         float moodMod = 1f;
+        public int noiseChance = 1;
         void Awake() {
             pm = GetComponent<PersonalityModule>();
             im = GetComponent<InputModule>();
@@ -61,12 +62,15 @@ namespace Boardgame.Agent {
             {
                 case PersonalityModule.PersonalityValue.high:
                     expressionIntensity = 1.2f;
+                    noiseChance = 2;
                     break;
                 case PersonalityModule.PersonalityValue.neutral:
                     expressionIntensity = 0.95f;
+                    noiseChance = 3;
                     break;
                 case PersonalityModule.PersonalityValue.low:
                     expressionIntensity = 0.8f;
+                    noiseChance = 5;
                     break;
             }
         }
@@ -142,7 +146,7 @@ namespace Boardgame.Agent {
             }
             Debug.Log(m.Who);
             if (m.Who != who) return;
-            if ((m.Simulations < averageSims && who != player) || (who == player && !move.Equals(myBestMove)))
+            if ((m.Simulations < averageSims * 0.8f && who != player) || (who == player && !move.Equals(myBestMove)))
             {
                 Debug.Log("SURPRISED");
                 surprised.Enable();
@@ -310,8 +314,9 @@ namespace Boardgame.Agent {
                                     poser.AddPose(Behaviour.Lexemes.BodyPart.RIGHT_ARM, Behaviour.Lexemes.BodyPose.FIST_COVER_MOUTH);
                                     curr.AddChunk(poser);
                                 }
-                                curr.AddChunk(faceReact);                                
-                                curr.AddChunk(voc);
+                                coin = UnityEngine.Random.Range(0, noiseChance);
+                                curr.AddChunk(faceReact);
+                                if(coin == 0) curr.AddChunk(voc);
                             }
                             break;
                         case FMLFunction.FunctionType.BOARDGAME_CONSIDER_MOVE:
@@ -346,18 +351,23 @@ namespace Boardgame.Agent {
                                 Behaviour.Lexemes.Mode.LEFT_HAND, (arm) => { graspPiece(from, arm); }, 0, end: 1.5f);
                             Posture leanReach = new Posture("leantowardsPiece", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0, end: 1.5f, priority: 2);
                             Gaze lookReach = new Gaze("glanceAtReach", chunk.owner, from.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 1.25f);
+                            Debug.Log((int)(Vector3.Distance(from.transform.position, transform.position) * 80));
                             leanReach.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD, 
-                                (int)(Vector3.Distance(from.transform.position, transform.position)*20));
+                                (int)(Vector3.Distance(from.transform.position, transform.position)*70));
                             Place place = new Place("placePiece", chunk.owner, to.gameObject,
                                 Behaviour.Lexemes.Mode.LEFT_HAND, (piece) => { placePiece(piece, to);
                                     BoardgameManager.Instance.MoveMade(move.MoveToMake, player); BoardgameManager.Instance.SyncState(); BoardgameManager.Instance.MakeNoise(to.id); }, 
                                 1.25f, end: 2f);
+                            Posture leanPlace = new Posture("leantowardsCell", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 1.25f, end: 1.5f, priority: 3);
+                            leanPlace.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD,
+                                (int)(Vector3.Distance(to.transform.position, transform.position) * 70));
                             Gaze lookPlace = new Gaze("glanceAtPlace", chunk.owner, to.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 1.25f, end: 2f, priority: 2);
                             Gaze glance = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 2f, end: 1.25f, priority: 3);
                             curr.AddChunk(glance);
                             curr.AddChunk(lookReach);
                             curr.AddChunk(lookPlace);
                             curr.AddChunk(leanReach);
+                            curr.AddChunk(leanPlace);
                             curr.AddChunk(reach);
                             curr.AddChunk(place);
                             break;
