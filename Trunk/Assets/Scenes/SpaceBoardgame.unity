@@ -5772,15 +5772,15 @@ MonoBehaviour:
     value: 1
     baseMoodMod:
       High:
-        Positive: 1.1
-        Negative: 1.1
-        Surprising: 1.1
-        Expected: 1.1
+        Positive: 1.2
+        Negative: 1.2
+        Surprising: 1.2
+        Expected: 1.2
       Low:
-        Positive: 0.9
-        Negative: 0.9
-        Surprising: 0.9
-        Expected: 0.9
+        Positive: 0.8
+        Negative: 0.8
+        Surprising: 0.8
+        Expected: 0.8
     interpolation:
       High:
         arousal: 0
@@ -5794,13 +5794,13 @@ MonoBehaviour:
       High:
         Positive: 1
         Negative: 1
-        Surprising: 1.05
-        Expected: 0.95
+        Surprising: 1.1
+        Expected: 0.9
       Low:
         Positive: 1
         Negative: 1
-        Surprising: 0.95
-        Expected: 1.05
+        Surprising: 0.9
+        Expected: 1.1
     interpolation:
       High:
         arousal: 0.15
