@@ -351,9 +351,9 @@ namespace Boardgame.Agent {
                                 Behaviour.Lexemes.Mode.LEFT_HAND, (arm) => { graspPiece(from, arm); }, 0, end: 1.5f);
                             Posture leanReach = new Posture("leantowardsPiece", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0, end: 1.5f, priority: 2);
                             Gaze lookReach = new Gaze("glanceAtReach", chunk.owner, from.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 1.25f);
-                            Debug.Log((int)(Vector3.Distance(from.transform.position, transform.position) * 80));
+                            Debug.Log((int)(Vector3.Distance(from.transform.position, transform.position) * 40));
                             leanReach.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD, 
-                                (int)(Vector3.Distance(from.transform.position, transform.position)*70));
+                                (int)(Vector3.Distance(from.transform.position, transform.position)*40));
                             Place place = new Place("placePiece", chunk.owner, to.gameObject,
                                 Behaviour.Lexemes.Mode.LEFT_HAND, (piece) => { placePiece(piece, to);
                                     BoardgameManager.Instance.MoveMade(move.MoveToMake, player); BoardgameManager.Instance.SyncState(); BoardgameManager.Instance.MakeNoise(to.id); }, 
