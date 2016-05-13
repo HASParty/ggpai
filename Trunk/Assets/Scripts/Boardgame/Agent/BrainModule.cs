@@ -210,8 +210,8 @@ namespace Boardgame.Agent {
 
             //increment counters for various states
             //best move is by far most simulated and is advantageous for me
-            count(d.SimulationStdDev > 2.5f && myUCT + 5f > foeUCT, ref disproportionateFavour);
-            count(d.SimulationStdDev > 2.5f && myUCT < foeUCT + 5f, ref opponentDisproportionateFavour);
+            count(d.SimulationStdDev > 2f && myUCT + 5f > foeUCT, ref disproportionateFavour);
+            count(d.SimulationStdDev > 2f && myUCT < foeUCT + 5f, ref opponentDisproportionateFavour);
             //my total weighted uct is greater than my foe's
             count(myWUCT + 5f > foeWUCT, ref weightedUCTOverFoe);
             count(myWUCT < foeWUCT + 5f, ref weightedUCTUnderFoe);
@@ -220,11 +220,11 @@ namespace Boardgame.Agent {
 
             //only start affecting confidence if these have been true for a few iterations
             //and stop affecting confidence when it has been true for a generous while
-            if (stabilised(disproportionateFavour)) confidence += 2f*weight(disproportionateFavour);
+            if (stabilised(disproportionateFavour)) confidence += 3f*weight(disproportionateFavour);
             if (stabilised(weightedUCTOverFoe)) confidence += 1f*weight(weightedUCTOverFoe);
             if (stabilised(weightedUCTUnderFoe)) confidence -= 1f*weight(weightedUCTUnderFoe);
-            if (stabilised(opponentDisproportionateFavour)) confidence -= 2f*weight(opponentDisproportionateFavour);
-            if (stabilised(highSimCount)) confidence += 2f*weight(highSimCount);
+            if (stabilised(opponentDisproportionateFavour)) confidence -= 8f*weight(opponentDisproportionateFavour);
+            if (stabilised(highSimCount)) confidence += 1f*weight(highSimCount);
 
             count(confidence > previousConfidence, ref confidentCount);
             count(confidence < previousConfidence, ref notConfidentCount);
@@ -360,7 +360,7 @@ namespace Boardgame.Agent {
                                 1.25f, end: 2f);
                             Posture leanPlace = new Posture("leantowardsCell", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 1.25f, end: 1.5f, priority: 3);
                             leanPlace.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD,
-                                (int)(Vector3.Distance(to.transform.position, transform.position) * 70));
+                                (int)(Vector3.Distance(to.transform.position, transform.position) * 40));
                             Gaze lookPlace = new Gaze("glanceAtPlace", chunk.owner, to.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 1.25f, end: 2f, priority: 2);
                             Gaze glance = new Gaze("glanceAtPlayer", chunk.owner, motion.Player, Behaviour.Lexemes.Influence.HEAD, start: 2f, end: 1.25f, priority: 3);
                             curr.AddChunk(glance);

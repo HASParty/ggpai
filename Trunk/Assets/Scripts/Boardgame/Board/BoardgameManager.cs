@@ -139,14 +139,14 @@ namespace Boardgame {
                 if (grid.IsPile(cell.id)) continue;
                 grid.Clear(cell.id);
             }
-            GameStart(state, true);      
+            GameStart(state);      
         }
 
-        public void GameStart(State state, bool skipPiles = false) {
+        public void GameStart(State state) {
             grid.SetPile(gameScriptable.TrashPile);
             foreach(GDL.Cell cell in state.Cells) {
                 if (piecePrefabs.ContainsKey(cell.Type)) {
-                    if (grid.IsPile(cell.ID) && skipPiles) continue;
+                    if (grid.IsPile(cell.ID)) continue;
                     if (cell.Count > 0) {
                         grid.SetPile(cell.ID);
                         for (int i = 0; i < cell.Count; i++) {
