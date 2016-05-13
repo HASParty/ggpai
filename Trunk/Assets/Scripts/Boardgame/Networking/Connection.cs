@@ -68,7 +68,7 @@ namespace Boardgame.Networking {
                     game, (first ? "first" : "second"), startTime, playTime, matchID,
                     Config.GGP.Epsilon, Config.GGP.Rave, Config.GGP.Grave, Config.GGP.ChargeDiscount, Config.GGP.TreeDiscount, Config.GGP.Limit,
                     Config.GGP.FirstAggression, Config.GGP.SecondAggression, Config.GGP.FirstDefensiveness, Config.GGP.SecondDefensiveness, 
-                    Config.GGP.ChargeDepth, Config.GGP.Horizon, Config.GGP.RandomError, 40, 40, 40));
+                    Config.GGP.ChargeDepth, Config.GGP.Horizon, Config.GGP.RandomError, 40, 40, Config.GGP.Exploration));
             Write(unityStart, gameConnection.GetStream());
         }
 

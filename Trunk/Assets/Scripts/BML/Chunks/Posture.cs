@@ -25,7 +25,7 @@ namespace Behaviour {
 		public List<Pose> Poses { get; private set; }
 
 		public Posture(string id, Participant character, Lexemes.Stance stance = Lexemes.Stance.STANDING, 
-		            float start = 0f, float end = 1f) 
+		            float start = 0f, float end = 1f, int priority = 1) 
 		{
 			ID = id;
 			Character = character;
@@ -33,6 +33,7 @@ namespace Behaviour {
 			Start = start;
 			End = end;
             Poses = new List<Pose>();
+            Priority = priority;
 		}
 
 		public void AddPose(Lexemes.BodyPart part, Lexemes.BodyPose lexeme, int degree = 0) {
