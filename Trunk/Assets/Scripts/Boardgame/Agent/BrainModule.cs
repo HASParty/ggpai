@@ -8,6 +8,7 @@ using System.Collections;
 using Boardgame.Configuration;
 using System;
 using UnityEngine.Events;
+using Boardgame.Networking;
 
 namespace Boardgame.Agent {
     /// <summary>
@@ -23,6 +24,47 @@ namespace Boardgame.Agent {
         private BehaviourRealiser behave;
         private ActorMotion motion;
         private Participant me;
+
+        public class Param {
+            public Param(float min, float max, float valenceWeight = 0.5f, float arousalWeight = 0.5f) {
+                this.min = min;
+                this.max = max;
+                float totalWeight = valenceWeight + arousalWeight;
+                if (totalWeight > 0f) {
+                    this.valenceWeight = Mathf.Clamp01(valenceWeight) / totalWeight;
+                    this.arousalWeight = Mathf.Clamp01(arousalWeight) / totalWeight;
+                } else {
+                    this.valenceWeight = 0;
+                    this.arousalWeight = 0;
+                }
+            }
+
+            public float Interpolate(float valence, float arousal) {
+                float vint = (valence / 2) * valenceWeight;
+                float varo = (arousal / 2) * arousalWeight;
+
+                return Mathf.Lerp(min, max, vint + varo);
+            }
+
+            public void Add(float min = 0, float max = 0) {
+                this.min += min;
+                this.max += max;
+            }
+
+            float min;
+            float max;
+            float valenceWeight;
+            float arousalWeight;
+        }
+
+        public GGPSettings Params;
+
+        Param exploration;
+        Param aggression;
+        Param treeDiscount;
+        Param chargeDiscount;
+        Param agreeableness;
+        Param randomError;
 
         /// <summary>
         /// Which player the agent is in the current game.
@@ -40,26 +82,63 @@ namespace Boardgame.Agent {
             me.identikit = GetComponent<Identikit>();
             motion = transform.parent.GetComponentInChildren<ActorMotion>();
             mood = GetComponent<Mood>();
+            Params = new GGPSettings(Config.GGP);
+            InitPersonalityParams();
+        }
+
+        public GGPSettings UpdateParams() {
+            float arousal = mood.GetArousal();
+            float valence = mood.GetValence();
+            Params.Agreeableness = (int)agreeableness.Interpolate(valence, arousal);
+            if (player == Player.First) {
+                Params.FirstAggression = aggression.Interpolate(valence, arousal);
+            } else {
+                Params.SecondAggression = aggression.Interpolate(valence, arousal);
+            }
+            Params.RandomError = randomError.Interpolate(valence, arousal);
+            Params.TreeDiscount = treeDiscount.Interpolate(valence, arousal);
+            Params.ChargeDiscount = chargeDiscount.Interpolate(valence, arousal);
+            Params.Exploration = (int)exploration.Interpolate(valence, arousal);
 
 
-            switch (pm.GetNeuroticism())
-            { 
+            return Params;
+        }
+
+        void InitPersonalityParams() {
+            switch (pm.GetOpenness()) {
                 case PersonalityModule.PersonalityValue.high:
-                    idleDurationBaseValue = 5f;
-                    moodMod = 1.5f;
+                    exploration = new Param(40, 100);
                     break;
                 case PersonalityModule.PersonalityValue.neutral:
-                    idleDurationBaseValue = 15f;
-                    moodMod = 1f;
+                    exploration = new Param(20, 60);
                     break;
                 case PersonalityModule.PersonalityValue.low:
-                    idleDurationBaseValue = 30f;
-                    moodMod = 0.9f;
-                    break;                    
+                    exploration = new Param(5, 30);
+                    break;
             }
 
-            switch (pm.GetExtraversion())
-            {
+            switch (pm.GetAgreeableness()) {
+                case PersonalityModule.PersonalityValue.high:
+                    agreeableness = new Param(10, 30, 0.8f, 0.2f);
+                    aggression = new Param(0f, 0.3f);
+                    treeDiscount = new Param(0.999f, 1f);
+                    chargeDiscount = new Param(0.995f, 1f);
+                    break;
+                case PersonalityModule.PersonalityValue.neutral:
+                    agreeableness = new Param(30, 40, 0.8f, 0.2f);
+                    aggression = new Param(0.3f, 1f);
+                    treeDiscount = new Param(0.995f, 0.999f);
+                    chargeDiscount = new Param(0.99f, 0.995f);
+                    break;
+                case PersonalityModule.PersonalityValue.low:
+                    agreeableness = new Param(-1, -1);
+                    aggression = new Param(1f, 3f);
+                    treeDiscount = new Param(0.99f, 0.995f);
+                    chargeDiscount = new Param(0.97f, 0.99f);
+                    break;
+            }
+
+            switch (pm.GetExtraversion()) {
                 case PersonalityModule.PersonalityValue.high:
                     expressionIntensity = 1.2f;
                     noiseChance = 2;
@@ -69,10 +148,46 @@ namespace Boardgame.Agent {
                     noiseChance = 3;
                     break;
                 case PersonalityModule.PersonalityValue.low:
-                    expressionIntensity = 0.8f;
+                    expressionIntensity = 0.7f;
                     noiseChance = 5;
                     break;
             }
+
+            switch (pm.GetNeuroticism()) {
+                case PersonalityModule.PersonalityValue.high:
+                    randomError = new Param(0.999f, 1f, 0.2f, 0.8f);
+                    idleDurationBaseValue = 5f;
+                    moodMod = 1.5f;
+                    break;
+                case PersonalityModule.PersonalityValue.neutral:
+                    randomError = new Param(0.99f, 0.999f, 0.2f, 0.8f);
+                    idleDurationBaseValue = 15f;
+                    moodMod = 1f;
+                    break;
+                case PersonalityModule.PersonalityValue.low:
+                    randomError = new Param(0.9f, 0.99f, 0.2f, 0.8f);
+                    idleDurationBaseValue = 30f;
+                    moodMod = 0.8f;
+                    break;
+            }
+
+            switch (pm.GetConscientiousness()) {
+                case PersonalityModule.PersonalityValue.high:
+                    exploration.Add(min: 15);
+                    randomError.Add(min: 0.02f);
+                    break;
+                case PersonalityModule.PersonalityValue.neutral:
+                    exploration.Add(min: 5);
+                    randomError.Add(min: 0.005f);
+                    break;
+                case PersonalityModule.PersonalityValue.low:
+                    exploration.Add(min: -4);
+                    randomError.Add(min: -0.02f);
+                    break;
+            }
+
+           
+
         }
 
         float idleDurationBaseValue;

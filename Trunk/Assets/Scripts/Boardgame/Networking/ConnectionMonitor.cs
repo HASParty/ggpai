@@ -24,6 +24,24 @@ namespace Boardgame.Networking {
             Agreeableness = a;
         }
 
+        public GGPSettings(GGPSettings g) {
+            Epsilon = g.Epsilon;
+            Rave = g.Rave;
+            Grave = g.Grave;
+            ChargeDiscount = g.ChargeDiscount;
+            TreeDiscount = g.TreeDiscount;
+            Limit = g.Limit;
+            FirstAggression = g.FirstAggression;
+            SecondAggression = g.SecondAggression;
+            FirstDefensiveness = g.FirstDefensiveness;
+            SecondDefensiveness = g.SecondDefensiveness;
+            ChargeDepth = g.ChargeDepth;
+            Horizon = g.Horizon;
+            RandomError = g.RandomError;
+            Exploration = g.Exploration;
+            Agreeableness = g.Agreeableness;
+        }
+
         public int Exploration;
         public float Epsilon;
         public float Rave;

@@ -66,8 +66,7 @@ namespace Boardgame.Agent {
                 if (data.Moves.Count == 1) ConnectionMonitor.Instance.SetMaxRequestTime(1f);                
             }
 
-            //generate ggp thingy in brain, use results here
-            ConnectionMonitor.Instance.WriteFeed(Config.GGP);
+            ConnectionMonitor.Instance.WriteFeed(bm.UpdateParams());
         }
 
         /// <summary>
