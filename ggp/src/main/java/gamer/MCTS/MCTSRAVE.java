@@ -317,10 +317,9 @@ public class MCTSRAVE extends SearchRunner {
         RaveNode bestNode = null;
         RaveNode currNode;
         boolean whoops = false;
-        if(rand.nextFloat() <= values.randErr){
+        if(rand.nextFloat() >= values.randErr){
             System.out.println("Whoops, selecting a bad move");
             whoops = true;
-
         }
 
         for (Map.Entry<List<Move>, RaveNode> entry : root.getChildren().entrySet()){
