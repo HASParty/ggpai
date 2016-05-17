@@ -64,11 +64,11 @@ namespace Boardgame.Networking {
         }
 
         public static void StartGame(string game, string matchID, bool first, int startTime, int playTime) {
-            string unityStart = Compose(String.Format("UNITY {4} {1} {0} {2} {3} ({5} {6} {7} {8} {9} {10} {11} {12} {13} {14} {15} {16} {17} {18} {19} {20})", 
+            string unityStart = Compose(String.Format("UNITY {4} {1} {0} {2} {3} ({5} {6} {7} {8} {9} {10} {11} {12} {13} {14} {15} {16} {17} {18} {19} {20} {21})", 
                     game, (first ? "first" : "second"), startTime, playTime, matchID,
                     Config.GGP.Epsilon, Config.GGP.Rave, Config.GGP.Grave, Config.GGP.ChargeDiscount, Config.GGP.TreeDiscount, Config.GGP.Limit,
                     Config.GGP.FirstAggression, Config.GGP.SecondAggression, Config.GGP.FirstDefensiveness, Config.GGP.SecondDefensiveness, 
-                    Config.GGP.ChargeDepth, Config.GGP.Horizon, Config.GGP.RandomError, 40, 40, Config.GGP.Exploration));
+                    Config.GGP.ChargeDepth, Config.GGP.Horizon, Config.GGP.RandomError, 40, 40, Config.GGP.Exploration, Config.GGP.Agreeableness));
             Write(unityStart, gameConnection.GetStream());
         }
 
