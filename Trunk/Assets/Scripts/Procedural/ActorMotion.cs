@@ -39,6 +39,23 @@ public class ActorMotion : MonoBehaviour {
         SetTarget(Table.transform);
 	}
 
+    private float desiredLean = 0f;
+    private float prevLean = 0f;
+    private float leanElapsed = 0f;
+    private float lean = 0f;
+    public void SetLean(float amount) {
+        desiredLean = Mathf.Clamp(amount, -25, 60);
+        prevLean = animator.GetFloat("Lean");
+        leanElapsed = 0f;
+    }
+
+    void UpdateLean() {
+        if (animator.GetFloat("Lean") != desiredLean) {
+            leanElapsed += Time.deltaTime;
+            animator.SetFloat("Lean", Mathf.SmoothStep(prevLean, desiredLean, leanElapsed / 2f));
+        }
+    }
+
     void Update() {
         if (isLooking) {
             headlook.SetTarget(GetTarget());
@@ -47,15 +64,12 @@ public class ActorMotion : MonoBehaviour {
             SetHeadLookEffect(0f, headLookEffectDampTime, Time.deltaTime);
         }
 
+        UpdateLean();
+
         LerpIK(leftHand);
         LerpIK(rightHand);
         Idle();
 
-    }
-
-
-    public void SetLean(float lean) {
-        headlook.lean = lean;
     }
 
     #region headlook

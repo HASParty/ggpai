@@ -495,7 +495,7 @@ namespace Boardgame.Agent {
                                 v = (v - Config.Neutral) * 0.8f + Config.Neutral;
                             }
                             FaceEmotion fe = new FaceEmotion("emote " + f.Arousal + " " + f.Valence, chunk.owner, 0f, ((f.Arousal-Config.Neutral)*0.4f)+Config.Neutral, v);
-                            float lean = Mathf.Clamp((f.Arousal - Config.Neutral) * 40, -20, 30);
+                            float lean = Mathf.Clamp((f.Arousal - Config.Neutral) * 30, -20, 30);
                             Posture emoLean = new Posture("emoteLean", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0, end: 3f);
                             emoLean.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD, (int)lean);
                             curr.AddChunk(emoLean);

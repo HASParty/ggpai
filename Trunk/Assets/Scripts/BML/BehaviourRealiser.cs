@@ -271,9 +271,6 @@ public class BehaviourRealiser : MonoBehaviour {
                     case Behaviour.Lexemes.BodyPose.LEGS_OPEN:
                         break;
                     case Behaviour.Lexemes.BodyPose.LEANING_FORWARD:
-                        if (!chunk.ID.Contains("emo")) {
-                            Debug.Log("I LEAN MY TRALALA " + pose.Degree);
-                        }
                         StartCoroutine(LeanIn(duration, pose.Degree));
                         break;
                     case Behaviour.Lexemes.BodyPose.FIST_COVER_MOUTH:
@@ -397,18 +394,19 @@ public class BehaviourRealiser : MonoBehaviour {
         return angle * Mathf.Sign(Vector3.Dot(normal, upVector));
     }
 
+    float leanAffectors = 0;
     /// <summary>
     /// Has the actor lean forwards.
     /// </summary>
     /// <param name="duration">Duration.</param>
     /// <param name="amount">Amount.</param>
     IEnumerator LeanIn(float duration = 3f, float amount = 30f) {
-//Debug.Log("Leaning in");
-        _hl.lean = amount;
-        _hl.leanAffectors++;
+        Debug.Log(amount);
+        _motion.SetLean(amount);
+        leanAffectors++;
         yield return new WaitForSeconds(duration);
-        _hl.leanAffectors--;
-        if(_hl.leanAffectors == 0) _hl.lean = 0;
+        leanAffectors--;
+        if(leanAffectors == 0) _motion.SetLean(0);
     }
     /// <summary>
     /// Nod down. Duration/repetitions/amount are highly dependent on one another -
