@@ -515,7 +515,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Override: 1
   MatchID: 1234
-  GameName: mylla
+  GameName: checkers
   StartTime: 10
   TurnTime: 10
   Turns: -1
@@ -640,7 +640,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11449366, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
       propertyPath: m_IsOn
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11449366, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
       propertyPath: m_Interactable
@@ -1032,23 +1032,23 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMin.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11426146, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -1190,23 +1190,23 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMin.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11426146, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_Value
@@ -1342,23 +1342,23 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMin.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 101260, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_Name
@@ -1575,23 +1575,23 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMin.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11426146, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -1763,7 +1763,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 11449366, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
       propertyPath: m_IsOn
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 346482c9cb2a0c04c9037e33a7a01143, type: 2}
@@ -2024,23 +2024,23 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22430728, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMin.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 22446256, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_AnchorMax.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 11426146, guid: e7548db005bf8f34fa9333ff76617726, type: 2}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Mode

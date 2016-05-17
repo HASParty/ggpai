@@ -401,7 +401,7 @@ public class BehaviourRealiser : MonoBehaviour {
     /// <param name="duration">Duration.</param>
     /// <param name="amount">Amount.</param>
     IEnumerator LeanIn(float duration = 3f, float amount = 30f) {
-        Debug.Log(amount);
+       // Debug.Log(amount);
         _motion.SetLean(amount);
         leanAffectors++;
         yield return new WaitForSeconds(duration);

@@ -144,11 +144,11 @@ namespace Boardgame.Agent {
                     noiseChance = 2;
                     break;
                 case PersonalityModule.PersonalityValue.neutral:
-                    expressionIntensity = 0.95f;
+                    expressionIntensity = 0.8f;
                     noiseChance = 3;
                     break;
                 case PersonalityModule.PersonalityValue.low:
-                    expressionIntensity = 0.7f;
+                    expressionIntensity = 0.6f;
                     noiseChance = 5;
                     break;
             }
@@ -326,7 +326,7 @@ namespace Boardgame.Agent {
             //increment counters for various states
             //best move is by far most simulated and is advantageous for me
             count(d.SimulationStdDev > 2f && myUCT + 5f > foeUCT, ref disproportionateFavour);
-            count(d.SimulationStdDev > 2f && myUCT < foeUCT + 5f, ref opponentDisproportionateFavour);
+            count(myUCT < foeUCT + 5f, ref opponentDisproportionateFavour);
             //my total weighted uct is greater than my foe's
             count(myWUCT + 5f > foeWUCT, ref weightedUCTOverFoe);
             count(myWUCT < foeWUCT + 5f, ref weightedUCTUnderFoe);
@@ -335,11 +335,16 @@ namespace Boardgame.Agent {
 
             //only start affecting confidence if these have been true for a few iterations
             //and stop affecting confidence when it has been true for a generous while
-            if (stabilised(disproportionateFavour)) confidence += 3f*weight(disproportionateFavour);
-            if (stabilised(weightedUCTOverFoe)) confidence += 1f*weight(weightedUCTOverFoe);
-            if (stabilised(weightedUCTUnderFoe)) confidence -= 1f*weight(weightedUCTUnderFoe);
-            if (stabilised(opponentDisproportionateFavour)) confidence -= 8f*weight(opponentDisproportionateFavour);
-            if (stabilised(highSimCount)) confidence += 1f*weight(highSimCount);
+            if (stabilised(disproportionateFavour)) {
+                confidence += 3f * weight(disproportionateFavour);
+            }
+            if (stabilised(weightedUCTOverFoe)) confidence += 0.5f*weight(weightedUCTOverFoe);
+            if (stabilised(weightedUCTUnderFoe)) confidence -= 0.5f*weight(weightedUCTUnderFoe);
+            if (stabilised(opponentDisproportionateFavour)) {
+                valence -= moodMod * 3f * weight(opponentDisproportionateFavour);
+                confidence -= 8f * weight(opponentDisproportionateFavour);
+            }
+            if (stabilised(highSimCount)) confidence += 0.5f*weight(highSimCount);
 
             count(confidence > previousConfidence, ref confidentCount);
             count(confidence < previousConfidence, ref notConfidentCount);
