@@ -48,6 +48,7 @@ public class MCTSRAVE extends SearchRunner {
     //MAST
     private MovePick mast;
     private int counter = 0;
+    private int me;
     private ArrayList<GdlSentence> pcQuery;
     //Aggression cache
     //}}
@@ -79,6 +80,7 @@ public class MCTSRAVE extends SearchRunner {
         this.maxCounts = new ArrayList<>();
         maxCounts.add(9);
         maxCounts.add(9);
+        this.me = ((UnityGamer)gamer).roleMap.get(gamer.getRole());
         this.values = values;
         this.root = new RaveNode(null);
         this.root.state = gamer.getCurrentState();
@@ -312,24 +314,48 @@ public class MCTSRAVE extends SearchRunner {
     @Override
     public List<Move> bestMove() throws MoveDefinitionException {
         Map.Entry<List<Move>, RaveNode> bestMove = null;
+        RaveNode bestNode = null;
+        RaveNode currNode;
         boolean whoops = false;
         if(rand.nextFloat() <= values.randErr){
-            System.out.println("Whoops, selecting a random move");
+            System.out.println("Whoops, selecting a bad move");
             whoops = true;
 
         }
+
         for (Map.Entry<List<Move>, RaveNode> entry : root.getChildren().entrySet()){
+            currNode = entry.getValue();
             if (whoops){
-                if (bestMove == null || entry.getValue().n() < bestMove.getValue().n()){
+                if (bestMove == null || currNode.n() < bestMove.getValue().n()){
                     bestMove = entry;
+                    bestNode = currNode;
                 }
 
             } else {
-                if (bestMove == null || entry.getValue().n() > bestMove.getValue().n()){
+                if (bestMove == null || currNode.n() > bestMove.getValue().n()){
                     bestMove = entry;
+                    bestNode = currNode;
                 }
             }
         }
+        double lowDiff = (bestNode.w(me) / bestNode.n()) - (bestNode.w((me == 0)? 1 : 0) / bestNode.n());
+        if (values.niceThreshold >= 0 && lowDiff > values.niceThreshold){
+            System.err.println("Too nice to pick " + bestNode);
+            double diff;
+            for (Map.Entry<List<Move>, RaveNode> entry : root.getChildren().entrySet()){
+                currNode = entry.getValue();
+                diff = (currNode.w(me) / currNode.n()) - (currNode.w((me == 0)? 1 : 0) / currNode.n());
+                if (diff > 0 && diff < lowDiff){
+                    lowDiff = diff;
+                    bestNode = currNode;
+                }
+                
+            }
+            System.err.println("Picking " + bestNode + " Instead");
+
+            
+        }
+        System.err.println(values);
         if (!silent){
             System.out.println("------------------------------------------------------------" +
                                "-------------------");

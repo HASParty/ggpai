@@ -30,6 +30,7 @@ public class MCTSControlValues{
     /**The default values used if a charge is stopped*/
     public ArrayList<Double> chargeDefaults;
     /**A control value used to see if a value has changed*/
+    public float niceThreshold;
     public boolean changed;                
 
     //public MCTSControlValues(){{
@@ -143,6 +144,11 @@ public class MCTSControlValues{
         changed = true;
     }//}}
 
+    //public void setNiceThreshold(double explorationFactor){{
+    public void setNiceThreshold(double niceThreshold){
+        this.niceThreshold = Math.round(niceThreshold);
+    }//}}
+
     //public void setHorizon(double horizon){{
     public void setHorizon(double horizon){
         this.horizon = Math.round(horizon);
@@ -168,5 +174,15 @@ public class MCTSControlValues{
         setRandErr(values.get(12));
         setChargeDefaults(values.subList(13, 15));
         setExplorationFactor(values.get(15));
+        setNiceThreshold(values.get(16));
     }//}}
+
+    //public String toString(){{
+    @Override
+    public String toString(){
+        String result;
+        result = "Rave: " + rave + " Grave: " + grave + "randErr: " + randErr + " treeDiscount: " + treeDiscount + "chargeDiscount: " + chargeDiscount + " epsilon: " + epsilon + " chargeDepth: "+ chargeDepth + " horizon: " + horizon + " explorationFactor: " + explorationFactor + " defensiveness: " + defensiveness + " aggression: " + aggression + " nice: " + niceThreshold;
+        return result;
+    }//}}
+    
 }
