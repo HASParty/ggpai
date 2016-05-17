@@ -42,7 +42,8 @@ namespace Boardgame.Configuration {
             sd: 1.0f,
             h: 10000,
             cdp: 40,
-            exp: 45
+            exp: 45,
+            a: 10
         );
 
         public static void SetValue(string which, string value) {

@@ -6,7 +6,7 @@ using Boardgame.Configuration;
 
 namespace Boardgame.Networking {
     public class GGPSettings {
-        public GGPSettings(float e, float r, float g, float cd, float td, int l, float fa, float sa, float fd, float sd, int cdp, float h, float rnd, int exp) {
+        public GGPSettings(float e, float r, float g, float cd, float td, int l, float fa, float sa, float fd, float sd, int cdp, float h, float rnd, int exp, int a) {
             Epsilon = e;
             Rave = r;
             Grave = g;
@@ -21,6 +21,7 @@ namespace Boardgame.Networking {
             Horizon = h;
             RandomError = rnd;
             Exploration = exp;
+            Agreeableness = a;
         }
 
         public int Exploration;
@@ -37,6 +38,7 @@ namespace Boardgame.Networking {
         public int ChargeDepth;
         public float Horizon;
         public float RandomError;
+        public int Agreeableness;
     }
 
     public class ConnectionMonitor : Singleton<ConnectionMonitor> {
@@ -247,9 +249,9 @@ namespace Boardgame.Networking {
         }
 
         public void WriteFeed(GGPSettings g) {
-            string send = string.Format("( update {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12} {13} {14} {15} )\n",
+            string send = string.Format("( update {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12} {13} {14} {15} {16} )\n",
                 g.Epsilon, g.Rave, g.Grave, g.ChargeDiscount, g.TreeDiscount, g.Limit, g.FirstAggression, g.SecondAggression, g.FirstDefensiveness,
-                g.SecondDefensiveness, g.ChargeDepth, g.Horizon, g.RandomError, 40, 40, g.Exploration);
+                g.SecondDefensiveness, g.ChargeDepth, g.Horizon, g.RandomError, 40, 40, g.Exploration, g.Agreeableness);
             //Debug.Log(send);
             Connection.Write(send, Connection.feedConnection.GetStream());
         }
