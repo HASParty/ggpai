@@ -37,11 +37,11 @@ namespace Boardgame.Configuration {
             cd: 0.99f,
             l: 4000,
             fa: 1.0f,
-            sa: 1.5f,
-            fd: 3f,
-            sd: 1.0f,
+            sa: 0.5f,
+            fd: 0.5f,
+            sd: 0.5f,
             h: 10000,
-            cdp: 40,
+            cdp: 10000,
             exp: 45,
             a: 10
         );

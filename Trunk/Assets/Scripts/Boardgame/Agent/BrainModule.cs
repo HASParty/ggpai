@@ -74,7 +74,7 @@ namespace Boardgame.Agent {
         float expressionIntensity = 1f;
         float moodMod = 1f;
         public int noiseChance = 1;
-        void Awake() {
+        void Start() {
             pm = GetComponent<PersonalityModule>();
             im = GetComponent<InputModule>();
             behave = transform.parent.GetComponentInChildren<BehaviourRealiser>();
@@ -84,6 +84,7 @@ namespace Boardgame.Agent {
             mood = GetComponent<Mood>();
             Params = new GGPSettings(Config.GGP);
             InitPersonalityParams();
+            Debug.Log(pm.GetAgreeableness());
         }
 
         public GGPSettings UpdateParams() {
@@ -140,7 +141,7 @@ namespace Boardgame.Agent {
 
             switch (pm.GetExtraversion()) {
                 case PersonalityModule.PersonalityValue.high:
-                    expressionIntensity = 1.2f;
+                    expressionIntensity = 1f;
                     noiseChance = 2;
                     break;
                 case PersonalityModule.PersonalityValue.neutral:
@@ -148,7 +149,7 @@ namespace Boardgame.Agent {
                     noiseChance = 3;
                     break;
                 case PersonalityModule.PersonalityValue.low:
-                    expressionIntensity = 0.6f;
+                    expressionIntensity = 0.5f;
                     noiseChance = 5;
                     break;
             }
@@ -156,17 +157,17 @@ namespace Boardgame.Agent {
             switch (pm.GetNeuroticism()) {
                 case PersonalityModule.PersonalityValue.high:
                     randomError = new Param(0.999f, 1f, 0.2f, 0.8f);
-                    idleDurationBaseValue = 5f;
+                    idleDurationBaseValue = 10f;
                     moodMod = 1.5f;
                     break;
                 case PersonalityModule.PersonalityValue.neutral:
                     randomError = new Param(0.99f, 0.999f, 0.2f, 0.8f);
-                    idleDurationBaseValue = 15f;
+                    idleDurationBaseValue = 17f;
                     moodMod = 1f;
                     break;
                 case PersonalityModule.PersonalityValue.low:
                     randomError = new Param(0.9f, 0.99f, 0.2f, 0.8f);
-                    idleDurationBaseValue = 30f;
+                    idleDurationBaseValue = 25f;
                     moodMod = 0.8f;
                     break;
             }
@@ -495,11 +496,8 @@ namespace Boardgame.Agent {
                             //transform expression
                             EmotionFunction f = function as EmotionFunction;
                             float v = f.Valence;
-                            if (v < Config.Neutral)
-                            {
-                                v = (v - Config.Neutral) * 0.8f + Config.Neutral;
-                            }
-                            FaceEmotion fe = new FaceEmotion("emote " + f.Arousal + " " + f.Valence, chunk.owner, 0f, ((f.Arousal-Config.Neutral)*0.4f)+Config.Neutral, v);
+                            v = (v - Config.Neutral) * expressionIntensity + Config.Neutral;
+                            FaceEmotion fe = new FaceEmotion("emote " + f.Arousal + " " + f.Valence, chunk.owner, 0f, ((f.Arousal-Config.Neutral)*0.6f*expressionIntensity)+Config.Neutral, v);
                             float lean = Mathf.Clamp((f.Arousal - Config.Neutral) * 30, -20, 30);
                             Posture emoLean = new Posture("emoteLean", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0, end: 3f);
                             emoLean.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD, (int)lean);
