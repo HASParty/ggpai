@@ -149,7 +149,7 @@ namespace Boardgame.Agent {
                     noiseChance = 3;
                     break;
                 case PersonalityModule.PersonalityValue.low:
-                    expressionIntensity = 0.5f;
+                    expressionIntensity = 0.65f;
                     noiseChance = 5;
                     break;
             }
@@ -168,7 +168,7 @@ namespace Boardgame.Agent {
                 case PersonalityModule.PersonalityValue.low:
                     randomError = new Param(0.9f, 0.99f, 0.2f, 0.8f);
                     idleDurationBaseValue = 25f;
-                    moodMod = 0.8f;
+                    moodMod = 0.7f;
                     break;
             }
 
