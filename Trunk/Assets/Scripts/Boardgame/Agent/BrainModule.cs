@@ -158,17 +158,17 @@ namespace Boardgame.Agent {
                 case PersonalityModule.PersonalityValue.high:
                     randomError = new Param(0.999f, 1f, 0.2f, 0.8f);
                     idleDurationBaseValue = 10f;
-                    moodMod = 1.5f;
+                    moodMod = 1f;
                     break;
                 case PersonalityModule.PersonalityValue.neutral:
                     randomError = new Param(0.99f, 0.999f, 0.2f, 0.8f);
                     idleDurationBaseValue = 17f;
-                    moodMod = 1f;
+                    moodMod = 0.85f;
                     break;
                 case PersonalityModule.PersonalityValue.low:
                     randomError = new Param(0.9f, 0.99f, 0.2f, 0.8f);
                     idleDurationBaseValue = 25f;
-                    moodMod = 0.7f;
+                    moodMod = 0.6f;
                     break;
             }
 
@@ -495,9 +495,18 @@ namespace Boardgame.Agent {
                         case FMLFunction.FunctionType.EMOTION:
                             //transform expression
                             EmotionFunction f = function as EmotionFunction;
-                            float v = f.Valence;
-                            v = (v - Config.Neutral) * expressionIntensity + Config.Neutral;
-                            FaceEmotion fe = new FaceEmotion("emote " + f.Arousal + " " + f.Valence, chunk.owner, 0f, ((f.Arousal-Config.Neutral)*0.6f*expressionIntensity)+Config.Neutral, v);
+                            float v = Mathf.Clamp(f.Valence, 0, 2);
+                            
+                            if (v < Config.Neutral)
+                            {
+                                v = (v - Config.Neutral) * 0.8f + Config.Neutral;
+                            }
+                            float a = Mathf.Clamp(f.Arousal, 0, 2);
+                            if (a > Config.Neutral)
+                            {
+                                a = (a - Config.Neutral) * 0.6f + Config.Neutral;
+                            }
+                            FaceEmotion fe = new FaceEmotion("emote " + f.Arousal + " " + f.Valence, chunk.owner, 0f, a, v);
                             float lean = Mathf.Clamp((f.Arousal - Config.Neutral) * 30, -20, 30);
                             Posture emoLean = new Posture("emoteLean", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0, end: 3f);
                             emoLean.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD, (int)lean);
