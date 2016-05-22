@@ -17,8 +17,6 @@ namespace Boardgame.Configuration {
         public int Neutral;
         public int High;
 
-        public int SimulationCutoff;
-
         [HideInInspector]
         public int Extraversion;
         [HideInInspector]
@@ -46,7 +44,6 @@ namespace Boardgame.Configuration {
                 Config.Neuroticism = Neuroticism;
                 Config.Conscientiousness = Conscientiousness;
                 Config.Openness = Openness;
-                Config.SimulationCutoff = SimulationCutoff;
             } else {
                 MatchID = Config.MatchID;
                 GameName = Config.GameName;
@@ -61,7 +58,6 @@ namespace Boardgame.Configuration {
                 Neuroticism = Config.Neuroticism;
                 Conscientiousness = Config.Conscientiousness;
                 Openness = Config.Openness;
-                SimulationCutoff = Config.SimulationCutoff;
             }
         }
 

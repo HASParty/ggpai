@@ -4,10 +4,8 @@ using Boardgame.GDL;
 using FML;
 using FML.Boardgame;
 using Behaviour;
-using System.Collections;
 using Boardgame.Configuration;
 using System;
-using UnityEngine.Events;
 using Boardgame.Networking;
 
 namespace Boardgame.Agent {
@@ -19,43 +17,10 @@ namespace Boardgame.Agent {
     [RequireComponent(typeof(PersonalityModule), typeof(InputModule), typeof(BehaviourRealiser))]
     public class BrainModule : MonoBehaviour {
         private PersonalityModule pm;
-        private InputModule im;
         private Mood mood;
         private BehaviourRealiser behave;
         private ActorMotion motion;
         private Participant me;
-
-        public class Param {
-            public Param(float min, float max, float valenceWeight = 0.5f, float arousalWeight = 0.5f) {
-                this.min = min;
-                this.max = max;
-                float totalWeight = valenceWeight + arousalWeight;
-                if (totalWeight > 0f) {
-                    this.valenceWeight = Mathf.Clamp01(valenceWeight) / totalWeight;
-                    this.arousalWeight = Mathf.Clamp01(arousalWeight) / totalWeight;
-                } else {
-                    this.valenceWeight = 0;
-                    this.arousalWeight = 0;
-                }
-            }
-
-            public float Interpolate(float valence, float arousal) {
-                float vint = (valence / 2) * valenceWeight;
-                float varo = (arousal / 2) * arousalWeight;
-
-                return Mathf.Lerp(min, max, vint + varo);
-            }
-
-            public void Add(float min = 0, float max = 0) {
-                this.min += min;
-                this.max += max;
-            }
-
-            float min;
-            float max;
-            float valenceWeight;
-            float arousalWeight;
-        }
 
         public GGPSettings Params;
 
@@ -76,7 +41,6 @@ namespace Boardgame.Agent {
         public int noiseChance = 1;
         void Start() {
             pm = GetComponent<PersonalityModule>();
-            im = GetComponent<InputModule>();
             behave = transform.parent.GetComponentInChildren<BehaviourRealiser>();
             me = new Participant();
             me.identikit = GetComponent<Identikit>();
@@ -100,7 +64,6 @@ namespace Boardgame.Agent {
             Params.TreeDiscount = treeDiscount.Interpolate(valence, arousal);
             Params.ChargeDiscount = chargeDiscount.Interpolate(valence, arousal);
             Params.Exploration = (int)exploration.Interpolate(valence, arousal);
-
 
             return Params;
         }
@@ -187,8 +150,6 @@ namespace Boardgame.Agent {
                     break;
             }
 
-           
-
         }
 
         float idleDurationBaseValue;
@@ -196,17 +157,14 @@ namespace Boardgame.Agent {
         float idleDuration;
         [SerializeField]
         float idleLeft = 0f;
-        void Update()
-        {
+        void Update() {
             idleLeft -= Time.deltaTime;
             idleDuration = idleDurationBaseValue / mood.GetArousal();
-            if (idleLeft <= 0f)
-            {
+            if (idleLeft <= 0f) {
                 idleLeft = idleDuration;
                 int die = UnityEngine.Random.Range(0, 4);
                 int hand = UnityEngine.Random.Range(0, 2);
-                switch (die)
-                {
+                switch (die) {
                     case 0:
                         motion.SetPose(0, 0);
                         break;
@@ -232,8 +190,8 @@ namespace Boardgame.Agent {
         }
         #region React to move
         private Move myBestMove;
-        private Dictionary<Move, Networking.FeedData.FMove> firstMoves;
-        private Dictionary<Move, Networking.FeedData.FMove> secondMoves;
+        private Dictionary<Move, FMove> firstMoves;
+        private Dictionary<Move, FMove> secondMoves;
         private float firstAverageSims, secondAverageSims;
         private Switch surprised = new Switch();
         private Switch impatient = new Switch();
@@ -249,10 +207,10 @@ namespace Boardgame.Agent {
             float averageSims = (who == Player.First ? firstAverageSims : secondAverageSims);
             var moves = (who == Player.First ? firstMoves : secondMoves);
             if (moves == null) return;
-            Networking.FeedData.FMove m;
+            FMove m;
             try {
                 m = moves[move];
-            } catch (Exception e) { 
+            } catch (Exception e) {
                 Debug.LogWarning("Sync issue");
                 Debug.Log(move);
                 var ms = new Move[moves.Count];
@@ -262,12 +220,11 @@ namespace Boardgame.Agent {
             }
             Debug.Log(m.Who);
             if (m.Who != who) return;
-            if ((m.Simulations < averageSims * 0.8f && who != player) || (who == player && !move.Equals(myBestMove)))
-            {
+            if ((m.Simulations < averageSims * 0.8f && who != player) || (who == player && !move.Equals(myBestMove))) {
                 Debug.Log("SURPRISED");
                 surprised.Enable();
             }
-            
+
         }
         #endregion
 
@@ -290,7 +247,7 @@ namespace Boardgame.Agent {
         /// <param name="isMyTurn">whether it is the agent's turn or not</param>
         public void EvaluateConfidence(Networking.FeedData d, bool isMyTurn) {
             if (d.Best == null) return;
-            if(isMyTurn) {               
+            if (isMyTurn) {
                 myBestMove = d.Best;
                 if (player == Player.First) {
                     firstMoves = d.Moves;
@@ -312,7 +269,7 @@ namespace Boardgame.Agent {
             float previousConfidence = confidence;
             valence = 0;
             arousal = 0;
-            if(player == Player.First) {
+            if (player == Player.First) {
                 myUCT = d.Moves[d.Best].FirstUCT;
                 foeUCT = d.Moves[d.Best].SecondUCT;
                 myWUCT = d.FirstWeightedUCT;
@@ -339,48 +296,45 @@ namespace Boardgame.Agent {
             if (stabilised(disproportionateFavour)) {
                 confidence += 3f * weight(disproportionateFavour);
             }
-            if (stabilised(weightedUCTOverFoe)) confidence += 0.5f*weight(weightedUCTOverFoe);
-            if (stabilised(weightedUCTUnderFoe)) confidence -= 0.5f*weight(weightedUCTUnderFoe);
+            if (stabilised(weightedUCTOverFoe)) confidence += 0.5f * weight(weightedUCTOverFoe);
+            if (stabilised(weightedUCTUnderFoe)) confidence -= 0.5f * weight(weightedUCTUnderFoe);
             if (stabilised(opponentDisproportionateFavour)) {
                 valence -= moodMod * 3f * weight(opponentDisproportionateFavour);
                 confidence -= 8f * weight(opponentDisproportionateFavour);
             }
-            if (stabilised(highSimCount)) confidence += 0.5f*weight(highSimCount);
+            if (stabilised(highSimCount)) confidence += 0.5f * weight(highSimCount);
 
             count(confidence > previousConfidence, ref confidentCount);
             count(confidence < previousConfidence, ref notConfidentCount);
 
 
             float diff = Mathf.Abs(confidence - previousConfidence);
-            if(diff > 0.7f) {
+            if (diff > 0.7f) {
                 arousal += 7f;
             }
 
-            if(stabilised(highSimCount)) {
+            if (stabilised(highSimCount)) {
                 arousal -= moodMod * 8f * weight(highSimCount);
             }
 
-            if (stabilised(notConfidentCount))
-            {
+            if (stabilised(notConfidentCount)) {
                 //Debug.Log("DROP");
                 valence -= moodMod * 8f * weight(notConfidentCount);
                 arousal += moodMod * 5f * weight(notConfidentCount);
-            }
-            else if(stabilised(confidentCount))
-            {
+            } else if (stabilised(confidentCount)) {
                 //Debug.Log("INCR");
                 valence += moodMod * 8f * weight(confidentCount);
                 arousal -= moodMod * 5f * weight(confidentCount);
             }
 
-            if(confidence > 10) {
-                if(!isMyTurn) {
-                    impatience++;  
-                    if(impatience == 80) {
+            if (confidence > 10) {
+                if (!isMyTurn) {
+                    impatience++;
+                    if (impatience == 80) {
                         impatient.Enable();
                         ReduceTurnTime.Enable();
                         impatience = 0;
-                    } 
+                    }
                 }
             } else {
                 impatience = 0;
@@ -391,11 +345,10 @@ namespace Boardgame.Agent {
         }
 
         private float weight(int val) {
-            return (float)(80-val) / 80;
+            return (float)(80 - val) / 80;
         }
 
-        private bool stabilised(int val)
-        {
+        private bool stabilised(int val) {
             return val > 5 && val < 50;
         }
         private void count(bool truthy, ref int val) {
@@ -403,7 +356,7 @@ namespace Boardgame.Agent {
                 val = 0;
                 return;
             }
-            if (truthy) val = val+1;
+            if (truthy) val = val + 1;
             else val = 0;
         }
 
@@ -415,9 +368,9 @@ namespace Boardgame.Agent {
         /// </summary>
         /// <param name="body">the FML body containing the FML functions to be interpreted</param>
         private void interpret(FMLBody body) {
-            foreach(var chunk in body.chunks) {
+            foreach (var chunk in body.chunks) {
                 BMLBody curr = new BMLBody();
-                chunk.BMLRef = curr;                
+                chunk.BMLRef = curr;
                 foreach (var function in chunk.functions) {
                     Vocalisation voc = new Vocalisation("Vocal", chunk.owner, 1f, mood.GetArousal(), mood.GetValence());
                     switch (function.Function) {
@@ -426,18 +379,16 @@ namespace Boardgame.Agent {
                             this.react(react.MoveToReact[0], react.MyMove ? player : (player == Player.First ? Player.Second : Player.First));
                             FaceEmotion faceReact;
                             Posture poser = new Posture("postureReact", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0f, 8f);
-                            if (surprised.Check())
-                            {
+                            if (surprised.Check()) {
                                 int coin = UnityEngine.Random.Range(0, 3);
                                 faceReact = new FaceEmotion("ConfusedFace", chunk.owner, 0f, 1.4f * expressionIntensity, 0.8f * expressionIntensity);
-                                if (coin < 2)
-                                {
+                                if (coin < 2) {
                                     poser.AddPose(Behaviour.Lexemes.BodyPart.RIGHT_ARM, Behaviour.Lexemes.BodyPose.FIST_COVER_MOUTH);
                                     curr.AddChunk(poser);
                                 }
                                 coin = UnityEngine.Random.Range(0, noiseChance);
                                 curr.AddChunk(faceReact);
-                                if(coin == 0) curr.AddChunk(voc);
+                                if (coin == 0) curr.AddChunk(voc);
                             }
                             break;
                         case FMLFunction.FunctionType.BOARDGAME_CONSIDER_MOVE:
@@ -462,7 +413,7 @@ namespace Boardgame.Agent {
                                     curr.AddChunk(glanceTo);
                                 }
                             }
-                            
+
                             break;
                         case FMLFunction.FunctionType.BOARDGAME_MAKE_MOVE:
                             MakeMoveFunction move = function as MakeMoveFunction;
@@ -473,11 +424,13 @@ namespace Boardgame.Agent {
                             Posture leanReach = new Posture("leantowardsPiece", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0, end: 1.5f, priority: 2);
                             Gaze lookReach = new Gaze("glanceAtReach", chunk.owner, from.gameObject, Behaviour.Lexemes.Influence.HEAD, start: 0f, end: 1.25f);
                             Debug.Log((int)(Vector3.Distance(from.transform.position, transform.position) * 40));
-                            leanReach.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD, 
-                                (int)(Vector3.Distance(from.transform.position, transform.position)*40));
+                            leanReach.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD,
+                                (int)(Vector3.Distance(from.transform.position, transform.position) * 40));
                             Place place = new Place("placePiece", chunk.owner, to.gameObject,
-                                Behaviour.Lexemes.Mode.LEFT_HAND, (piece) => { placePiece(piece, to);
-                                    BoardgameManager.Instance.MoveMade(move.MoveToMake, player); BoardgameManager.Instance.SyncState(); BoardgameManager.Instance.MakeNoise(to.id); }, 
+                                Behaviour.Lexemes.Mode.LEFT_HAND, (piece) => {
+                                    placePiece(piece, to);
+                                    BoardgameManager.Instance.MoveMade(move.MoveToMake, player); BoardgameManager.Instance.SyncState(); BoardgameManager.Instance.MakeNoise(to.id);
+                                },
                                 1.25f, end: 2f);
                             Posture leanPlace = new Posture("leantowardsCell", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 1.25f, end: 1.5f, priority: 3);
                             leanPlace.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD,
@@ -497,7 +450,7 @@ namespace Boardgame.Agent {
                             EmotionFunction f = function as EmotionFunction;
                             float v = f.Valence;
                             v = (v - Config.Neutral) * expressionIntensity + Config.Neutral;
-                            FaceEmotion fe = new FaceEmotion("emote " + f.Arousal + " " + f.Valence, chunk.owner, 0f, ((f.Arousal-Config.Neutral)*0.6f*expressionIntensity)+Config.Neutral, v);
+                            FaceEmotion fe = new FaceEmotion("emote " + f.Arousal + " " + f.Valence, chunk.owner, 0f, ((f.Arousal - Config.Neutral) * 0.6f * expressionIntensity) + Config.Neutral, v);
                             float lean = Mathf.Clamp((f.Arousal - Config.Neutral) * 30, -20, 30);
                             Posture emoLean = new Posture("emoteLean", chunk.owner, Behaviour.Lexemes.Stance.SITTING, 0, end: 3f);
                             emoLean.AddPose(Behaviour.Lexemes.BodyPart.WHOLEBODY, Behaviour.Lexemes.BodyPose.LEANING_FORWARD, (int)lean);
@@ -508,7 +461,7 @@ namespace Boardgame.Agent {
                 }
             }
             //sort out timing
-            foreach(var chunk in body.chunks) {
+            foreach (var chunk in body.chunks) {
                 if (chunk.timing != null) {
                     switch (chunk.timing.Primitive) {
                         case Primitive.MustEndBefore:
@@ -522,7 +475,7 @@ namespace Boardgame.Agent {
             }
 
             //let's refactor this later so that we don't have to do 3N
-            foreach(var chunk in body.chunks) {
+            foreach (var chunk in body.chunks) {
                 behave.ScheduleBehaviour(chunk.BMLRef);
             }
         }
@@ -561,7 +514,7 @@ namespace Boardgame.Agent {
         public void ConsiderMove(Move move) {
             if (lastTime == -1) lastTime = Time.time;
             FMLBody body = new FMLBody();
-            if (Time.time >= lastTime  + 4f) {                
+            if (Time.time >= lastTime + 4f) {
                 MentalChunk mc = new MentalChunk();
                 //eye movement every 4
                 mc.AddFunction(new ConsiderMoveFunction(move));
@@ -570,12 +523,12 @@ namespace Boardgame.Agent {
                 body.AddChunk(getEmotion());
                 interpret(body);
                 lastTime = Time.time;
-            } else if(Time.time >= lastTime + 2f) {
+            } else if (Time.time >= lastTime + 2f) {
                 //emotions every second
                 body.AddChunk(getEmotion());
                 interpret(body);
             }
-            
+
         }
 
         /// <summary>
@@ -588,7 +541,7 @@ namespace Boardgame.Agent {
 
             pc.AddFunction(new MakeMoveFunction(moves));
             pc.owner = me;
-            body.AddChunk(pc);     
+            body.AddChunk(pc);
             body.AddChunk(getEmotion());
 
             interpret(body);

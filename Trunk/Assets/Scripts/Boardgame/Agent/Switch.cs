@@ -11,7 +11,7 @@ namespace Boardgame.Agent {
         }
 
         public bool Check() {
-            if(value) {
+            if (value) {
                 value = false;
                 return true;
             }

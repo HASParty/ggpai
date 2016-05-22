@@ -11,7 +11,7 @@ namespace Boardgame.UI {
         public string Value;
 
         public void Set(bool ok) {
-            if(ok) Configuration.Config.SetValue(Which, Value);
+            if (ok) Configuration.Config.SetValue(Which, Value);
         }
 
         public void Set(float value) {

@@ -2,10 +2,8 @@
 using FML;
 using UnityEngine.Events;
 
-namespace Behaviour
-{
-    public class Place : BMLChunk
-    {
+namespace Behaviour {
+    public class Place : BMLChunk {
         public override BMLChunkType Type { get { return BMLChunkType.Placing; } }
         /// <summary>
         /// Gets which hand the behaviour is to be executed on.
@@ -33,8 +31,7 @@ namespace Behaviour
                      UnityAction<GameObject> callback,
                        float start = 0f, float ready = -1f, float strokeStart = -1f,
                        float stroke = -1f, float strokeEnd = -1f, float relax = -1f,
-                       float end = 1f)
-        {
+                       float end = 1f) {
             ID = id;
             Character = character;
             Target = target;
@@ -49,10 +46,8 @@ namespace Behaviour
             Callback = callback;
         }
 
-        public override float GetTime(SyncPoints point)
-        {
-            switch (point)
-            {
+        public override float GetTime(SyncPoints point) {
+            switch (point) {
                 case SyncPoints.Start:
                     return Start;
                 case SyncPoints.Ready:
@@ -72,8 +67,7 @@ namespace Behaviour
             }
         }
 
-        public override string ToString()
-        {
+        public override string ToString() {
             return string.Format("[Placing: Start={0}, End={1}, Mode={2}, Target={3}, Ready={4}, StrokeStart={5}, Stroke={6}, StrokeEnd={7}, Relax={8}]", Start, End, Mode, Target, Ready, StrokeStart, Stroke, StrokeEnd, Relax);
         }
     }

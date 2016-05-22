@@ -16,34 +16,30 @@ namespace Boardgame.Configuration {
         public static int Neutral = 1;
         public static int High = 2;
 
-        public static float UCTDecay = 0.9f;
-
         public static int Extraversion = Neutral;
         public static int Agreeableness = Neutral;
         public static int Neuroticism = Neutral;
         public static int Conscientiousness = Neutral;
         public static int Openness = Neutral;
 
-        public static int SimulationCutoff = 3000;
-
 
         //ggp defaults
         public static Networking.GGPSettings GGP = new Networking.GGPSettings(
-            r: 100,
-            g: 40,
-            rnd: 0,
-            e: 0.0f,
-            td: 0.997f,
-            cd: 0.99f,
-            l: 4000,
-            fa: 1.0f,
-            sa: 0.5f,
-            fd: 0.5f,
-            sd: 0.5f,
-            h: 10000,
-            cdp: 10000,
-            exp: 45,
-            a: 10
+            rave: 100,
+            grave: 40,
+            randomErr: 0,
+            epsilon: 0.0f,
+            treeDiscount: 0.997f,
+            chargeDiscount: 0.99f,
+            limit: 4000,
+            firstAggro: 1.0f,
+            secondAggro: 0.5f,
+            firstDefense: 0.5f,
+            secondDefense: 0.5f,
+            horizon: 10000,
+            chargeDepth: 10000,
+            exploration: 45,
+            agreeableness: 10
         );
 
         public static void SetValue(string which, string value) {
@@ -55,7 +51,7 @@ namespace Boardgame.Configuration {
                     break;
                 case "MatchID":
                     MatchID = value;
-                    break;                    
+                    break;
                 case "StartTime":
                 case "TurnTime":
                 case "Turns":
@@ -69,7 +65,7 @@ namespace Boardgame.Configuration {
 
         private static void SetInt(string which, string value, int min = -1, int max = 120) {
             int intValue;
-            if(!Int32.TryParse(value, out intValue)) {
+            if (!Int32.TryParse(value, out intValue)) {
                 Debug.LogError("Integer expected, did not receive integer.");
             }
             intValue = Mathf.Clamp(intValue, min, max);

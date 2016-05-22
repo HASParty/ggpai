@@ -1,18 +1,16 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-namespace Behaviour
-{
-	/// <summary>
-	/// Groups BML behaviours that sync with one another / are generated from a FML chunk
-	/// </summary>
-	public class BMLBody
-	{
+namespace Behaviour {
+    /// <summary>
+    /// Groups BML behaviours that sync with one another / are generated from a FML chunk
+    /// </summary>
+    public class BMLBody {
         /// <summary>
         /// The chunks, indexed by id
         /// </summary>
 		public Dictionary<string, BMLChunk> Chunks { get { return chunks; } }
-		Dictionary<string, BMLChunk> chunks = new Dictionary<string, BMLChunk>();
+        Dictionary<string, BMLChunk> chunks = new Dictionary<string, BMLChunk>();
 
         /// <summary>
         /// Is the body done executing?
@@ -49,8 +47,8 @@ namespace Behaviour
         /// </summary>
         /// <returns>Whether it is ready to execute</returns>
 		public bool IsReady() {
-			return executeAfter == null || executeAfter.isDone;
-		}
+            return executeAfter == null || executeAfter.isDone;
+        }
 
         /// <summary>
         /// Checks whether it should execute alongside another body
@@ -59,16 +57,16 @@ namespace Behaviour
         /// </summary>
         /// <returns>Whether it is ready to be executed alongside another body</returns>
 		public bool Synchronized() {
-			return executeWith == null || executeWith.SpeechChunk == null || executeWith.syncComplete;
-		}
+            return executeWith == null || executeWith.SpeechChunk == null || executeWith.syncComplete;
+        }
 
         /// <summary>
         /// Checks whether the body needs to be synchronised with another.
         /// </summary>
         /// <returns>Whether it has a body to sync with.</returns>
 		public bool NeedsSync() {
-			return executeWith != null;
-		}
+            return executeWith != null;
+        }
 
         /// <summary>
         /// If the body is synchronising with another (in the event of speech syncing with
@@ -76,29 +74,28 @@ namespace Behaviour
         /// </summary>
         /// <returns>Behaviour chunks of the body to sync with</returns>
 		public Dictionary<string, BMLChunk> GetSyncChunks() {
-			if (executeWith != null) {
-				return executeWith.Chunks;
-			} else {
-				return null;
-			}
-		}
+            if (executeWith != null) {
+                return executeWith.Chunks;
+            } else {
+                return null;
+            }
+        }
 
         /// <summary>
         /// Set a body that the body should execute after.
         /// </summary>
         /// <param name="body">The body this body should execute after</param>
 		public void ExecuteAfter(BMLBody body) {
-			executeAfter = body;
-		}
+            executeAfter = body;
+        }
 
         /// <summary>
         /// Set a body the body should execute with.
         /// </summary>
         /// <param name="body">Body to execute alongside</param>
-		public void ExecuteWith (BMLBody body)
-		{
-			executeWith = body;
-		}
+		public void ExecuteWith(BMLBody body) {
+            executeWith = body;
+        }
 
         /// <summary>
         /// Add a chunk to the body, becomes the sole SpeechChunk
@@ -106,14 +103,14 @@ namespace Behaviour
         /// </summary>
         /// <param name="chunk">The chunk to add</param>
 		public void AddChunk(BMLChunk chunk) {
-			if (chunk.Type == BMLChunkType.Speech)
-				SpeechChunk = chunk as Speech;
-			else {
-				if(chunks.ContainsKey(chunk.ID)) return;
-				chunks.Add (chunk.ID, chunk);
-				latestEnd = Math.Max (latestEnd, chunk.End); 
-			}
-		}
-	}
+            if (chunk.Type == BMLChunkType.Speech)
+                SpeechChunk = chunk as Speech;
+            else {
+                if (chunks.ContainsKey(chunk.ID)) return;
+                chunks.Add(chunk.ID, chunk);
+                latestEnd = Math.Max(latestEnd, chunk.End);
+            }
+        }
+    }
 }
 

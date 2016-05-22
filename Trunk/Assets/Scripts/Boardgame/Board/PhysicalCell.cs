@@ -25,7 +25,7 @@ namespace Boardgame {
         public void SetColliderRadius(float radius) {
             SphereCollider col = GetComponent<SphereCollider>();
             col.radius = radius;
-            col.center = new Vector3(col.center.x, col.center.y - radius/2, col.center.z);
+            col.center = new Vector3(col.center.x, col.center.y - radius / 2, col.center.z);
         }
 
         public bool isEmpty() {
@@ -60,8 +60,8 @@ namespace Boardgame {
             } else {
                 piece.Add(go);
             }
-            piece[piece.Count-1].transform.SetParent(transform);
-            piece[piece.Count-1].transform.localPosition = Vector3.zero;
+            piece[piece.Count - 1].transform.SetParent(transform);
+            piece[piece.Count - 1].transform.localPosition = Vector3.zero;
             piece[piece.Count - 1].transform.localRotation = Quaternion.identity;
         }
 
@@ -70,7 +70,7 @@ namespace Boardgame {
         }
 
         public void Clear() {
-            while(piece.Count > 0) {
+            while (piece.Count > 0) {
                 GameObject ret = piece[piece.Count - 1];
                 piece.RemoveAt(piece.Count - 1);
                 Destroy(ret);
@@ -78,11 +78,11 @@ namespace Boardgame {
         }
 
         public GameObject RemovePiece() {
-            if(piece.Count == 0) {
-                Debug.LogWarning("No piece to remove at "+id);
+            if (piece.Count == 0) {
+                Debug.LogWarning("No piece to remove at " + id);
                 return null;
             }
-            GameObject ret = piece[piece.Count-1];
+            GameObject ret = piece[piece.Count - 1];
             piece.RemoveAt(piece.Count - 1);
             if (isPile) {
                 Destroy(ret.GetComponent<Rigidbody>());

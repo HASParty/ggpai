@@ -42,7 +42,6 @@ public class ActorMotion : MonoBehaviour {
     private float desiredLean = 0f;
     private float prevLean = 0f;
     private float leanElapsed = 0f;
-    private float lean = 0f;
     public void SetLean(float amount) {
         desiredLean = Mathf.Clamp(amount, -25, 60);
         prevLean = animator.GetFloat("Lean");

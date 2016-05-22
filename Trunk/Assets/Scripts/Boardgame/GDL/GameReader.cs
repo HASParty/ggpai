@@ -2,53 +2,12 @@
 using System.Collections.Generic;
 
 namespace Boardgame.GDL {
-    public class Cell {
-        public Cell(string id, string type, int count = 0) {
-            ID = id;
-            Type = type;
-            Count = count;
-        }
-        public string ID;
-        public string Type;
-        public int Count;
-
-        public override string ToString() {
-            return String.Format("( Cell id: {0}, type: {1}, count: {2} )", ID, Type, Count);
-        }
-    }
-
-    public struct State {
-        public Cell[] Cells;
-        public Player Control;
-    }
-
-    public enum Terminal {
-        FALSE,
-        WIN,
-        LOSS,
-        DRAW,
-        DONE
-    }
-
-    public class ConsideredMove {
-        public Move First = null;
-        public Move Second = null;
-        public float FirstUCT = 0;
-        public float SecondUCT = 0;
-        public int Simulations = 0;
-
-        public override string ToString() {
-            return String.Format("( FIRST: {0} [{1}], SECOND: {2} [{3}], SIMULATIONS: {4} )",
-                First, FirstUCT, Second, SecondUCT, Simulations);
-        }
-    }
-
     public abstract class GameReader {
-        protected Lexer lexer;      
+        protected Lexer lexer;
 
         protected void Advance(ref List<Token>.Enumerator tok, TokenType expect = TokenType.CONSTANT) {
             if (!tok.MoveNext() || tok.Current.type != expect) {
-                throw new Exception("INVALID GDL: "+expect.ToString()+" expected, got "+tok.Current.ToString());
+                throw new Exception("INVALID GDL: " + expect.ToString() + " expected, got " + tok.Current.ToString());
             }
         }
 
@@ -56,8 +15,7 @@ namespace Boardgame.GDL {
             return Parser.BreakMessage(data).action.Trim() == "ready";
         }
 
-        public bool IsDone(string data)
-        {
+        public bool IsDone(string data) {
             return Parser.BreakMessage(data).action.Trim() == "done";
         }
 
@@ -79,10 +37,32 @@ namespace Boardgame.GDL {
             }
         }
 
+        public List<Move> GetMove(string message) {
+            string lexify = Parser.BreakMessage(message).action;
+            return ParseMoves(lexify);
+        }
+
+        private List<Move> ParseMoves(string moves) {
+            var lexed = lexer.Lex(moves);
+            var token = lexed.GetEnumerator();
+            var list = new List<Move>();
+
+
+            while (token.MoveNext()) {
+                var move = ParseSingleMove(ref token);
+                if (move != null) list.Add(move);
+            }
+            return list;
+        }
+
+        public List<Move> GetLegalMoves(string message) {
+            string lexify = Parser.BreakMessage(message).legalMoves;
+            return ParseMoves(lexify);
+        }
+
         public abstract State GetBoardState(string message);
-        public abstract List<Move> GetMove(string message);
-        public abstract List<Move> GetLegalMoves(string message);
         protected abstract Move ParseSingleMove(ref List<Token>.Enumerator token);
+
         public List<ConsideredMove> GetConsideredMoves(string message) {
             var cons = new List<ConsideredMove>();
             var token = lexer.Lex(Parser.CleanMessage(message)).GetEnumerator();

@@ -10,10 +10,10 @@ public class TestManager : Singleton<TestManager> {
     private bool showingPlayer = true;
 
     void Update() {
-        if(showingPlayer && HidePlayerMode) {
+        if (showingPlayer && HidePlayerMode) {
             HidePlayer();
         }
-        if(!showingPlayer && !HidePlayerMode) {
+        if (!showingPlayer && !HidePlayerMode) {
             ShowPlayer();
         }
     }
@@ -35,6 +35,6 @@ public class TestManager : Singleton<TestManager> {
             go.SetActive(true);
             silenceMe.mute = false;
         }
-       // MouseCast.DefaultMode();
+        // MouseCast.DefaultMode();
     }
 }

@@ -100,7 +100,7 @@ public class BehaviourRealiser : MonoBehaviour {
     IEnumerator Schedule(FaceEmotion chunk) {
         yield return new WaitForSeconds(chunk.Start);
         DebugManager.Instance.OnChunkStart(chunk);
-        
+
         var node = FaceControllerII.GenerateEmotionalExpression(chunk.Arousal, chunk.Valence, 0.75f);
         //Debug.Log("scheduling emotional expression for " + gameObject.name + chunk.ToString());
         _fc.ScheduleExpression(node);
@@ -111,7 +111,7 @@ public class BehaviourRealiser : MonoBehaviour {
     IEnumerator Schedule(Gaze chunk) {
         yield return new WaitForSeconds(chunk.Start);
         float duration = chunk.End;
-        while (gazePriority > chunk.Priority && duration > 0f) {           
+        while (gazePriority > chunk.Priority && duration > 0f) {
             yield return new WaitForEndOfFrame();
             duration -= Time.deltaTime;
         }
@@ -155,7 +155,7 @@ public class BehaviourRealiser : MonoBehaviour {
             yield return new WaitForSeconds(duration);
             if (gazePriority == chunk.Priority) gazePriority = 0;
         } else {
-            Debug.Log("Chunk cancelled. "+chunk);
+            Debug.Log("Chunk cancelled. " + chunk);
         }
         yield return null;
     }
@@ -215,8 +215,7 @@ public class BehaviourRealiser : MonoBehaviour {
         StartCoroutine(Point(duration, chunk.Target, lookAtTarget: false));
     }
 
-    IEnumerator Schedule(Grasp chunk)
-    {
+    IEnumerator Schedule(Grasp chunk) {
         yield return new WaitForSeconds(chunk.Start);
         DebugManager.Instance.OnChunkStart(chunk);
         float duration = chunk.End;
@@ -227,8 +226,7 @@ public class BehaviourRealiser : MonoBehaviour {
 
     }
 
-    IEnumerator Schedule(Place chunk)
-    {
+    IEnumerator Schedule(Place chunk) {
         yield return new WaitForSeconds(chunk.Start);
         DebugManager.Instance.OnChunkStart(chunk);
         float duration = chunk.End;
@@ -244,17 +242,14 @@ public class BehaviourRealiser : MonoBehaviour {
         DebugManager.Instance.OnChunkStart(chunk);
         float duration = chunk.End;
         //ignore stance for now
-        while (posePriority > chunk.Priority && duration > 0f) {           
+        while (posePriority > chunk.Priority && duration > 0f) {
             yield return new WaitForEndOfFrame();
             duration -= Time.deltaTime;
         }
-        if (duration > 0)
-        {
-            foreach (Pose pose in chunk.Poses)
-            {
+        if (duration > 0) {
+            foreach (Pose pose in chunk.Poses) {
                 //ignoring affected parts
-                switch (pose.Lexeme)
-                {
+                switch (pose.Lexeme) {
                     case Behaviour.Lexemes.BodyPose.ARMS_AKIMBO:
                         break;
                     case Behaviour.Lexemes.BodyPose.ARMS_CROSSED:
@@ -282,23 +277,18 @@ public class BehaviourRealiser : MonoBehaviour {
             }
 
             yield return new WaitForSeconds(duration);
-            if (posePriority == chunk.Priority)
-            {
+            if (posePriority == chunk.Priority) {
                 posePriority = 0;
             }
-        }
-        else
-        {
+        } else {
             Debug.Log("Chunk cancelled. " + chunk);
         }
     }
 
-    IEnumerator Pose(int left, int right, float duration)
-    {
+    IEnumerator Pose(int left, int right, float duration) {
         _motion.SetPose(left, right);
         yield return new WaitForSeconds(duration);
-        if (_motion.IsPose(left, right))
-        {
+        if (_motion.IsPose(left, right)) {
             _motion.SetPose(0, 0);
         }
     }
@@ -337,14 +327,14 @@ public class BehaviourRealiser : MonoBehaviour {
         if (target != null) {
             //float angle = SignedAngle(transform.forward * 5, target.transform.position - transform.position, transform.up);
             //if (angle <= 85 && angle >= -85) {
-                 _motion.Point(duration, target, lookAtTarget, true);
-           /* } else {
-                if (angle < 0) {
-                    //  _motion.OpenPalmLeft();
-                } else {
-                    // _motion.OpenPalm();
-              *  }
-            }*/
+            _motion.Point(duration, target, lookAtTarget, true);
+            /* } else {
+                 if (angle < 0) {
+                     //  _motion.OpenPalmLeft();
+                 } else {
+                     // _motion.OpenPalm();
+               *  }
+             }*/
         }
         yield return new WaitForSeconds(duration);
     }
@@ -353,13 +343,11 @@ public class BehaviourRealiser : MonoBehaviour {
     /// Grasp target taking time duration to do so.
     /// </summary>
     /// <param name="duration">Duration of motion.</param>
-    IEnumerator Grasp(float duration = 3f, GameObject target = null, bool left = true)
-    {
+    IEnumerator Grasp(float duration = 3f, GameObject target = null, bool left = true) {
         //Debug.Log("Grasp");
-        if (target != null)
-        {
+        if (target != null) {
             yield return StartCoroutine(_motion.Grab(duration, target, left));
-            
+
         }
     }
 
@@ -367,11 +355,9 @@ public class BehaviourRealiser : MonoBehaviour {
     /// Place whatever is in hand at target taking time duration to do so.
     /// </summary>
     /// <param name="duration">Duration of motion.</param>
-    IEnumerator Place(float duration = 3f, GameObject target = null, bool left = true)
-    {
+    IEnumerator Place(float duration = 3f, GameObject target = null, bool left = true) {
         //Debug.Log("Place");
-        if (target != null)
-        {
+        if (target != null) {
             yield return _motion.Place(duration, target, left);
         }
     }
@@ -401,12 +387,12 @@ public class BehaviourRealiser : MonoBehaviour {
     /// <param name="duration">Duration.</param>
     /// <param name="amount">Amount.</param>
     IEnumerator LeanIn(float duration = 3f, float amount = 30f) {
-       // Debug.Log(amount);
+        // Debug.Log(amount);
         _motion.SetLean(amount);
         leanAffectors++;
         yield return new WaitForSeconds(duration);
         leanAffectors--;
-        if(leanAffectors == 0) _motion.SetLean(0);
+        if (leanAffectors == 0) _motion.SetLean(0);
     }
     /// <summary>
     /// Nod down. Duration/repetitions/amount are highly dependent on one another -

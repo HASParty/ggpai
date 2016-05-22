@@ -5,60 +5,6 @@ using UnityEngine;
 using Boardgame.Configuration;
 
 namespace Boardgame.Networking {
-    public class GGPSettings {
-        public GGPSettings(float e, float r, float g, float cd, float td, int l, float fa, float sa, float fd, float sd, int cdp, float h, float rnd, int exp, int a) {
-            Epsilon = e;
-            Rave = r;
-            Grave = g;
-            ChargeDiscount = cd;
-            TreeDiscount = td;
-            Limit = l;
-            FirstAggression = fa;
-            SecondAggression = sa;
-            FirstDefensiveness = fd;
-            SecondDefensiveness = sd;
-            ChargeDepth = cdp;
-            Horizon = h;
-            RandomError = rnd;
-            Exploration = exp;
-            Agreeableness = a;
-        }
-
-        public GGPSettings(GGPSettings g) {
-            Epsilon = g.Epsilon;
-            Rave = g.Rave;
-            Grave = g.Grave;
-            ChargeDiscount = g.ChargeDiscount;
-            TreeDiscount = g.TreeDiscount;
-            Limit = g.Limit;
-            FirstAggression = g.FirstAggression;
-            SecondAggression = g.SecondAggression;
-            FirstDefensiveness = g.FirstDefensiveness;
-            SecondDefensiveness = g.SecondDefensiveness;
-            ChargeDepth = g.ChargeDepth;
-            Horizon = g.Horizon;
-            RandomError = g.RandomError;
-            Exploration = g.Exploration;
-            Agreeableness = g.Agreeableness;
-        }
-
-        public int Exploration;
-        public float Epsilon;
-        public float Rave;
-        public float Grave;
-        public float ChargeDiscount;
-        public float TreeDiscount;
-        public int   Limit;
-        public float FirstAggression;
-        public float SecondAggression;
-        public float FirstDefensiveness;
-        public float SecondDefensiveness;
-        public int ChargeDepth;
-        public float Horizon;
-        public float RandomError;
-        public int Agreeableness;
-    }
-
     public class ConnectionMonitor : Singleton<ConnectionMonitor> {
         public string GameConnectionStatus { get { return Connection.GameConnectionStatus.ToString(); } }
         public string FeedConnectionStatus { get { return Connection.FeedConnectionStatus.ToString(); } }
@@ -93,7 +39,7 @@ namespace Boardgame.Networking {
                 p.StartInfo.CreateNoWindow = true;
                 p.StartInfo.RedirectStandardError = true;
                 p.StartInfo.FileName = "java";
-                p.StartInfo.Arguments = "-Xmx1500m -server -XX:-DontCompileHugeMethods -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=10 -jar " + 
+                p.StartInfo.Arguments = "-Xmx1500m -server -XX:-DontCompileHugeMethods -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=10 -jar " +
                     System.IO.Path.Combine(Application.streamingAssetsPath, "Jeff.jar 9147");
                 p.Start();
             }
@@ -106,7 +52,7 @@ namespace Boardgame.Networking {
                 string err = p.StandardError.ReadToEnd();
                 Debug.Log(feedlog);
                 Debug.Log(gamelog);
-                if(err.Length > 0) Debug.LogError(err);              
+                if (err.Length > 0) Debug.LogError(err);
                 p.Close();
             }
         }
@@ -135,25 +81,24 @@ namespace Boardgame.Networking {
             }
         }
 
-		public void ModifyRequestTime (float modifier)
-		{
-			requestLeft *= modifier;
-		}
+        public void ModifyRequestTime(float modifier) {
+            requestLeft *= modifier;
+        }
 
         public void SetMaxRequestTime(float max) {
             requestLeft = Mathf.Min(max, requestLeft);
         }
 
-		private float requestLeft;
+        private float requestLeft;
         IEnumerator Request() {
             while (BoardgameManager.Instance.IsBusy()) {
                 yield return new WaitForEndOfFrame();
             }
             while (requestLeft > 0f) {
-            	yield return new WaitForSeconds(0.1f);
-				requestLeft -= 0.1f;
-			}            
-			Pull();
+                yield return new WaitForSeconds(0.1f);
+                requestLeft -= 0.1f;
+            }
+            Pull();
         }
 
         IEnumerator InitialRequest() {
@@ -164,12 +109,9 @@ namespace Boardgame.Networking {
         private int turnCount = 0;
         void TurnMonitor(GameData data) {
             if (data.IsDone || waitingToEnd) return;
-            //Debug.Log(Config.Turns + " " + turnCount);
-            if (Config.Turns != -1 && turnCount >= Config.Turns)
-            {
+            if (Config.Turns != -1 && turnCount >= Config.Turns) {
                 EndGame();
-            }
-            else if (data.State == GDL.Terminal.FALSE) {
+            } else if (data.State == GDL.Terminal.FALSE) {
                 if (data.IsStart) {
                     UIManager.Instance.HideLoading();
                     if (!data.IsHumanPlayerTurn) {
@@ -181,9 +123,9 @@ namespace Boardgame.Networking {
                     if (data.IsStart) {
                         StartCoroutine(InitialRequest());
                     } else {
-						requestLeft = Config.TurnTime;
+                        requestLeft = Config.TurnTime;
                         StartCoroutine(Request());
-                    }                    
+                    }
                 }
             } else {
                 EndGame();
@@ -197,13 +139,12 @@ namespace Boardgame.Networking {
             Debug.Log("REQUESTING ABORTION");
             endAcked = false;
             waitingToEnd = true;
-            Connection.Write("abort\n", Connection.feedConnection.GetStream());            
+            Connection.Write("abort\n", Connection.feedConnection.GetStream());
             StartCoroutine(AbortGame());
         }
 
-        IEnumerator AbortGame()
-        {
-            while(!endAcked) yield return new WaitForEndOfFrame();
+        IEnumerator AbortGame() {
+            while (!endAcked) yield return new WaitForEndOfFrame();
             Write("ABORT " + Config.MatchID);
             waitingToEnd = false;
             IsOver = true;
@@ -246,19 +187,16 @@ namespace Boardgame.Networking {
         string gamelog = "";
         public void ReadOnce() {
             string data;
-            if(Connection.ReadLine(Connection.feedConnection, out data)) {
+            if (Connection.ReadLine(Connection.feedConnection, out data)) {
                 //Debug.Log(data);
-                if (!data.Contains("ack"))
-                {    
+                if (!data.Contains("ack")) {
                     OnFeedUpdate.Invoke(new FeedData(data));
-                }
-                else
-                {
+                } else {
                     endAcked = true;
                 }
                 feedlog += data;
             }
-            if(Connection.gameConnection.Available > 0) {
+            if (Connection.gameConnection.Available > 0) {
                 data = Connection.HttpRead(Connection.gameConnection);
                 gamelog += data;
                 Debug.Log(data);
@@ -270,11 +208,9 @@ namespace Boardgame.Networking {
             string send = string.Format("( update {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12} {13} {14} {15} {16} )\n",
                 g.Epsilon, g.Rave, g.Grave, g.ChargeDiscount, g.TreeDiscount, g.Limit, g.FirstAggression, g.SecondAggression, g.FirstDefensiveness,
                 g.SecondDefensiveness, g.ChargeDepth, g.Horizon, g.RandomError, 40, 40, g.Exploration, g.Agreeableness);
-            //Debug.Log(send);
             Connection.Write(send, Connection.feedConnection.GetStream());
         }
 
-        // Update is called once per frame
         void Update() {
             if (IsConnected() && !IsOver) {
                 if (Connection.feedConnection.Available > 0 || Connection.gameConnection.Available > 0) ReadOnce();

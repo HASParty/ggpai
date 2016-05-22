@@ -6,17 +6,6 @@ using UnityEngine;
 
 namespace Boardgame.Networking {
     public class FeedData {
-        public struct FMove {
-            public Move Move;
-            public int Simulations;
-            public Player Who;
-            public float FirstUCT;
-            public float SecondUCT;
-            public override string ToString() {
-                return string.Format("{0} s: {1} p: {2} fUCT: {3} sUCT: {4}",
-                    Move, Simulations, Who, FirstUCT, SecondUCT);
-            }
-        }
         public Move Best;
         public Dictionary<Move, FMove> Moves = new Dictionary<Move, FMove>();
         public float SimulationStdDev;
@@ -31,9 +20,9 @@ namespace Boardgame.Networking {
             TotalSimulations = moves.Sum(v => v.Simulations) + maxsim;
             FirstWeightedUCT = 0;
             SecondWeightedUCT = 0;
-            foreach(var cm in moves) {
+            foreach (var cm in moves) {
                 if (cm.Simulations == maxsim) {
-                    Best = (cm.First != null ? cm.First : cm.Second);                 
+                    Best = (cm.First != null ? cm.First : cm.Second);
                 }
                 FMove m;
                 m.Move = (cm.First != null ? cm.First : cm.Second);
@@ -51,7 +40,7 @@ namespace Boardgame.Networking {
             }
 
             try {
-                AverageSimulations = moves.Average(v => v.Simulations);                
+                AverageSimulations = moves.Average(v => v.Simulations);
                 double stdDev = Math.Sqrt(moves.Average(v => Math.Pow(v.Simulations - AverageSimulations, 2)));
                 SimulationStdDev = (maxsim - (float)AverageSimulations) / (float)stdDev;
             } catch (Exception e) {

@@ -2,18 +2,8 @@
 using System.Collections;
 using Boardgame.Configuration;
 
-namespace Boardgame.Agent
-{
-    [System.Serializable]
-    public struct MoodEffect {
-        public float Positive;
-        public float Negative;
-        public float Surprising;
-        public float Expected;
-    }
-
-    public class Mood : MonoBehaviour
-    {
+namespace Boardgame.Agent {
+    public class Mood : MonoBehaviour {
 
         private Decayable valence;
         private Decayable arousal;
@@ -26,11 +16,6 @@ namespace Boardgame.Agent
         private MoodEffect mods;
 
         private PersonalityModule pm;
-
-        [SerializeField]
-        private float currentValence;
-        [SerializeField]
-        private float currentArousal;
 
         //find good defaults
         [SerializeField]
@@ -51,8 +36,6 @@ namespace Boardgame.Agent
             arousal.Update();
             currentValenceMod = (valence.IsPositive() ? mods.Positive : (valence.IsNegative() ? mods.Negative : 1));
             currentArousalMod = (arousal.IsPositive() ? mods.Surprising : (arousal.IsNegative() ? mods.Expected : 1));
-            currentValence = valence.Get();
-            currentArousal = arousal.Get();
         }
 
         public void Reset() {

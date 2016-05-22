@@ -33,7 +33,7 @@ namespace Boardgame {
             updated = true;
             waitingForUpdate = false;
             //if the state is terminal
-            if(data.State != GDL.Terminal.FALSE) {
+            if (data.State != GDL.Terminal.FALSE) {
                 //hide all UI effects
                 UIManager.Instance.HideHighlightEffect();
                 UIManager.Instance.HideLegalCells();
@@ -125,10 +125,10 @@ namespace Boardgame {
                     UIManager.Instance.HideHighlightEffect();
                 } else {
                     if (piece == selectedPiece)
-                    return;
+                        return;
                     if (piece == currentPiece) {
                         PieceLeave(piece);
-                    }                
+                    }
                     selectedPiece = piece;
                     UIManager.Instance.ShowSelectEffect(selectedPiece.transform.position);
                 }
@@ -148,7 +148,7 @@ namespace Boardgame {
             var cid = " ";
             if (currentPiece != null && currentPiece.HasPiece()) {
                 cid = currentPiece.id;
-            } else if(selectedPiece != null) {
+            } else if (selectedPiece != null) {
                 cid = selectedPiece.id;
             }
             if (lastPiece == cid && !updated) return;

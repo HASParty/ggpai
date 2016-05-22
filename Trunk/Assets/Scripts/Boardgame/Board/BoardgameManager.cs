@@ -49,8 +49,8 @@ namespace Boardgame {
 
         void Awake() {
             if (gameScriptable != null) {
-                reader = Activator.CreateInstance(Type.GetType("Boardgame.GDL."+gameScriptable.ID+"Reader")) as GameReader;
-                writer = Activator.CreateInstance(Type.GetType("Boardgame.GDL."+gameScriptable.ID+"Writer")) as GameWriter;
+                reader = Activator.CreateInstance(Type.GetType("Boardgame.GDL." + gameScriptable.ID + "Reader")) as GameReader;
+                writer = Activator.CreateInstance(Type.GetType("Boardgame.GDL." + gameScriptable.ID + "Writer")) as GameWriter;
 
                 piecePrefabs = new Dictionary<string, GameObject>();
 
@@ -96,24 +96,21 @@ namespace Boardgame {
                     SetState(data.GameState);
                     if (data.LegalMoves.Count == 0 && data.MovesMade.Count == 0) SyncState();
                 }
-                
-                if (data.IsHumanPlayerTurn)
-                {
+
+                if (data.IsHumanPlayerTurn) {
                     if (last == Player.Second) moveInProgress = false;
                     StartCoroutine(WaitForMove(() => {
                         SetLegalMoves(data.LegalMoves);
                         turn = Player.Second;
                         UIManager.Instance.SetState("Player's turn");
-                    }));                   
-                }
-                else
-                {
+                    }));
+                } else {
                     if (last == Player.Second) moveInProgress = false;
                     SetLegalMoves(data.LegalMoves);
                     turn = Player.First;
                     UIManager.Instance.SetState("AI's turn");
                 }
-                
+
             } else {
                 //Debug.Log(data.State);
                 SetLegalMoves(new List<Move>());
@@ -139,12 +136,12 @@ namespace Boardgame {
                 if (grid.IsPile(cell.id)) continue;
                 grid.Clear(cell.id);
             }
-            GameStart(state);      
+            GameStart(state);
         }
 
         public void GameStart(State state) {
             grid.SetPile(gameScriptable.TrashPile);
-            foreach(GDL.Cell cell in state.Cells) {
+            foreach (GDL.Cell cell in state.Cells) {
                 if (piecePrefabs.ContainsKey(cell.Type)) {
                     if (grid.IsPile(cell.ID)) continue;
                     if (cell.Count > 0) {
@@ -154,7 +151,7 @@ namespace Boardgame {
                             p.AddComponent<Rigidbody>();
                             grid.PlacePiece(p, cell.ID);
                             p.transform.SetParent(PileSpawnTransform);
-                        }                     
+                        }
                     } else {
                         grid.PlacePiece(piecePrefabs[cell.Type], cell.ID, false);
                     }
@@ -171,8 +168,8 @@ namespace Boardgame {
             removeableIDs.Clear();
             moveableIDs.Clear();
             captureableIDs.Clear();
-            foreach(Move m in moves) {
-                switch(m.Type) {
+            foreach (Move m in moves) {
+                switch (m.Type) {
                     case MoveType.CAPTURE:
                         if (captureableIDs.ContainsKey(m.From)) {
                             captureableIDs[m.From].Add(m.To);
@@ -183,7 +180,7 @@ namespace Boardgame {
                         }
                         break;
                     case MoveType.MOVE:
-                        if(moveableIDs.ContainsKey(m.From)) {
+                        if (moveableIDs.ContainsKey(m.From)) {
                             moveableIDs[m.From].Add(m.To);
                         } else {
                             List<string> vals = new List<string>();
@@ -208,7 +205,7 @@ namespace Boardgame {
 
         public void MakeMove(List<Move> moves, Player player) {
             GameObject piece = null;
-            foreach(var move in moves) {
+            foreach (var move in moves) {
                 Debug.Log(move);
                 switch (move.Type) {
                     case MoveType.PLACE:
@@ -256,7 +253,7 @@ namespace Boardgame {
                     to = null;
                     break;
             }
-        } 
+        }
 
         public void MoveMade(List<Move> moves, Player player) {
             moveInProgress = false;
@@ -269,7 +266,7 @@ namespace Boardgame {
             if (moveableIDs.ContainsKey(selected.id) && moveableIDs[selected.id].Contains(cell.id)) return true;
             if (captureableIDs.ContainsKey(selected.id) && captureableIDs[selected.id].Contains(cell.id)) return true;
             return false;
-        } 
+        }
 
         public bool CanSelectPiece(PhysicalCell cell, Player player) {
             string pile = player == Player.First ? gameScriptable.FirstPile : gameScriptable.SecondPile;
@@ -322,7 +319,7 @@ namespace Boardgame {
                 move = new Move(MoveType.PLACE, cellToID);
             } else if (cellToID == null) {
                 move = new Move(MoveType.REMOVE, cellFromID);
-            } else if(captureableIDs.ContainsKey(cellFromID) && captureableIDs[cellFromID].Contains(cellToID)) {  
+            } else if (captureableIDs.ContainsKey(cellFromID) && captureableIDs[cellFromID].Contains(cellToID)) {
                 move = new Move(MoveType.CAPTURE, cellFromID, cellToID);
             } else {
                 move = new Move(cellFromID, cellToID);

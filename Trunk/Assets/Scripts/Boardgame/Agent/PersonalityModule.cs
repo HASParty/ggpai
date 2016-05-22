@@ -72,7 +72,7 @@ namespace Boardgame.Agent {
             traits[1] = conscientiousness;
             traits[2] = extraversion;
             traits[3] = neuroticism;
-            traits[4] = openness;            
+            traits[4] = openness;
             Recalc();
         }
 

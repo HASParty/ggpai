@@ -74,8 +74,7 @@ namespace Boardgame {
             stateText.text = state;
         }
 
-        public void ShowSelectEffect(Vector3 worldPosition)
-        {
+        public void ShowSelectEffect(Vector3 worldPosition) {
             RectTransform rt;
 
             HideSelectEffect();
@@ -95,23 +94,18 @@ namespace Boardgame {
             }
         }
 
-        public void HideSelectEffect()
-        {
-            if (selectObject != null)
-            {
+        public void HideSelectEffect() {
+            if (selectObject != null) {
                 Destroy(selectObject);
             }
         }
 
-        public void ShowLegalCells(List<Vector3> cells)
-        {
+        public void ShowLegalCells(List<Vector3> cells) {
             RectTransform rt;
-            if (legalCellObjects.Count > 0)
-            {
+            if (legalCellObjects.Count > 0) {
                 HideLegalCells();
             }
-            foreach (Vector3 cellPos in cells)
-            {
+            foreach (Vector3 cellPos in cells) {
                 var legalCell = Instantiate(legalCellImage.gameObject);
                 legalCell.transform.SetParent(canvas.transform);
                 rt = legalCell.GetComponent<RectTransform>();
@@ -124,10 +118,8 @@ namespace Boardgame {
 
         }
 
-        public void HideLegalCells()
-        {
-            foreach (GameObject cell in legalCellObjects)
-            {
+        public void HideLegalCells() {
+            foreach (GameObject cell in legalCellObjects) {
                 Destroy(cell);
             }
 

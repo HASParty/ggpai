@@ -11,12 +11,9 @@ namespace Boardgame.Networking {
 
             if (r.IsStart(data)) {
                 IsStart = true;
-            }
-            else if (r.IsDone(data))
-            {
+            } else if (r.IsDone(data)) {
                 IsDone = true;
-            }
-            else {                
+            } else {
                 MovesMade = r.GetMove(data);
             }
 

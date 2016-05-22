@@ -47,11 +47,6 @@ namespace Boardgame.GDL {
             return state;
         }
 
-        public override List<Move> GetMove(string message) {
-            string lexify = Parser.BreakMessage(message).action;
-            return ParseMoves(lexify);
-        }
-
         protected override Move ParseSingleMove(ref List<Token>.Enumerator token) {
             string cellID, toID;
             switch (token.Current.type) {
@@ -80,22 +75,6 @@ namespace Boardgame.GDL {
             return null;
         }
 
-        private List<Move> ParseMoves(string moves) {
-            var lexed = lexer.Lex(moves);
-            var token = lexed.GetEnumerator();
-            var list = new List<Move>();
 
-
-            while (token.MoveNext()) {
-                var move = ParseSingleMove(ref token);
-                if (move != null) list.Add(move);
-            }
-            return list;
-        }
-
-        public override List<Move> GetLegalMoves(string message) {
-            string lexify = Parser.BreakMessage(message).legalMoves;
-            return ParseMoves(lexify);
-        }
     }
 }
