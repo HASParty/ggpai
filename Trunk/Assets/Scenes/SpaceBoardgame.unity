@@ -1984,7 +1984,6 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -4883,7 +4882,6 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -5732,13 +5730,13 @@ MonoBehaviour:
     value: 1
     baseMoodMod:
       High:
-        Positive: 1.05
-        Negative: 0.95
+        Positive: 1.1
+        Negative: 0.9
         Surprising: 1
         Expected: 1
       Low:
-        Positive: 0.95
-        Negative: 1.05
+        Positive: 0.9
+        Negative: 1.1
         Surprising: 1
         Expected: 1
     interpolation:
@@ -5772,15 +5770,15 @@ MonoBehaviour:
     value: 1
     baseMoodMod:
       High:
-        Positive: 1.2
-        Negative: 1.2
-        Surprising: 1.2
-        Expected: 1.2
+        Positive: 1.3
+        Negative: 1.3
+        Surprising: 1.3
+        Expected: 1.3
       Low:
-        Positive: 0.8
-        Negative: 0.8
-        Surprising: 0.8
-        Expected: 0.8
+        Positive: 0.7
+        Negative: 0.7
+        Surprising: 0.7
+        Expected: 0.7
     interpolation:
       High:
         arousal: 0
@@ -5794,19 +5792,19 @@ MonoBehaviour:
       High:
         Positive: 1
         Negative: 1
-        Surprising: 1.1
-        Expected: 0.9
+        Surprising: 1.4
+        Expected: 0.5
       Low:
         Positive: 1
         Negative: 1
-        Surprising: 0.9
-        Expected: 1.1
+        Surprising: 0.5
+        Expected: 1.4
     interpolation:
       High:
         arousal: 0.15
         valence: 0
       Low:
-        arousal: -0.15
+        arousal: -0.2
         valence: 0
   openness:
     value: 1
@@ -6104,7 +6102,6 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
-  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
