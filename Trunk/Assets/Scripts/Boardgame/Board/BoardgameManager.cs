@@ -16,7 +16,8 @@ namespace Boardgame {
     /// </summary>
     public class BoardgameManager : Singleton<BoardgameManager> {
 
-        [SerializeField]
+        public BoardgameScriptable[] GameScriptables;
+
         private BoardgameScriptable gameScriptable;
 
         public Transform BoardSpawnLocation;
@@ -48,6 +49,15 @@ namespace Boardgame {
 
 
         void Awake() {
+            //hack fix until I can get to the black hole to see what actual changes were made and never committed
+            foreach (var scriptable in GameScriptables)
+            {
+                if (scriptable.ID.ToLower() == Boardgame.Configuration.Config.GameName.ToLower())
+                {
+                    gameScriptable = scriptable;
+                    break;
+                }
+            }
             if (gameScriptable != null) {
                 reader = Activator.CreateInstance(Type.GetType("Boardgame.GDL." + gameScriptable.ID + "Reader")) as GameReader;
                 writer = Activator.CreateInstance(Type.GetType("Boardgame.GDL." + gameScriptable.ID + "Writer")) as GameWriter;
